@@ -1,48 +1,61 @@
 import React, { useState } from "react";
 import "./LandingPage.css";
-import { FiPhone } from "react-icons/fi";
-import logo from "../assets/logo.png";
+import logo from "../assets/turantx-logo.png"; // make sure this logo path is correct
+import OtpPage from "./OtpPage";
 
-function LandingPage() {
-  const [phone, setPhone] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
-  const isValid = phone.length === 10;
+const LandingPage = () => {
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isValid, setIsValid] = useState(false);
+  const [showOtpPage, setShowOtpPage] = useState(false);
 
   const handleChange = (e) => {
-    const value = e.target.value.replace(/\D/g, "");
-    setPhone(value);
+    const value = e.target.value.replace(/\D/g, ""); // allow only numbers
+    setPhoneNumber(value);
+    setIsValid(/^[6-9]\d{9}$/.test(value)); // highlight when valid 10-digit
   };
+
+  const handleSendOtp = () => {
+    if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+    setShowOtpPage(true); // show OTP screen
+  };
+
+  if (showOtpPage) {
+    return <OtpPage phoneNumber={phoneNumber} onBack={() => setShowOtpPage(false)} />;
+  }
 
   return (
     <div className="landing-container">
-      <div className="card">
-        <img src={logo} alt="TurantX Logo" className="logo" />
+      <div className="landing-card">
+        <img src={logo} alt="TurantX Logo" className="landing-logo" />
 
-        <h2 className="title">Welcome to TurantX</h2>
-        <p className="subtitle">Delivering speed, reliability, and trust.</p>
+        <h2 className="landing-title">
+          Welcome to <span>TurantX</span>
+        </h2>
+        <p className="landing-subtitle">
+          Instant and Reliable Travel & Delivery Connections
+        </p>
 
-        <div className={`input-box ${isFocused ? "focused" : ""}`}>
-          <FiPhone color="#ff7a00" size={20} />
-          <input
-            type="text"
-            maxLength="10"
-            placeholder="Enter your mobile number"
-            value={phone}
-            onChange={handleChange}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-          />
-        </div>
+        <input
+          type="tel"
+          placeholder="Enter mobile number"
+          value={phoneNumber}
+          onChange={handleChange}
+          maxLength={10}
+          className={`landing-input ${isValid ? "active" : ""}`}
+        />
 
         <button
-          className={`otp-btn ${isValid ? "active" : ""}`}
-          disabled={!isValid}
+          className={`landing-btn ${isValid ? "active" : ""}`}
+          onClick={handleSendOtp}
         >
           Send OTP
         </button>
       </div>
     </div>
   );
-}
+};
 
 export default LandingPage;

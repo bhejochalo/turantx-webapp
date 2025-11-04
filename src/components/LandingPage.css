@@ -1,112 +1,82 @@
 .landing-container {
   height: 100vh;
-  width: 100%;
-  background-color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: linear-gradient(135deg, #fff7f1 0%, #fffaf7 100%);
 }
 
-/* Card container */
-.card {
-  width: 360px;
-  background: #ffffff;
-  padding: 45px 35px;
-  border-radius: 18px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+.landing-card {
+  background: #fff;
+  padding: 50px 60px;
+  border-radius: 20px;
   text-align: center;
-  transition: transform 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 400px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.5s ease;
 }
 
-.card:hover {
-  transform: translateY(-3px);
+.landing-logo {
+  width: 120px;
+  margin-bottom: 25px;
 }
 
-/* Logo */
-.logo {
-  width: 150px;
-  margin-bottom: 18px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Title - gradient and premium look */
-.title {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  background: linear-gradient(90deg, #ff7a00, #ffaf47);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 5px 0 6px 0;
-  text-align: center;
-}
-
-/* Subtitle - refined grey tone */
-.subtitle {
-  color: #777;
-  font-size: 15px;
-  font-weight: 400;
-  margin-bottom: 28px;
-  text-align: center;
-}
-
-/* Input box */
-.input-box {
-  display: flex;
-  align-items: center;
-  border: 2px solid #e5e5e5;
-  border-radius: 10px;
-  padding: 12px 15px;
-  background-color: #fafafa;
-  transition: all 0.3s ease;
-  width: 100%;
-  max-width: 300px;
-}
-
-.input-box.focused {
-  border-color: #ff8c1a;
-  box-shadow: 0 0 6px rgba(255, 122, 0, 0.25);
-  background-color: #fff8f3;
-}
-
-.input-box input {
-  border: none;
-  outline: none;
-  background: transparent;
-  margin-left: 10px;
-  width: 100%;
-  font-size: 16px;
-  color: #333;
-}
-
-/* Button */
-.otp-btn {
-  margin-top: 30px;
-  width: 100%;
-  max-width: 300px;
-  padding: 13px;
-  font-size: 16px;
+.landing-title {
+  font-size: 22px;
   font-weight: 600;
-  color: white;
-  background-color: #ffd9b8;
-  border: none;
+  color: #222;
+  margin-bottom: 10px;
+}
+
+.landing-title span {
+  color: #ff914d;
+}
+
+.landing-subtitle {
+  color: #666;
+  font-size: 15px;
+  margin-bottom: 30px;
+}
+
+.landing-input {
+  width: 100%;
+  padding: 13px;
+  border: 1.5px solid #ddd;
   border-radius: 10px;
-  transition: all 0.3s ease;
-  cursor: not-allowed;
+  outline: none;
+  font-size: 15px;
+  transition: 0.3s;
+  margin-bottom: 16px;
 }
 
-.otp-btn.active {
-  background: linear-gradient(90deg, #ff7a00, #ff9f2e);
+.landing-input.active,
+.landing-input:focus {
+  border-color: #ff914d;
+  box-shadow: 0 0 6px rgba(255, 145, 77, 0.3);
+}
+
+.landing-btn {
+  width: 108%;
+  background-color: #ffc5a3;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 10px;
+  padding: 14px 0;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(255, 122, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
-.otp-btn.active:hover {
-  background: linear-gradient(90deg, #ff8c1a, #ffaa3a);
-  transform: translateY(-2px);
+.landing-btn.active {
+  background-color: #ff914d;
+  box-shadow: 0 4px 10px rgba(255, 145, 77, 0.4);
+}
+
+.landing-btn.active:hover {
+  background-color: #ff7a29;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
