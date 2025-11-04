@@ -1,67 +1,100 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./OtpPage.css";
-import logo from "../assets/turantx-logo.png";
-import { FiArrowLeft } from "react-icons/fi";
+import { ArrowLeft } from "lucide-react"; // icon library
 
-const OtpPage = ({ phoneNumber, onBack, onVerify }) => {
+const OtpPage = ({ phoneNumber, onBack }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [isComplete, setIsComplete] = useState(false);
+  const inputRefs = useRef([]);
 
-  const handleChange = (value, index) => {
-    if (/^\d?$/.test(value)) {
+  const handleChange = (e, index) => {
+    const value = e.target.value.replace(/\D/g, ""); // only digits
+    if (!value) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value[0];
+    setOtp(newOtp);
+
+    // Move focus to next input if available
+    if (index < 5) inputRefs.current[index + 1].focus();
+
+    // Check if all 6 digits entered
+    setIsComplete(newOtp.every((digit) => digit !== ""));
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace") {
       const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
-
-      if (value && index < 5) {
-        document.getElementById(`otp-${index + 1}`).focus();
+      if (otp[index] === "") {
+        // move backward if empty
+        if (index > 0) {
+          inputRefs.current[index - 1].focus();
+          newOtp[index - 1] = "";
+        }
+      } else {
+        // clear current box
+        newOtp[index] = "";
       }
+      setOtp(newOtp);
+      setIsComplete(false);
     }
   };
 
   const handleVerify = () => {
-    const fullOtp = otp.join("");
-    if (fullOtp.length === 6) {
-      onVerify(fullOtp);
-    } else {
-      alert("Please enter a valid 6-digit OTP");
-    }
+    const otpValue = otp.join("");
+    if (otpValue.length !== 6) return alert("Enter a valid 6-digit OTP");
+    alert(`✅ OTP Verified Successfully: ${otpValue}`);
+  };
+
+  const handleClearAll = () => {
+    setOtp(["", "", "", "", "", ""]);
+    inputRefs.current[0].focus();
+    setIsComplete(false);
   };
 
   return (
     <div className="otp-container">
       <div className="otp-card">
-        <div className="otp-back" onClick={onBack}>
-          <FiArrowLeft size={20} />
-          <span>Back</span>
+        <div className="otp-header">
+          <button className="back-btn" onClick={onBack}>
+            <ArrowLeft size={20} />
+          </button>
+          <h3>Verify OTP</h3>
         </div>
 
-        <img src={logo} alt="TurantX Logo" className="otp-logo" />
+        <p className="otp-text">Sent to +91 {phoneNumber}</p>
 
-        <h2>Enter OTP</h2>
-        <p>
-          We’ve sent a 6-digit code to <br />
-          <strong>+91 {phoneNumber}</strong>
-        </p>
-
-        <div className="otp-inputs">
-          {otp.map((digit, i) => (
+        <div className="otp-input-group">
+          {otp.map((digit, index) => (
             <input
-              key={i}
-              id={`otp-${i}`}
+              key={index}
+              ref={(el) => (inputRefs.current[index] = el)}
               type="text"
-              maxLength={1}
-              className="otp-box"
+              maxLength="1"
               value={digit}
-              onChange={(e) => handleChange(e.target.value, i)}
+              onChange={(e) => handleChange(e, index)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              className="otp-input"
             />
           ))}
         </div>
 
-        <p className="resend">Resend OTP</p>
-
-        <button className="verify-btn" onClick={handleVerify}>
+        <button
+          className={`verify-btn ${isComplete ? "active" : ""}`}
+          onClick={handleVerify}
+          disabled={!isComplete}
+        >
           Verify OTP
         </button>
+
+        <div className="otp-footer">
+          <button className="clear-btn" onClick={handleClearAll}>
+            Clear All
+          </button>
+          <p className="resend-text">
+            Didn’t receive the code? <span>Resend OTP</span>
+          </p>
+        </div>
       </div>
     </div>
   );
