@@ -1,46 +1,46 @@
-.selection-container {
-    text-align: center;
-    padding: 50px;
-    font-family: Arial, sans-serif;
-  }
-  
-  .phone-display {
-    color: #666;
-    margin-bottom: 20px;
-  }
-  
-  .btn-group {
+.select-container {
+    height: 100vh;
+    width: 100%;
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin-top: 30px;
+    align-items: center;
+    background: #ffffff;
+  }
+  
+  .select-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .select-logo {
+    width: 180px;
+    margin-bottom: 40px;
   }
   
   .select-btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 6px;
+    width: 320px;
+    padding: 14px 0;
+    margin: 12px 0;
     font-size: 16px;
-    cursor: pointer;
-    color: white;
-  }
-  
-  .select-btn.sender {
-    background-color: #007bff;
-  }
-  
-  .select-btn.traveler {
-    background-color: #28a745;
-  }
-  
-  .select-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  
-  .status {
-    margin-top: 25px;
-    color: #333;
     font-weight: 500;
+    color: white;
+    background-color: #e46822;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.25s;
+    outline: none;
+  }
+  
+  .select-btn:hover {
+    background-color: #cf5714;
+  }
+  
+  .select-btn:active {
+    transform: scale(0.97);
   }
   
