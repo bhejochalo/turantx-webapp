@@ -1,0 +1,46 @@
+.selection-container {
+    text-align: center;
+    padding: 50px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .phone-display {
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  
+  .select-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .select-btn.sender {
+    background-color: #007bff;
+  }
+  
+  .select-btn.traveler {
+    background-color: #28a745;
+  }
+  
+  .select-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .status {
+    margin-top: 25px;
+    color: #333;
+    font-weight: 500;
+  }
+  

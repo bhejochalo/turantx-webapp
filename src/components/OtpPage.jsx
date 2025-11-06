@@ -1,10 +1,14 @@
 import React, { useState, useRef } from "react";
 import "./OtpPage.css";
-import { ArrowLeft } from "lucide-react"; // icon library
+import { ArrowLeft } from "lucide-react";
+import SelectionPage from "./SelectionPage";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 
 const OtpPage = ({ phoneNumber, onBack }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isComplete, setIsComplete] = useState(false);
+  const [verified, setVerified] = useState(false);
   const inputRefs = useRef([]);
 
   const handleChange = (e, index) => {
@@ -15,10 +19,9 @@ const OtpPage = ({ phoneNumber, onBack }) => {
     newOtp[index] = value[0];
     setOtp(newOtp);
 
-    // Move focus to next input if available
+    // move to next input
     if (index < 5) inputRefs.current[index + 1].focus();
 
-    // Check if all 6 digits entered
     setIsComplete(newOtp.every((digit) => digit !== ""));
   };
 
@@ -26,13 +29,11 @@ const OtpPage = ({ phoneNumber, onBack }) => {
     if (e.key === "Backspace") {
       const newOtp = [...otp];
       if (otp[index] === "") {
-        // move backward if empty
         if (index > 0) {
           inputRefs.current[index - 1].focus();
           newOtp[index - 1] = "";
         }
       } else {
-        // clear current box
         newOtp[index] = "";
       }
       setOtp(newOtp);
@@ -40,17 +41,45 @@ const OtpPage = ({ phoneNumber, onBack }) => {
     }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const otpValue = otp.join("");
-    if (otpValue.length !== 6) return alert("Enter a valid 6-digit OTP");
-    alert(`✅ OTP Verified Successfully: ${otpValue}`);
+  
+    if (otpValue.length !== 6) {
+      alert("Enter a valid 6-digit OTP");
+      return;
+    }
+  
+    // ✅ OTP Verified UI
+    alert(`✅ OTP Verified Successfully`);
+  
+    // ✅ Save phoneNumber to Firestore (just like Android)
+    try {
+      await setDoc(doc(db, "users", phoneNumber), {
+        phoneNumber: phoneNumber,
+        verified: true,
+        timestamp: Date.now()
+      }, { merge: true });
+  
+      console.log("✅ User stored/updated successfully.");
+    } catch (error) {
+      console.error("❌ Firestore Error:", error);
+    }
+  
+    // ✅ Move to Selection Page
+    setVerified(true);
   };
+  
 
   const handleClearAll = () => {
     setOtp(["", "", "", "", "", ""]);
     inputRefs.current[0].focus();
     setIsComplete(false);
   };
+
+  // ✅ if verified, show selection page
+  if (verified) {
+    return <SelectionPage phoneNumber={phoneNumber} />;
+  }
 
   return (
     <div className="otp-container">
