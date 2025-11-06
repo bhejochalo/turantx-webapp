@@ -1,47 +1,51 @@
 import React, { useState, useEffect } from "react";
 import "./IntroPage.css";
-import LandingPage from "./LandingPage";
+import { useNavigate } from "react-router-dom";
 
 const slides = [
   {
-    title: "Deliver Smarter. Travel Lighter.",
-    text: "Send parcels with real travelers flying to your destination."
+    title: "Send Items Faster",
+    text: "Your item travels with real passengers — not in cargo delays.",
   },
   {
-    title: "Earn While You Travel.",
-    text: "Travelers get paid to carry verified packages safely."
+    title: "Earn While You Travel",
+    text: "Travelers earn money for carrying verified parcels.",
   },
   {
-    title: "Fast, Reliable, Trusted.",
-    text: "End-to-end verification for secure parcel delivery."
-  }
+    title: "Instant Matches",
+    text: "We connect senders with travelers flying the same route.",
+  },
 ];
 
-const IntroPage = () => {
+export default function IntroPage() {
   const [index, setIndex] = useState(0);
-  const [showLanding, setShowLanding] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % slides.length);
-    }, 4000);
-    return () => clearInterval(interval);
+    }, 2600);
+    return () => clearInterval(timer);
   }, []);
 
-  if (showLanding) return <LandingPage />;
-
   return (
-    <div className="intro-container">
-      <div className="intro-slide fade-in">
-        <h1>{slides[index].title}</h1>
-        <p>{slides[index].text}</p>
-      </div>
+    <div className="intro-container page-transition">
+      <div className="intro-content">
+        <div className="intro-slide">
+          <h1>{slides[index].title}</h1>
+          <p>{slides[index].text}</p>
+        </div>
 
-      <button className="continue-btn" onClick={() => setShowLanding(true)}>
-        Continue to TurantX →
-      </button>
+        <div className="dots">
+          {slides.map((_, i) => (
+            <div key={i} className={`dot ${index === i ? "active" : ""}`} />
+          ))}
+        </div>
+
+        <button className="continue-btn" onClick={() => navigate("/login")}>
+          Continue to TurantX →
+        </button>
+      </div>
     </div>
   );
-};
-
-export default IntroPage;
+}

@@ -51,3 +51,20 @@ body {
 .send-btn:hover {
   background-color: #e65c00;
 }
+/* Smooth Apple-like page transitions */
+.page-transition {
+  animation: fadeBlur 0.6s ease forwards;
+}
+
+@keyframes fadeBlur {
+  0% {
+    opacity: 0;
+    filter: blur(18px);
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
