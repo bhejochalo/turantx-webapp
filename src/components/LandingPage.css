@@ -1,31 +1,45 @@
+/* Always include box-sizing so widths are predictable */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 .landing-container {
-  height: 100vh;
+  min-height: 100dvh;                 /* handles mobile browser UI height */
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  padding: 24px;                      /* breathing room on small screens */
   background: linear-gradient(135deg, #fff7f1 0%, #fffaf7 100%);
 }
 
 .landing-card {
+  width: 100%;
+  max-width: 420px;                   /* exact visual width of the card */
   background: #fff;
-  padding: 50px 60px;
   border-radius: 20px;
-  text-align: center;
-  width: 400px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  padding: 48px 40px;                 /* balanced inner spacing */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;                          /* clean vertical rhythm */
+  text-align: center;
   animation: fadeIn 0.5s ease;
 }
 
 .landing-logo {
   width: 120px;
-  margin-bottom: 25px;
+  height: auto;
+  margin-bottom: 6px;                 /* subtle spacing under logo */
 }
 
 .landing-title {
   font-size: 22px;
   font-weight: 600;
   color: #222;
-  margin-bottom: 10px;
+  margin: 0;                          /* rely on gap for spacing */
 }
 
 .landing-title span {
@@ -35,18 +49,17 @@
 .landing-subtitle {
   color: #666;
   font-size: 15px;
-  margin-bottom: 30px;
+  margin: 0 0 8px 0;                  /* small extra space before input */
 }
 
 .landing-input {
-  width: 100%;
+  width: 100%;                        /* align with card edges */
   padding: 13px;
   border: 1.5px solid #ddd;
   border-radius: 10px;
   outline: none;
   font-size: 15px;
   transition: 0.3s;
-  margin-bottom: 16px;
 }
 
 .landing-input.active,
@@ -56,15 +69,15 @@
 }
 
 .landing-btn {
-  width: 108%;
+  width: 100%;                        /* fixed: was 108% */
   background-color: #ffc5a3;
   border: none;
-  color: white;
+  color: #fff;
   font-size: 16px;
   border-radius: 10px;
   padding: 14px 0;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color .2s ease, box-shadow .2s ease, transform .02s ease;
 }
 
 .landing-btn.active {
@@ -78,5 +91,11 @@
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Slightly tighter layout on very small screens */
+@media (max-width: 400px) {
+  .landing-card { padding: 36px 24px; border-radius: 16px; }
+  .landing-logo { width: 104px; }
 }
