@@ -1,40 +1,57 @@
-.select-container {
+.auto-page {
     height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     background: linear-gradient(135deg, #fff7f1 0%, #fffaf7 100%);
-    animation: fadeIn 0.6s ease;
   }
   
-  .select-content {
+  .auto-card {
     background: #fff;
     padding: 50px 60px;
     border-radius: 20px;
     text-align: center;
     width: 400px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.5s ease;
   }
   
-  .select-logo {
+  .auto-logo {
     width: 120px;
+    margin-bottom: 20px;
+  }
+  
+  .auto-title {
+    color: #ff914d;
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .auto-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
     margin-bottom: 25px;
   }
   
-  .select-title {
-    font-size: 22px;
-    font-weight: 600;
-    color: #222;
-    margin-bottom: 8px;
-  }
-  
-  .select-subtitle {
-    color: #666;
+  .field-input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1.5px solid #ddd;
+    background-color: #f9f9f9;
     font-size: 15px;
-    margin-bottom: 25px;
+    outline: none;
+    transition: 0.3s;
   }
   
-  .select-btn {
+  .field-input:focus {
+    border-color: #ff914d;
+    box-shadow: 0 0 6px rgba(255, 145, 77, 0.3);
+    background-color: #fff;
+  }
+  
+  .next-btn {
     width: 100%;
     background-color: #ffc5a3;
     border: none;
@@ -42,31 +59,18 @@
     font-size: 16px;
     border-radius: 10px;
     padding: 14px 0;
-    cursor: pointer;
-    margin-top: 10px;
+    cursor: not-allowed;
     transition: all 0.3s ease;
   }
   
-  .select-btn:hover {
-    transform: translateY(-2px);
-  }
-  
-  .select-btn.sender {
+  .next-btn.active {
     background-color: #ff914d;
+    cursor: pointer;
     box-shadow: 0 4px 10px rgba(255, 145, 77, 0.4);
   }
   
-  .select-btn.traveler {
-    background-color: #ffa86b;
-    box-shadow: 0 4px 10px rgba(255, 168, 107, 0.4);
-  }
-  
-  .select-btn.sender:hover {
+  .next-btn.active:hover {
     background-color: #ff7a29;
-  }
-  
-  .select-btn.traveler:hover {
-    background-color: #ff9241;
   }
   
   @keyframes fadeIn {

@@ -1,0 +1,13 @@
+[debug] [2025-11-06T14:40:45.972Z] ----------------------------------------------------------------------
+[debug] [2025-11-06T14:40:45.974Z] Command:       /usr/local/bin/node /Users/swadeshkumargupta/.npm-global/bin/firebase apps:list
+[debug] [2025-11-06T14:40:45.974Z] CLI Version:   14.24.0
+[debug] [2025-11-06T14:40:45.974Z] Platform:      darwin
+[debug] [2025-11-06T14:40:45.974Z] Node Version:  v22.17.0
+[debug] [2025-11-06T14:40:45.974Z] Time:          Thu Nov 06 2025 20:10:45 GMT+0530 (India Standard Time)
+[debug] [2025-11-06T14:40:45.974Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-11-06T14:40:46.050Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-06T14:40:46.051Z] > authorizing via signed-in user (bhejochalo@gmail.com)
+[debug] [2025-11-06T14:40:46.052Z] Checked if tokens are valid: true, expires at: 1762443313967
+[debug] [2025-11-06T14:40:46.052Z] Checked if tokens are valid: true, expires at: 1762443313967
+[debug] [2025-11-06T14:40:46.053Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/turant-x:searchApps pageSize=100

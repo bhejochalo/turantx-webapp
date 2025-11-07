@@ -1,30 +1,37 @@
 import React from "react";
 import "./SelectionPage.css";
-import logo from "../assets/turantx-logo.png"; // adjust path if needed
+import logo from "../assets/turantx-logo.png";
 import { useNavigate } from "react-router-dom";
 
 const SelectionPage = ({ phoneNumber }) => {
   const navigate = useNavigate();
 
+  // Handle Sender
   const handleSender = () => {
-    navigate("/sender-profile", { state: { phoneNumber } });
+    navigate("/address", { state: { phoneNumber, userType: "SENDER" } });
   };
 
+  // Handle Traveler
   const handleTraveler = () => {
-    navigate("/traveler-profile", { state: { phoneNumber } });
+    navigate("/address", { state: { phoneNumber, userType: "TRAVELER" } });
   };
 
   return (
     <div className="select-container">
       <div className="select-content">
-        <img src={logo} alt="turantx" className="select-logo" />
+        <img src={logo} alt="TurantX Logo" className="select-logo" />
 
-        <button className="select-btn" onClick={handleSender}>
-          🙋‍♂️  I'm a Sender
+        <h2 className="select-title">Select Your Role</h2>
+        <p className="select-subtitle">
+          Whether you want to send items or earn while traveling — choose below.
+        </p>
+
+        <button className="select-btn sender" onClick={handleSender}>
+          🙋‍♂️ I'm a Sender
         </button>
 
-        <button className="select-btn" onClick={handleTraveler}>
-          ✈️  I'm a Traveller
+        <button className="select-btn traveler" onClick={handleTraveler}>
+          ✈️ I'm a Traveller
         </button>
       </div>
     </div>
