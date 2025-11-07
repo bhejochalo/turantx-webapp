@@ -1,43 +1,44 @@
 import React, { useState } from "react";
-import "./LandingPage.css";
-import logo from "../assets/turantx-logo.png"; // make sure this logo path is correct
+import Loader from "./Loader";
 import OtpPage from "./OtpPage";
+import "./LandingPage.css";
+import logo from "../assets/turantx-logo.png";
 
 const LandingPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [showOtpPage, setShowOtpPage] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    const value = e.target.value.replace(/\D/g, ""); // allow only numbers
+    const value = e.target.value.replace(/\D/g, "");
     setPhoneNumber(value);
-    setIsValid(/^[6-9]\d{9}$/.test(value)); // highlight when valid 10-digit
+    setIsValid(/^[6-9]\d{9}$/.test(value));
   };
 
   const handleSendOtp = () => {
-    if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
-      alert("Please enter a valid 10-digit mobile number.");
+    if (!isValid) {
+      alert("Enter valid mobile number");
       return;
     }
-    setShowOtpPage(true); // show OTP screen
+    setLoading(true);
+    setTimeout(() => {
+      setShowOtpPage(true);
+      setLoading(false);
+    }, 1500);
   };
 
-  if (showOtpPage) {
-    return <OtpPage phoneNumber={phoneNumber} onBack={() => setShowOtpPage(false)} />;
-  }
+  if (loading) return <Loader />;
+  if (showOtpPage) return <OtpPage phoneNumber={phoneNumber} onBack={() => setShowOtpPage(false)} />;
 
   return (
     <div className="landing-container">
       <div className="landing-card">
-        <img src={logo} alt="TurantX Logo" className="landing-logo" />
-
+        <img src={logo} alt="TurantX" className="landing-logo" />
         <h2 className="landing-title">
           Welcome to <span>TurantX</span>
         </h2>
-        <p className="landing-subtitle">
-          Instant and Reliable Travel & Delivery Connections
-        </p>
-
+        <p className="landing-subtitle">Instant and Reliable Travel & Delivery Connections</p>
         <input
           type="tel"
           placeholder="Enter mobile number"
@@ -46,11 +47,7 @@ const LandingPage = () => {
           maxLength={10}
           className={`landing-input ${isValid ? "active" : ""}`}
         />
-
-        <button
-          className={`landing-btn ${isValid ? "active" : ""}`}
-          onClick={handleSendOtp}
-        >
+        <button className={`landing-btn ${isValid ? "active" : ""}`} onClick={handleSendOtp}>
           Send OTP
         </button>
       </div>

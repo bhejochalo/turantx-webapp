@@ -3,6 +3,7 @@ import "./OtpPage.css";
 import logo from "../assets/turantx-logo.png";
 import { ArrowLeft } from "lucide-react";
 import SelectionPage from "./SelectionPage";
+import Loader from "./Loader"; // ✅ Import Loader
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
@@ -10,8 +11,10 @@ const OtpPage = ({ phoneNumber, onBack }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isComplete, setIsComplete] = useState(false);
   const [verified, setVerified] = useState(false);
+  const [loading, setLoading] = useState(false); // ✅ Loader state
   const inputRefs = useRef([]);
 
+  // Handle OTP input
   const handleChange = (e, index) => {
     const value = e.target.value.slice(-1).replace(/\D/g, "");
     const newOtp = [...otp];
@@ -22,6 +25,7 @@ const OtpPage = ({ phoneNumber, onBack }) => {
     setIsComplete(newOtp.every((v) => v !== ""));
   };
 
+  // Handle Backspace
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
       const newOtp = [...otp];
@@ -32,20 +36,46 @@ const OtpPage = ({ phoneNumber, onBack }) => {
     }
   };
 
+  // Handle Verify OTP
   const handleVerify = async () => {
     const otpValue = otp.join("");
-    if (otpValue.length !== 6) return;
+    if (otpValue.length !== 6) {
+      alert("Please enter a valid 6-digit OTP");
+      return;
+    }
 
-    // save to firestore (same as Android flow)
-    await setDoc(doc(db, "users", phoneNumber), {
-      phoneNumber,
-      verified: true,
-      timestamp: Date.now(),
-    }, { merge: true });
+    // ✅ Show Loader
+    setLoading(true);
 
-    setVerified(true);
+    try {
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // ✅ Save user in Firestore (like Android)
+      await setDoc(
+        doc(db, "users", phoneNumber),
+        {
+          phoneNumber,
+          verified: true,
+          timestamp: Date.now(),
+        },
+        { merge: true }
+      );
+
+      console.log("✅ User saved successfully!");
+      setVerified(true);
+    } catch (error) {
+      console.error("❌ Firestore Error:", error);
+    } finally {
+      // ✅ Hide loader after slight delay for smoothness
+      setTimeout(() => setLoading(false), 1000);
+    }
   };
 
+  // ✅ Display Loader while verifying
+  if (loading) return <Loader />;
+
+  // ✅ Go to next page after verification
   if (verified) return <SelectionPage phoneNumber={phoneNumber} />;
 
   return (
@@ -54,10 +84,12 @@ const OtpPage = ({ phoneNumber, onBack }) => {
         <ArrowLeft size={18} /> Back
       </button>
 
-      <img src={logo} alt="turantx" className="otp-logo" />
+      <img src={logo} alt="TurantX" className="otp-logo" />
 
       <h2 className="otp-title">Enter OTP</h2>
-      <p className="otp-subtext">We’ve sent a 6-digit code to <br /> +91 {phoneNumber}</p>
+      <p className="otp-subtext">
+        We’ve sent a 6-digit code to <br /> +91 {phoneNumber}
+      </p>
 
       <div className="otp-input-row">
         {otp.map((digit, i) => (
