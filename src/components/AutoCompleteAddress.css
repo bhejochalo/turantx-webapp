@@ -77,4 +77,50 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  /* Distance section styling */
+.distance-box {
+    margin: 20px auto 25px;
+    padding: 14px 0;
+    background: linear-gradient(135deg, #fff1e6 0%, #fff6f0 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(255, 145, 77, 0.15);
+    width: 85%;
+    transition: 0.4s ease;
+    animation: fadeInUp 0.6s ease;
+  }
+  
+  .distance-inner {
+    text-align: center;
+    color: #333;
+  }
+  
+  .distance-inner h3 {
+    color: #ff914d;
+    font-size: 22px;
+    margin: 5px 0;
+    font-weight: 600;
+  }
+  
+  .distance-inner p {
+    color: #777;
+    font-size: 13px;
+    margin-top: -5px;
+  }
+  
+  .plane-icon {
+    font-size: 22px;
+    animation: flyAcross 2s ease-in-out infinite;
+    display: inline-block;
+  }
+  
+  @keyframes flyAcross {
+    0% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    100% { transform: translateX(-5px); }
+  }
+  
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   

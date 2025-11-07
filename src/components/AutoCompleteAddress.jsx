@@ -27,13 +27,25 @@ function loadGoogleMaps(apiKey) {
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
     script.async = true;
     script.defer = true;
-    script.onload = () => {
-      if (window.google && window.google.maps) resolve(window.google);
-      else reject(new Error("Google Maps failed to load"));
-    };
+    script.onload = () => resolve(window.google);
     script.onerror = reject;
     document.head.appendChild(script);
   });
+}
+
+// Helper function to calculate haversine distance (in km)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth radius in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return (R * c).toFixed(1); // distance in km, rounded
 }
 
 export default function AutoCompleteAddress() {
@@ -46,44 +58,51 @@ export default function AutoCompleteAddress() {
   const toRef = useRef(null);
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
+  const [fromCoords, setFromCoords] = useState(null);
+  const [toCoords, setToCoords] = useState(null);
+  const [distance, setDistance] = useState(null);
   const [loading, setLoading] = useState(false);
   const geocoder = useRef(null);
 
-  // load google script
   useEffect(() => {
-    if (!apiKey) {
-      console.error("❌ Missing REACT_APP_GOOGLE_MAPS_API_KEY in .env");
-      return;
-    }
+    if (!apiKey) return console.error("Missing API key in .env");
     loadGoogleMaps(apiKey).then((google) => {
       geocoder.current = new google.maps.Geocoder();
       initAutocomplete(google);
       autofillCurrentLocation(google);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const initAutocomplete = (google) => {
-    if (!fromRef.current || !toRef.current) return;
-
-    const fromAutocomplete = new google.maps.places.Autocomplete(fromRef.current, {
+    const fromAuto = new google.maps.places.Autocomplete(fromRef.current, {
+      componentRestrictions: { country: "IN" },
+      fields: ["formatted_address", "geometry"],
+    });
+    const toAuto = new google.maps.places.Autocomplete(toRef.current, {
       componentRestrictions: { country: "IN" },
       fields: ["formatted_address", "geometry"],
     });
 
-    const toAutocomplete = new google.maps.places.Autocomplete(toRef.current, {
-      componentRestrictions: { country: "IN" },
-      fields: ["formatted_address", "geometry"],
+    fromAuto.addListener("place_changed", () => {
+      const place = fromAuto.getPlace();
+      if (place.formatted_address && place.geometry) {
+        setFromAddress(place.formatted_address);
+        setFromCoords({
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng(),
+        });
+      }
     });
 
-    fromAutocomplete.addListener("place_changed", () => {
-      const place = fromAutocomplete.getPlace();
-      setFromAddress(place.formatted_address || "");
-    });
-
-    toAutocomplete.addListener("place_changed", () => {
-      const place = toAutocomplete.getPlace();
-      setToAddress(place.formatted_address || "");
+    toAuto.addListener("place_changed", () => {
+      const place = toAuto.getPlace();
+      if (place.formatted_address && place.geometry) {
+        setToAddress(place.formatted_address);
+        setToCoords({
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng(),
+        });
+      }
     });
   };
 
@@ -95,6 +114,7 @@ export default function AutoCompleteAddress() {
         geocoder.current.geocode({ location: latlng }, (results, status) => {
           if (status === "OK" && results[0]) {
             setFromAddress(results[0].formatted_address);
+            setFromCoords(latlng);
             fromRef.current.value = results[0].formatted_address;
           }
         });
@@ -102,6 +122,19 @@ export default function AutoCompleteAddress() {
       () => console.warn("Location permission denied or unavailable")
     );
   };
+
+  // calculate distance when both coords are set
+  useEffect(() => {
+    if (fromCoords && toCoords) {
+      const dist = calculateDistance(
+        fromCoords.lat,
+        fromCoords.lng,
+        toCoords.lat,
+        toCoords.lng
+      );
+      setDistance(dist);
+    }
+  }, [fromCoords, toCoords]);
 
   const handleNext = () => {
     if (!fromAddress || !toAddress) return;
@@ -114,9 +147,10 @@ export default function AutoCompleteAddress() {
           phoneNumber,
           fromAddress,
           toAddress,
+          distance,
         },
       });
-    }, 1000);
+    }, 1200);
   };
 
   return (
@@ -148,6 +182,17 @@ export default function AutoCompleteAddress() {
             className="field-input"
           />
         </div>
+
+        {/* Distance Section */}
+        {distance && (
+          <div className="distance-box">
+            <div className="distance-inner">
+              <span className="plane-icon">🛫</span>
+              <h3>{distance} km</h3>
+              <p>Approx travel distance between locations</p>
+            </div>
+          </div>
+        )}
 
         <button
           className={`next-btn ${fromAddress && toAddress ? "active" : ""}`}
