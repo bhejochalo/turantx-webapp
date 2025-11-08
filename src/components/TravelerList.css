@@ -10,7 +10,8 @@
     color: #ff6b1a;
     font-weight: 600;
     margin-bottom: 25px;
-    font-size: 20px;
+    font-size: 22px;
+    letter-spacing: 0.3px;
   }
   
   .traveler-list {
@@ -20,68 +21,97 @@
     gap: 18px;
   }
   
+  /* ✨ Card design */
   .traveler-card {
     background: #fff;
-    box-shadow: 0px 3px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
     border-radius: 18px;
-    padding: 20px;
+    padding: 18px 20px;
     width: 360px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: 0.3s ease;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.5s ease forwards;
   }
   
   .traveler-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
+    transform: scale(1.02);
   }
   
-  .traveler-info h4 {
-    color: #333;
-    font-weight: 600;
+  .traveler-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .traveler-header h4 {
     font-size: 18px;
-    margin-bottom: 4px;
+    font-weight: 600;
+    color: #222;
   }
   
+  .distance-tags {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .dist {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 8px;
+    color: #fff;
+  }
+  
+  .dist.from {
+    background-color: #6b8afd;
+  }
+  
+  .dist.to {
+    background-color: #6c63ff;
+  }
+  
+  /* Info text */
   .traveler-info p {
-    color: #777;
+    color: #666;
     font-size: 14px;
     margin: 2px 0;
   }
   
+  /* Buttons */
   .traveler-buttons {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    justify-content: space-between;
+    margin-top: 10px;
   }
   
   .details-btn {
     background: #fff;
     border: 1.5px solid #ddd;
     border-radius: 10px;
-    padding: 5px 12px;
+    padding: 6px 14px;
     font-size: 13px;
     cursor: pointer;
+    transition: 0.3s;
   }
   
   .book-btn {
     background: #00b15f;
     border: none;
     color: #fff;
-    font-weight: 500;
     border-radius: 10px;
-    padding: 6px 12px;
+    padding: 6px 16px;
     font-size: 13px;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: 0.3s;
   }
   
   .book-btn:hover {
-    background: #00a155;
+    background: #009e56;
   }
   
-  /* Modal */
+  /* 💫 Modal */
   .traveler-modal-overlay {
     position: fixed;
     inset: 0;
@@ -97,19 +127,19 @@
     border-radius: 16px;
     width: 360px;
     padding: 25px;
-    animation: fadeIn 0.4s ease-in-out;
     position: relative;
+    animation: fadeIn 0.4s ease-in-out;
   }
   
   .close-btn {
     position: absolute;
-    top: 10px;
+    top: 8px;
     right: 12px;
     font-size: 22px;
     color: #999;
-    cursor: pointer;
     background: none;
     border: none;
+    cursor: pointer;
   }
   
   .traveler-modal h3 {
@@ -125,10 +155,7 @@
   }
   
   .terms {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 12px;
+    margin-top: 10px;
     font-size: 13px;
     color: #555;
   }
@@ -140,7 +167,6 @@
     color: #fff;
     padding: 12px;
     font-size: 15px;
-    font-weight: 500;
     border-radius: 12px;
     margin-top: 14px;
     transition: 0.3s ease;
@@ -151,14 +177,51 @@
     cursor: pointer;
   }
   
+  /* 🌟 Animations */
   @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: scale(0.95);
+      transform: translateY(20px);
     }
     to {
       opacity: 1;
-      transform: scale(1);
+      transform: translateY(0);
     }
+  }
+  
+  /* 🪄 Shimmer loader */
+  .shimmer-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .shimmer-card {
+    width: 360px;
+    height: 120px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    border-radius: 18px;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+  /* Center Loader */
+.traveler-page .loader-container {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
   }
   
