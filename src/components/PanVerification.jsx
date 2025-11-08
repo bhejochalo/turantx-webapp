@@ -61,7 +61,8 @@ export default function PanVerification() {
   };
 
   const handleNext = () => {
-    navigate("/address-selection", { state: { phoneNumber, userType: "SENDER", panVerified: true } });
+    const panDetails = { verified: true, panNumber: detectedPAN };
+    navigate("/address-selection", { state: { phoneNumber, userType: "SENDER", panDetails } });
   };
 
   return (

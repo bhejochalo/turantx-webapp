@@ -167,14 +167,24 @@ export default function AutoCompleteAddress() {
       navigate("/from-address", {
         state: {
           phoneNumber,
-          userType,
-          fromPlace: fromPlaceRef.current,
-          toPlace: toPlaceRef.current,
+          userType: location.state?.userType, // ✅ keep user type
+          panDetails: location.state?.panDetails, // ✅ forward PAN
+          from: {
+            address: fromAddress,
+            latitude: fromCoords?.lat || null,
+            longitude: fromCoords?.lng || null,
+          },
+          to: {
+            address: toAddress,
+            latitude: toCoords?.lat || null,
+            longitude: toCoords?.lng || null,
+          },
           distance,
         },
       });
-    }, 1200);
+    }, 1000);
   };
+  
 
   return (
     <div className="auto-page">

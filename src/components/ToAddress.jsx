@@ -63,8 +63,8 @@ export default function ToAddress() {
         });
       } else if (userType === "SENDER") {
         navigate("/item-details", {
-          state: { phoneNumber, userType, from, to, distance },
-        });
+          state: { phoneNumber, userType, from, to, distance, panDetails: state?.panDetails },
+        });        
       }
     }, 800);
   };

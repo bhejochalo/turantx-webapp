@@ -6,7 +6,6 @@ admin.initializeApp();
 const db = admin.firestore();
 db.settings({ ignoreUndefinedProperties: true });
 
-// ✅ Unified function: Handles Traveler, Sender, and PAN verification (Sender only)
 exports.saveUserData = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     try {
@@ -16,60 +15,55 @@ exports.saveUserData = functions.https.onRequest((req, res) => {
 
       const {
         phoneNumber,
-        userType,         // "SENDER" or "TRAVELER"
+        userType,
         from,
         to,
         flightDetails,
         itemDetails,
-        panDetails,       // Only for Sender
+        panDetails,
+        distance,
       } = req.body;
 
       if (!phoneNumber || !userType) {
-        return res
-          .status(400)
-          .json({ error: "Missing phoneNumber or userType" });
+        return res.status(400).json({ error: "Missing phoneNumber or userType" });
       }
 
-      // ✅ Prepare main data
-      const baseData = {
+      // ✅ normalize function to ensure lat/lng always present
+      const normalize = (obj) =>
+        obj
+          ? {
+              ...obj,
+              latitude: obj.latitude ?? null,
+              longitude: obj.longitude ?? null,
+            }
+          : null;
+
+      const data = {
         phoneNumber,
         userType,
-        from: from || null,
-        to: to || null,
+        from: normalize(from),
+        to: normalize(to),
+        distance: distance || null,
         flightDetails: flightDetails || null,
         itemDetails: itemDetails || null,
+        panDetails: panDetails || null,
         createdAt: new Date().toISOString(),
       };
 
-      // ✅ Choose Firestore subcollection name
       const collectionName = userType === "SENDER" ? "Sender" : "Traveler";
-      const userDoc = db.collection("users").doc(phoneNumber);
-      const userSubDoc = userDoc.collection(collectionName).doc("details");
 
-      // ✅ For sender: merge PAN verification (if provided)
-      if (userType === "SENDER") {
-        const senderData = {
-          ...baseData,
-          panDetails: panDetails || null,
-          verified: !!panDetails, // true if PAN details present
-          verifiedAt: panDetails ? new Date().toISOString() : null,
-        };
-        await userSubDoc.set(senderData, { merge: true });
-        console.log(`✅ Sender data (with PAN) saved for ${phoneNumber}`);
-      }
+      await db
+        .collection("users")
+        .doc(phoneNumber)
+        .collection(collectionName)
+        .doc("details")
+        .set(data, { merge: true });
 
-      // ✅ For traveler: normal data (no PAN)
-      else if (userType === "TRAVELER") {
-        await userSubDoc.set(baseData, { merge: true });
-        console.log(`✅ Traveler data saved for ${phoneNumber}`);
-      }
-
+      console.log(`✅ ${userType} saved:`, phoneNumber);
       return res.json({
         success: true,
-        message:
-          userType === "SENDER"
-            ? "Sender details saved successfully (with PAN check)"
-            : "Traveler details saved successfully",
+        message: `${userType} saved successfully`,
+        data,
       });
     } catch (err) {
       console.error("🔥 Error saving user data:", err);

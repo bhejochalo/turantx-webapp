@@ -11,6 +11,7 @@ export default function ItemDetails() {
   const from = state?.from;
   const to = state?.to;
   const distance = state?.distance || "";
+  const panDetails = state?.panDetails || {}; // ✅ from PAN Verification screen
 
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState({
@@ -38,6 +39,7 @@ export default function ItemDetails() {
         from,
         to,
         distance,
+        panDetails, // ✅ include PAN
         itemDetails: {
           ...item,
           totalWeight: `${item.weightKg || 0}kg ${item.weightGram || 0}g`,

@@ -51,8 +51,9 @@ export default function FromAddress() {
     }
 
     navigate("/to-address", {
-      state: { phoneNumber, userType, from, distance },
+      state: { phoneNumber, userType, from, distance, panDetails: state?.panDetails },
     });
+    
   };
 
   return (
