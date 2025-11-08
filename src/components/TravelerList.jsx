@@ -105,14 +105,57 @@ export default function TravelerList() {
     };
   };
 
-  const handleBook = (traveler) => {
+  const handleBook = async (traveler) => {
     if (!accepted) {
       alert("⚠️ Please accept the booking terms before continuing.");
       return;
     }
-    alert(`✅ Booking request sent for ${traveler.flightDetails?.firstName || "Traveler"}`);
-    setSelectedTraveler(null);
+  
+    // ✅ Load Razorpay script dynamically
+    const loadRazorpay = () => {
+      return new Promise((resolve) => {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+      });
+    };
+  
+    const res = await loadRazorpay();
+    if (!res) {
+      alert("Razorpay SDK failed to load. Please check your connection.");
+      return;
+    }
+  
+    const amount = 200 * 100; // ₹200 test amount
+    const RAZORPAY_KEY = "rzp_test_4HNx49ek9VPhNQ";
+  
+    const options = {
+      key: RAZORPAY_KEY,
+      amount: amount.toString(),
+      currency: "INR",
+      name: "TurantX Booking",
+      description: `Booking for ${traveler.flightDetails?.firstName || "Traveler"}`,
+      image: "https://i.imgur.com/QzBfZpL.png",
+      handler: function (response) {
+        console.log("✅ Payment Successful:", response);
+        alert("✅ Payment Successful! Your booking is confirmed.");
+      },
+      prefill: {
+        name: "TurantX User",
+        email: "user@example.com",
+        contact: "9999999999",
+      },
+      theme: {
+        color: "#ff7b29",
+      },
+    };
+  
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
   };
+  
 
   return (
     <div className="traveler-page">
