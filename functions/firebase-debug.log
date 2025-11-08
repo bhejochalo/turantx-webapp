@@ -1,0 +1,8 @@
+[debug] [2025-11-08T10:30:17.462Z] ----------------------------------------------------------------------
+[debug] [2025-11-08T10:30:17.463Z] Command:       /usr/local/bin/node /Users/swadeshkumargupta/.npm-global/bin/firebase deploy --only functions:saveTraveler
+[debug] [2025-11-08T10:30:17.464Z] CLI Version:   14.24.1
+[debug] [2025-11-08T10:30:17.464Z] Platform:      darwin
+[debug] [2025-11-08T10:30:17.464Z] Node Version:  v22.17.0
+[debug] [2025-11-08T10:30:17.464Z] Time:          Sat Nov 08 2025 16:00:17 GMT+0530 (India Standard Time)
+[debug] [2025-11-08T10:30:17.464Z] ----------------------------------------------------------------------
+[debug] 
