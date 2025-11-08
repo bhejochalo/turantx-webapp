@@ -1,116 +1,125 @@
-/* === PAN Verification Page === */
+.pan-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff7f1, #fffaf7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  font-family: "Inter", sans-serif;
+}
 
-.auto-page {
-    background-color: #fff7f1;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
+.pan-card {
+  background: white;
+  border-radius: 16px;
+  padding: 36px;
+  width: 420px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.pan-title {
+  color: #ff914d;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.upload-label {
+  display: inline-block;
+  background: linear-gradient(180deg, #ffb78a, #ff914d);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.upload-label:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 145, 77, 0.25);
+}
+
+.preview-section {
+  margin-top: 16px;
+}
+.preview-img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+}
+
+.progress-bar {
+  margin-top: 20px;
+  width: 100%;
+  background: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.progress {
+  background: linear-gradient(90deg, #ffb78a, #ff914d);
+  height: 10px;
+  transition: width 0.3s ease;
+}
+.progress-bar p {
+  margin-top: 6px;
+  color: #555;
+  font-size: 14px;
+}
+
+.scan-btn {
+  margin-top: 20px;
+  background: linear-gradient(180deg, #ffb78a, #ff914d);
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.scan-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(255, 145, 77, 0.25);
+}
+
+.ocr-output {
+  margin-top: 20px;
+  background: #fff9f5;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: left;
+  max-height: 180px;
+  overflow-y: auto;
+  color: #333;
+  font-size: 13px;
+  border: 1px solid #ffe0cc;
+}
+.ocr-output pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.verified-box {
+  margin-top: 20px;
+  background: #e7f8ef;
+  color: #22bb66;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(34, 187, 102, 0.15);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
   }
-  
-  .auto-card {
-    background: #ffffff;
-    width: 400px;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
-    text-align: center;
-    animation: fadeIn 0.4s ease-in-out;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
-  
-  .auto-logo {
-    width: 100px;
-    margin-bottom: 25px;
-  }
-  
-  .auto-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #ff7b29;
-    margin-bottom: 20px;
-  }
-  
-  .field-input {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 1.4px solid #ddd;
-    outline: none;
-    font-size: 15px;
-    background: #fafafa;
-    transition: 0.3s;
-    text-align: center;
-  }
-  
-  .field-input:focus {
-    border-color: #ffb47d;
-    box-shadow: 0 0 6px rgba(255, 140, 0, 0.3);
-  }
-  
-  .pan-success {
-    margin-top: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: fadeUp 0.5s ease-in-out;
-  }
-  
-  .success-text {
-    color: #12b76a;
-    font-weight: 600;
-    margin-top: 5px;
-  }
-  
-  .pan-name {
-    color: #333;
-    font-size: 15px;
-    margin-top: 3px;
-  }
-  
-  .next-btn {
-    margin-top: 20px;
-    width: 100%;
-    padding: 13px;
-    font-size: 16px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s ease-in-out;
-    font-weight: 600;
-    background: #ffd6b2;
-    color: #fff;
-  }
-  
-  .next-btn.active {
-    background: linear-gradient(180deg, #ffb97b, #ff7b29);
-    box-shadow: 0 8px 25px rgba(255, 145, 77, 0.25);
-  }
-  
-  .next-btn.active:hover {
-    transform: translateY(-2px);
-  }
-  
-  /* Animations */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: scale(0.96);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  @keyframes fadeUp {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0px);
-    }
-  }
-  
+}

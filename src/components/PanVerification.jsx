@@ -1,66 +1,109 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import logo from "../assets/turantx-logo.png";
+import Tesseract from "tesseract.js";
 import "./PanVerification.css";
-import { CheckCircle } from "lucide-react";
+import Loader from "./Loader";
 
 export default function PanVerification() {
-  const navigate = useNavigate();
-  const { state } = useLocation();
-  const phoneNumber = state?.phoneNumber;
-  const userType = state?.userType || "SENDER";
-
-  const [pan, setPan] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [ocrText, setOcrText] = useState("");
+  const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [verifiedData, setVerifiedData] = useState(null);
+  const [verified, setVerified] = useState(false);
 
-  const handleVerify = async () => {
-    if (!pan) return alert("Enter valid PAN number");
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(URL.createObjectURL(file));
+      setOcrText("");
+      setVerified(false);
+      setProgress(0);
+    }
+  };
+
+  const handleScan = async () => {
+    if (!selectedImage) {
+      alert("Please upload a PAN card image first.");
+      return;
+    }
+
     setLoading(true);
+    setProgress(0);
+    setOcrText("");
+
     try {
-      // simulate API
-      await new Promise((res) => setTimeout(res, 1200));
-      setVerifiedData({ name: "Rajesh Kumar Singh", status: "Verified" });
-    } catch {
-      alert("PAN verification failed");
+      const result = await Tesseract.recognize(selectedImage, "eng", {
+        logger: (m) => {
+          if (m.status === "recognizing text") {
+            setProgress(Math.round(m.progress * 100));
+          }
+        },
+      });
+
+      const text = result.data.text;
+      setOcrText(text);
+
+      // ✅ Simple validation — looks for "INCOME TAX" and PAN-like pattern
+      const panRegex = /([A-Z]{5}[0-9]{4}[A-Z]{1})/;
+      const found = text.match(panRegex);
+
+      if (found) {
+        setVerified(true);
+        alert(`✅ PAN Verified: ${found[0]}`);
+      } else {
+        alert("❌ Could not detect a valid PAN number. Please try again.");
+      }
+    } catch (err) {
+      console.error("OCR Error:", err);
+      alert("Something went wrong during scanning.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleContinue = () => {
-    navigate("/address-selection", {
-      state: { phoneNumber, userType, panVerified: true },
-    });
-  };
-
   return (
-    <div className="auto-page">
-      <div className="auto-card">
-        <img src={logo} alt="TurantX" className="auto-logo" />
-        <h3 className="auto-title">Enter PAN Details</h3>
-        <input
-          value={pan}
-          onChange={(e) => setPan(e.target.value.toUpperCase())}
-          placeholder="Enter PAN Card Number"
-          className="field-input"
-          disabled={!!verifiedData}
-        />
+    <div className="pan-container page-transition">
+      {loading && <Loader />}
 
-        {verifiedData && (
-          <div className="pan-success">
-            <CheckCircle color="green" size={22} />
-            <p className="success-text">{verifiedData.status}</p>
-            <p className="pan-name">{verifiedData.name}</p>
+      <div className="pan-card">
+        <h2 className="pan-title">PAN Card Verification 🧾</h2>
+
+        <label className="upload-label">
+          Upload PAN Card Image
+          <input type="file" accept="image/*" onChange={handleImageUpload} hidden />
+        </label>
+
+        {selectedImage && (
+          <div className="preview-section">
+            <img src={selectedImage} alt="PAN Preview" className="preview-img" />
           </div>
         )}
 
-        <button
-          className={`next-btn ${verifiedData ? "active" : ""}`}
-          onClick={verifiedData ? handleContinue : handleVerify}
-        >
-          {verifiedData ? "Continue" : loading ? "Verifying..." : "Verify"}
-        </button>
+        {/* Progress bar */}
+        {loading && (
+          <div className="progress-bar">
+            <div className="progress" style={{ width: `${progress}%` }} />
+            <p>Scanning PAN... {progress}%</p>
+          </div>
+        )}
+
+        {!loading && selectedImage && (
+          <button className="scan-btn" onClick={handleScan}>
+            Start Scanning
+          </button>
+        )}
+
+        {ocrText && (
+          <div className="ocr-output">
+            <h4>Extracted Text:</h4>
+            <pre>{ocrText}</pre>
+          </div>
+        )}
+
+        {verified && (
+          <div className="verified-box">
+            <span>✅ Verified Successfully</span>
+          </div>
+        )}
       </div>
     </div>
   );
