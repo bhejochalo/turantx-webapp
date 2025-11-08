@@ -10,6 +10,7 @@ import PnrCheck from "./components/PnrCheck";
 import FlightDetails from "./components/FlightDetails";
 import PanVerification from "./components/PanVerification";
 import ItemDetails from "./components/ItemDetails";
+import TravelerList from "./components/TravelerList";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/flight-details" element={<FlightDetails />} />
         <Route path="/pan-verification" element={<PanVerification />} />
         <Route path="/item-details" element={<ItemDetails />} />
+        <Route path="/traveler-list" element={<TravelerList />} />
       </Routes>
     </Router>
   );

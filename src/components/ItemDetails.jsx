@@ -59,7 +59,7 @@ export default function ItemDetails() {
       if (!res.ok) throw new Error(data.error || "Server error");
 
       alert("✅ Sender details saved successfully!");
-      navigate("/success", { state: { phoneNumber } });
+      navigate("/traveler-list", { state: { phoneNumber } });
     } catch (err) {
       console.error("❌ Error saving sender:", err);
       alert("Something went wrong while saving sender details.");
