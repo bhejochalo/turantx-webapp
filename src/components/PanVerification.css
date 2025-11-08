@@ -10,7 +10,7 @@
 
 .pan-card {
   background: white;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 36px;
   width: 420px;
   text-align: center;
@@ -41,7 +41,7 @@
 }
 
 .preview-section {
-  margin-top: 16px;
+  margin-top: 18px;
 }
 .preview-img {
   width: 100%;
@@ -50,26 +50,31 @@
   object-fit: cover;
 }
 
-.progress-bar {
+/* Progress */
+.progress-wrapper {
   margin-top: 20px;
+}
+.progress-bar {
   width: 100%;
   background: #f0f0f0;
-  border-radius: 10px;
+  height: 10px;
+  border-radius: 12px;
   overflow: hidden;
-  position: relative;
 }
 .progress {
   background: linear-gradient(90deg, #ffb78a, #ff914d);
   height: 10px;
   transition: width 0.3s ease;
 }
-.progress-bar p {
-  margin-top: 6px;
+.progress-text {
+  margin-top: 8px;
   color: #555;
   font-size: 14px;
 }
 
-.scan-btn {
+/* Buttons */
+.scan-btn,
+.next-btn {
   margin-top: 20px;
   background: linear-gradient(180deg, #ffb78a, #ff914d);
   border: none;
@@ -79,10 +84,31 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 100%;
 }
-.scan-btn:hover {
+.scan-btn:hover,
+.next-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(255, 145, 77, 0.25);
+}
+
+/* Results */
+.result-box {
+  margin-top: 25px;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  animation: fadeIn 0.4s ease-in-out;
+}
+.result-box.success {
+  background: #e7f8ef;
+  color: #22bb66;
+  border: 1px solid #c6f0da;
+}
+.result-box.failed {
+  background: #ffeaea;
+  color: #d9534f;
+  border: 1px solid #f5c6c6;
 }
 
 .ocr-output {
@@ -100,17 +126,6 @@
 .ocr-output pre {
   white-space: pre-wrap;
   word-break: break-word;
-}
-
-.verified-box {
-  margin-top: 20px;
-  background: #e7f8ef;
-  color: #22bb66;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  box-shadow: 0 2px 8px rgba(34, 187, 102, 0.15);
 }
 
 @keyframes fadeIn {

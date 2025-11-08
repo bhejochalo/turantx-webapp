@@ -1,34 +1,37 @@
 import React, { useState } from "react";
 import Tesseract from "tesseract.js";
 import "./PanVerification.css";
-import Loader from "./Loader";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function PanVerification() {
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const phoneNumber = state?.phoneNumber;
+
   const [selectedImage, setSelectedImage] = useState(null);
   const [ocrText, setOcrText] = useState("");
   const [progress, setProgress] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [verified, setVerified] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | scanning | success | failed
+  const [detectedPAN, setDetectedPAN] = useState("");
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedImage(URL.createObjectURL(file));
       setOcrText("");
-      setVerified(false);
       setProgress(0);
+      setStatus("idle");
+      setDetectedPAN("");
     }
   };
 
   const handleScan = async () => {
-    if (!selectedImage) {
-      alert("Please upload a PAN card image first.");
-      return;
-    }
+    if (!selectedImage) return;
 
-    setLoading(true);
+    setStatus("scanning");
     setProgress(0);
     setOcrText("");
+    setDetectedPAN("");
 
     try {
       const result = await Tesseract.recognize(selectedImage, "eng", {
@@ -42,28 +45,27 @@ export default function PanVerification() {
       const text = result.data.text;
       setOcrText(text);
 
-      // ✅ Simple validation — looks for "INCOME TAX" and PAN-like pattern
       const panRegex = /([A-Z]{5}[0-9]{4}[A-Z]{1})/;
       const found = text.match(panRegex);
 
       if (found) {
-        setVerified(true);
-        alert(`✅ PAN Verified: ${found[0]}`);
+        setDetectedPAN(found[0]);
+        setStatus("success");
       } else {
-        alert("❌ Could not detect a valid PAN number. Please try again.");
+        setStatus("failed");
       }
     } catch (err) {
       console.error("OCR Error:", err);
-      alert("Something went wrong during scanning.");
-    } finally {
-      setLoading(false);
+      setStatus("failed");
     }
+  };
+
+  const handleNext = () => {
+    navigate("/address-selection", { state: { phoneNumber, userType: "SENDER", panVerified: true } });
   };
 
   return (
     <div className="pan-container page-transition">
-      {loading && <Loader />}
-
       <div className="pan-card">
         <h2 className="pan-title">PAN Card Verification 🧾</h2>
 
@@ -78,30 +80,46 @@ export default function PanVerification() {
           </div>
         )}
 
-        {/* Progress bar */}
-        {loading && (
-          <div className="progress-bar">
-            <div className="progress" style={{ width: `${progress}%` }} />
-            <p>Scanning PAN... {progress}%</p>
+        {/* Progress Bar */}
+        {status === "scanning" && (
+          <div className="progress-wrapper">
+            <div className="progress-bar">
+              <div className="progress" style={{ width: `${progress}%` }}></div>
+            </div>
+            <p className="progress-text">Scanning PAN... {progress}%</p>
           </div>
         )}
 
-        {!loading && selectedImage && (
+        {status === "idle" && selectedImage && (
           <button className="scan-btn" onClick={handleScan}>
             Start Scanning
           </button>
         )}
 
-        {ocrText && (
-          <div className="ocr-output">
-            <h4>Extracted Text:</h4>
-            <pre>{ocrText}</pre>
+        {/* ✅ Verified / ❌ Failed Status */}
+        {status === "success" && (
+          <div className="result-box success">
+            <h3>✅ PAN Verified Successfully</h3>
+            <p><strong>PAN Number:</strong> {detectedPAN}</p>
+
+            {/* ✅ Continue button appears after success */}
+            <button className="next-btn" onClick={handleNext}>
+              Continue →
+            </button>
           </div>
         )}
 
-        {verified && (
-          <div className="verified-box">
-            <span>✅ Verified Successfully</span>
+        {status === "failed" && (
+          <div className="result-box failed">
+            <h3>❌ Verification Failed</h3>
+            <p>Could not detect a valid PAN number. Please try again with a clearer image.</p>
+          </div>
+        )}
+
+        {ocrText && (
+          <div className="ocr-output">
+            <h4>Extracted Text (Preview):</h4>
+            <pre>{ocrText}</pre>
           </div>
         )}
       </div>
