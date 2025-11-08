@@ -1,15 +1,48 @@
 import React, { useEffect, useState } from "react";
 import "./TravelerList.css";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import Loader from "./Loader";
+
+// ✅ Haversine distance calculator (in km)
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return parseFloat((R * c).toFixed(1));
+};
 
 export default function TravelerList() {
   const [travelers, setTravelers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTraveler, setSelectedTraveler] = useState(null);
   const [accepted, setAccepted] = useState(false);
+  const [senderCoords, setSenderCoords] = useState(null);
 
+  // ✅ 1️⃣ Get sender location (from state or Firestore)
+  useEffect(() => {
+    const storedSender = sessionStorage.getItem("senderCoords");
+    if (storedSender) {
+      setSenderCoords(JSON.parse(storedSender));
+      return;
+    }
+
+    // Example fallback for testing (replace with your state/props later)
+    setSenderCoords({
+      from: { lat: 18.5204, lng: 73.8567 }, // Pune
+      to: { lat: 19.076, lng: 72.8777 }, // Mumbai
+    });
+  }, []);
+
+  // ✅ 2️⃣ Fetch travelers from Firestore
   useEffect(() => {
     const fetchTravelers = async () => {
       setLoading(true);
@@ -21,18 +54,19 @@ export default function TravelerList() {
         for (const userDoc of userDocs.docs) {
           const travelerRef = collection(db, "users", userDoc.id, "Traveler");
           const travelerSnap = await getDocs(travelerRef);
-          travelerSnap.forEach((doc) => {
+          travelerSnap.forEach((docSnap) => {
+            const data = docSnap.data();
             travelerList.push({
-              id: doc.id,
+              id: docSnap.id,
               phone: userDoc.id,
-              ...doc.data(),
+              ...data,
             });
           });
         }
 
         setTravelers(travelerList);
       } catch (err) {
-        console.error("Error fetching travelers:", err);
+        console.error("❌ Error fetching travelers:", err);
       } finally {
         setLoading(false);
       }
@@ -40,6 +74,36 @@ export default function TravelerList() {
 
     fetchTravelers();
   }, []);
+
+  // ✅ 3️⃣ Calculate distances dynamically
+  const getDistancePair = (traveler) => {
+    if (!senderCoords) return { from: "–", to: "–" };
+    const travelerFrom = traveler?.from?.coords;
+    const travelerTo = traveler?.to?.coords;
+
+    const fromDist = travelerFrom
+      ? calculateDistance(
+          senderCoords.from.lat,
+          senderCoords.from.lng,
+          travelerFrom.lat,
+          travelerFrom.lng
+        )
+      : null;
+
+    const toDist = travelerTo
+      ? calculateDistance(
+          senderCoords.to.lat,
+          senderCoords.to.lng,
+          travelerTo.lat,
+          travelerTo.lng
+        )
+      : null;
+
+    return {
+      from: fromDist ? `${fromDist} km` : "–",
+      to: toDist ? `${toDist} km` : "–",
+    };
+  };
 
   const handleBook = (traveler) => {
     if (!accepted) {
@@ -52,17 +116,7 @@ export default function TravelerList() {
 
   return (
     <div className="traveler-page">
-      {/* ✅ Show your loader on data fetch */}
-      {loading && (
-        <>
-          <Loader />
-          <div className="shimmer-wrapper">
-            <div className="shimmer-card"></div>
-            <div className="shimmer-card"></div>
-            <div className="shimmer-card"></div>
-          </div>
-        </>
-      )}
+      {loading && <Loader />}
 
       {!loading && (
         <>
@@ -72,49 +126,51 @@ export default function TravelerList() {
             {travelers.length === 0 ? (
               <p className="no-data">No travelers available currently.</p>
             ) : (
-              travelers.map((t, i) => (
-                <div
-                  key={i}
-                  className="traveler-card fade-in"
-                  style={{ animationDelay: `${i * 0.12}s` }}
-                >
-                  <div className="traveler-header">
-                    <h4>{t.flightDetails?.firstName || "Traveler"}</h4>
-                    <div className="distance-tags">
-                      <span className="dist from">From: {t.from?.distance || "5.6"} km</span>
-                      <span className="dist to">To: {t.to?.distance || "6.7"} km</span>
+              travelers.map((t, i) => {
+                const dist = getDistancePair(t);
+                return (
+                  <div
+                    key={i}
+                    className="traveler-card fade-in"
+                    style={{ animationDelay: `${i * 0.12}s` }}
+                  >
+                    <div className="traveler-header">
+                      <h4>{t.flightDetails?.firstName || "Traveler"}</h4>
+                      <div className="distance-tags">
+                        <span className="dist from">From: {dist.from}</span>
+                        <span className="dist to">To: {dist.to}</span>
+                      </div>
+                    </div>
+
+                    <div className="traveler-info">
+                      <p>Airline: {t.flightDetails?.airline || "Not specified"}</p>
+                      <p>PNR: {t.flightDetails?.pnr || "Not specified"}</p>
+                      <p>Leaving Time: {t.flightDetails?.departureTime || "N/A"}</p>
+                      <p>Weight Upto: {t.flightDetails?.baggageSpace || "0"} kg</p>
+                    </div>
+
+                    <div className="traveler-buttons">
+                      <button
+                        className="details-btn"
+                        onClick={() => setSelectedTraveler(t)}
+                      >
+                        DETAILS
+                      </button>
+                      <button
+                        className="book-btn"
+                        onClick={() => setSelectedTraveler(t)}
+                      >
+                        Book
+                      </button>
                     </div>
                   </div>
-
-                  <div className="traveler-info">
-                    <p>Airline: {t.flightDetails?.airline || "Not specified"}</p>
-                    <p>PNR: {t.flightDetails?.pnr || "Not specified"}</p>
-                    <p>Leaving Time: {t.flightDetails?.departureTime || "N/A"}</p>
-                    <p>Weight Upto: {t.flightDetails?.baggageSpace || "0"} kg</p>
-                  </div>
-
-                  <div className="traveler-buttons">
-                    <button
-                      className="details-btn"
-                      onClick={() => setSelectedTraveler(t)}
-                    >
-                      DETAILS
-                    </button>
-                    <button
-                      className="book-btn"
-                      onClick={() => setSelectedTraveler(t)}
-                    >
-                      Book
-                    </button>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </>
       )}
 
-      {/* ✅ Modal */}
       {selectedTraveler && (
         <div
           className="traveler-modal-overlay"
