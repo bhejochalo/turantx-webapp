@@ -1,0 +1,60 @@
+.addr-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fff7f1 0%, #fffaf7 100%);
+    padding: 40px;
+  }
+  
+  .addr-card {
+    width: 680px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+  
+  .addr-logo {
+    width: 120px;
+    margin-bottom: 10px;
+  }
+  
+  .addr-title {
+    color: #ff914d;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .addr-input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid #e9e9ec;
+    background: #f7f7f9;
+    outline: none;
+    font-size: 14px;
+  }
+  
+  .addr-next {
+    margin-top: 20px;
+    padding: 14px 20px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, #ffb78a, #ff914d);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 12px 30px rgba(255, 145, 77, 0.18);
+    transition: 0.3s;
+  }
+  
+  .addr-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(255, 145, 77, 0.25);
+  }
+  

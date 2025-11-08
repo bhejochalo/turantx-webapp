@@ -6,32 +6,21 @@ import { useNavigate } from "react-router-dom";
 const SelectionPage = ({ phoneNumber }) => {
   const navigate = useNavigate();
 
-  // Handle Sender
-  const handleSender = () => {
-    navigate("/address", { state: { phoneNumber, userType: "SENDER" } });
-  };
-
-  // Handle Traveler
   const handleTraveler = () => {
-    navigate("/address", { state: { phoneNumber, userType: "TRAVELER" } });
+    navigate("/address-selection", { state: { phoneNumber, userType: "TRAVELER" } });
   };
 
   return (
-    <div className="select-container">
+    <div className="select-container page-transition">
       <div className="select-content">
-        <img src={logo} alt="TurantX Logo" className="select-logo" />
-
-        <h2 className="select-title">Select Your Role</h2>
+        <img src={logo} alt="TurantX" className="select-logo" />
+        <h2 className="select-title">Choose Your Role</h2>
         <p className="select-subtitle">
-          Whether you want to send items or earn while traveling — choose below.
+          Travel smart. Deliver smarter. Earn rewards on every trip.
         </p>
 
-        <button className="select-btn sender" onClick={handleSender}>
-          🙋‍♂️ I'm a Sender
-        </button>
-
         <button className="select-btn traveler" onClick={handleTraveler}>
-          ✈️ I'm a Traveller
+          ✈️ I’m a Traveler
         </button>
       </div>
     </div>

@@ -3,18 +3,24 @@ import IntroPage from "./components/IntroPage";
 import LandingPage from "./components/LandingPage";
 import OtpPage from "./components/OtpPage";
 import SelectionPage from "./components/SelectionPage";
-import AutoCompleteAddress from "./components/AutoCompleteAddress";
+import AddressSelection from "./components/AddressSelection";
+import FromAddress from "./components/FromAddress";
+import ToAddress from "./components/ToAddress";
+import PnrCheck from "./components/PnrCheck";
 
 function App() {
   return (
     <Router>
       <Routes>
-  <Route path="/" element={<IntroPage />} />
-  <Route path="/login" element={<LandingPage />} />
-  <Route path="/otp" element={<OtpPage />} />
-  <Route path="/selection" element={<SelectionPage />} />
-  <Route path="/address" element={<AutoCompleteAddress />} /> {/* ✅ new route */}
-</Routes>
+        <Route path="/" element={<IntroPage />} />
+        <Route path="/login" element={<LandingPage />} />
+        <Route path="/otp" element={<OtpPage />} />
+        <Route path="/selection" element={<SelectionPage />} />
+        <Route path="/address-selection" element={<AddressSelection />} /> {/* ✅ added */}
+        <Route path="/from-address" element={<FromAddress />} />
+        <Route path="/to-address" element={<ToAddress />} />
+        <Route path="/pnr-check" element={<PnrCheck />} />
+      </Routes>
     </Router>
   );
 }
