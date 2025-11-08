@@ -1,0 +1,105 @@
+/* Floating button */
+.help-fab {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: linear-gradient(135deg, #ff7b29, #ff9e5e);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 58px;
+    height: 58px;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    transition: 0.3s ease;
+    z-index: 9999;
+  }
+  
+  .help-fab:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Overlay */
+  .help-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9998;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  /* Popup */
+  .help-popup {
+    background: #fff;
+    border-radius: 20px;
+    padding: 25px;
+    width: 340px;
+    animation: slideUp 0.4s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+  
+  .help-title {
+    text-align: center;
+    color: #ff7b29;
+    margin-bottom: 15px;
+  }
+  
+  .help-popup input,
+  .help-popup select,
+  .help-popup textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    outline: none;
+    font-size: 14px;
+  }
+  
+  .help-popup input:focus,
+  .help-popup textarea:focus,
+  .help-popup select:focus {
+    border-color: #ff7b29;
+  }
+  
+  .help-submit {
+    width: 100%;
+    background: linear-gradient(135deg, #ff7b29, #ff9e5e);
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+  
+  .help-submit:hover {
+    opacity: 0.9;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
