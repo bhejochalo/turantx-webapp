@@ -98,7 +98,7 @@ export default function ToAddress() {
       if (!res.ok) throw new Error(data.error || "Failed to save traveler");
 
       alert(`Traveler saved successfully! Distance: ${distance} km`);
-      navigate("/pnr-check", { state: { phoneNumber } });
+      navigate("/flight-details", { state: { phoneNumber } });
     } catch (err) {
       console.error("Error:", err);
       alert("Error saving traveler.");

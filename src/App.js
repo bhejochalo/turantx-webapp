@@ -7,6 +7,7 @@ import AddressSelection from "./components/AddressSelection";
 import FromAddress from "./components/FromAddress";
 import ToAddress from "./components/ToAddress";
 import PnrCheck from "./components/PnrCheck";
+import FlightDetails from "./components/FlightDetails";
 
 function App() {
   return (
@@ -19,7 +20,7 @@ function App() {
         <Route path="/address-selection" element={<AddressSelection />} /> {/* ✅ added */}
         <Route path="/from-address" element={<FromAddress />} />
         <Route path="/to-address" element={<ToAddress />} />
-        <Route path="/pnr-check" element={<PnrCheck />} />
+        <Route path="/flight-details" element={<FlightDetails />} />
       </Routes>
     </Router>
   );
