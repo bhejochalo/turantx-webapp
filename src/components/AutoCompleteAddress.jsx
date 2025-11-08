@@ -185,14 +185,18 @@ export default function AutoCompleteAddress() {
 
         {/* Distance Section */}
         {distance && (
-          <div className="distance-box">
-            <div className="distance-inner">
-              <span className="plane-icon">🛫</span>
-              <h3>{distance} km</h3>
-              <p>Approx travel distance between locations</p>
-            </div>
-          </div>
-        )}
+  <div className="distance-box">
+    <div className="distance-inner">
+      <div className="plane-wrapper">
+        <span className="plane-icon">🛫</span>
+      </div>
+      <h3>{distance} km</h3>
+      <p>Approx travel distance between locations</p>
+    </div>
+  </div>
+)}
+
+
 
         <button
           className={`next-btn ${fromAddress && toAddress ? "active" : ""}`}
