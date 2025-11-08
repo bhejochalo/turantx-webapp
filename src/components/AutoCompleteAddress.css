@@ -1,126 +1,151 @@
+/* ====== Page Base ====== */
 .auto-page {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #fff7f1 0%, #fffaf7 100%);
-  }
-  
-  .auto-card {
-    background: #fff;
-    padding: 50px 60px;
-    border-radius: 20px;
-    text-align: center;
-    width: 400px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    animation: fadeIn 0.5s ease;
-  }
-  
-  .auto-logo {
-    width: 120px;
-    margin-bottom: 20px;
-  }
-  
-  .auto-title {
-    color: #ff914d;
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-  
-  .auto-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 25px;
-  }
-  
-  .field-input {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: 1.5px solid #ddd;
-    background-color: #f9f9f9;
-    font-size: 15px;
-    outline: none;
-    transition: 0.3s;
-  }
-  
-  .field-input:focus {
-    border-color: #ff914d;
-    box-shadow: 0 0 6px rgba(255, 145, 77, 0.3);
-    background-color: #fff;
-  }
-  
-  .next-btn {
-    width: 100%;
-    background-color: #ffc5a3;
-    border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 10px;
-    padding: 14px 0;
-    cursor: not-allowed;
-    transition: all 0.3s ease;
-  }
-  
-  .next-btn.active {
-    background-color: #ff914d;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(255, 145, 77, 0.4);
-  }
-  
-  .next-btn.active:hover {
-    background-color: #ff7a29;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  /* Distance section styling */
+  background-color: #fff3ec;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Inter", sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+/* ====== Main Card ====== */
+.auto-card {
+  background-color: #ffffff;
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 28px;
+  padding: 40px 45px;
+  width: 400px;
+  text-align: center;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* ====== Logo ====== */
+.auto-logo {
+  width: 90px;
+  margin-bottom: 20px;
+}
+
+/* ====== Title ====== */
+.auto-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #ff7b29;
+  margin-bottom: 25px;
+}
+
+.plane {
+  margin-left: 6px;
+}
+
+/* ====== Input Fields ====== */
+.auto-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+.field-input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 15px;
+  border: 1.6px solid #e0e0e0;
+  border-radius: 12px;
+  outline: none;
+  transition: 0.3s ease;
+  text-align: center;
+}
+
+.field-input:focus {
+  border-color: #ffae70;
+  box-shadow: 0 0 6px rgba(255, 125, 0, 0.3);
+}
+
+/* ====== Distance Box ====== */
 .distance-box {
-    margin: 20px auto 25px;
-    padding: 14px 0;
-    background: linear-gradient(135deg, #fff1e6 0%, #fff6f0 100%);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(255, 145, 77, 0.15);
-    width: 85%;
-    transition: 0.4s ease;
-    animation: fadeInUp 0.6s ease;
+  background-color: #fff0e0;
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 25px;
+  box-shadow: inset 0px 2px 8px rgba(255, 140, 0, 0.1);
+  animation: fadeUp 0.5s ease-in-out;
+}
+
+.distance-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #444;
+}
+
+.distance-inner h3 {
+  color: #ff7b29;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 5px 0;
+}
+
+.distance-inner p {
+  color: #777;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+/* ====== Next Button ====== */
+.next-btn {
+  background-color: #ffd5b0;
+  color: #fff;
+  border: none;
+  width: 100%;
+  padding: 13px;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: not-allowed;
+  transition: 0.3s ease-in-out;
+}
+
+.next-btn.active {
+  background-color: #ff7b29;
+  cursor: pointer;
+  box-shadow: 0px 5px 12px rgba(255, 140, 0, 0.25);
+}
+
+.next-btn.active:hover {
+  background-color: #ff8b3b;
+}
+
+/* ====== Loader Overlay ====== */
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* ====== Animations ====== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
   }
-  
-  .distance-inner {
-    text-align: center;
-    color: #333;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
-  
-  .distance-inner h3 {
-    color: #ff914d;
-    font-size: 22px;
-    margin: 5px 0;
-    font-weight: 600;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  
-  .distance-inner p {
-    color: #777;
-    font-size: 13px;
-    margin-top: -5px;
+  to {
+    opacity: 1;
+    transform: translateY(0px);
   }
-  
-  .plane-icon {
-    font-size: 22px;
-    animation: flyAcross 2s ease-in-out infinite;
-    display: inline-block;
-  }
-  
-  @keyframes flyAcross {
-    0% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    100% { transform: translateX(-5px); }
-  }
-  
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
+}
