@@ -6,9 +6,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 export default function FlightDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
+
   const phoneNumber = state?.phoneNumber;
   const from = state?.from;
   const to = state?.to;
+  const distance = state?.distance || "";
 
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -36,38 +38,42 @@ export default function FlightDetails() {
 
   const handleSubmit = async () => {
     if (!form.firstName || !form.lastName || !form.airline) {
-      alert("Please fill all mandatory fields");
+      alert("⚠️ Please fill all mandatory fields");
       return;
     }
     if (!form.agreeTerms) {
-      alert("Please agree to Terms and Conditions");
+      alert("⚠️ Please agree to Terms and Conditions");
       return;
     }
 
-    const fullData = {
+    const payload = {
       phoneNumber,
+      userType: "TRAVELER",
       from,
       to,
+      distance,
       flightDetails: form,
     };
 
     setLoading(true);
     try {
       const res = await fetch(
-        "https://us-central1-bhejochalo-3d292.cloudfunctions.net/saveTraveler",
+        "https://us-central1-bhejochalo-3d292.cloudfunctions.net/saveUserData",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(fullData),
+          body: JSON.stringify(payload),
         }
       );
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      alert("Traveler saved successfully!");
-      navigate("/sender-dashboard", { state: { phoneNumber } });
+      if (!res.ok) throw new Error(data.error || "Server error");
+
+      alert("✅ Traveler details saved successfully!");
+      navigate("/success", { state: { phoneNumber } });
     } catch (err) {
-      console.error(err);
-      alert("Something went wrong while saving traveler details");
+      console.error("❌ Error saving traveler:", err);
+      alert("Something went wrong while saving traveler details.");
     } finally {
       setLoading(false);
     }
@@ -92,7 +98,6 @@ export default function FlightDetails() {
 
           <input type="date" name="travelDate" value={form.travelDate} onChange={handleChange} />
           <input type="time" name="departureTime" value={form.departureTime} onChange={handleChange} />
-
           <input type="number" name="baggageSpace" placeholder="Free Space in Baggage (kg)" value={form.baggageSpace} onChange={handleChange} />
 
           <select name="spaceAvailableWhen" value={form.spaceAvailableWhen} onChange={handleChange}>
@@ -114,6 +119,7 @@ export default function FlightDetails() {
           <label>
             <input type="checkbox" name="checkParcel" checked={form.checkParcel} onChange={handleChange} /> I want to check parcel before carrying
           </label>
+
           <label>
             <input type="checkbox" name="agreeTerms" checked={form.agreeTerms} onChange={handleChange} /> I agree to Terms & Conditions
           </label>
