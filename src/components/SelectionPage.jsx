@@ -10,18 +10,29 @@ const SelectionPage = ({ phoneNumber }) => {
     navigate("/address-selection", { state: { phoneNumber, userType: "TRAVELER" } });
   };
 
+  const handleSender = () => {
+    navigate("/pan-verification", { state: { phoneNumber, userType: "SENDER" } });
+  };
+
   return (
     <div className="select-container page-transition">
       <div className="select-content">
         <img src={logo} alt="TurantX" className="select-logo" />
+
         <h2 className="select-title">Choose Your Role</h2>
         <p className="select-subtitle">
           Travel smart. Deliver smarter. Earn rewards on every trip.
         </p>
 
-        <button className="select-btn traveler" onClick={handleTraveler}>
-          ✈️ I’m a Traveler
-        </button>
+        <div className="select-buttons">
+          <button className="select-btn traveler" onClick={handleTraveler}>
+            ✈️ I’m a Traveler
+          </button>
+
+          <button className="select-btn sender" onClick={handleSender}>
+            📦 I’m a Sender
+          </button>
+        </div>
       </div>
     </div>
   );

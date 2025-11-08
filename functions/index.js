@@ -1,36 +1,95 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const cors = require("cors")({ origin: true });
+const express = require("express");
+const cors = require("cors");
 
-admin.initializeApp();
+// Initialize Firebase
+if (!admin.apps.length) admin.initializeApp();
 admin.firestore().settings({ ignoreUndefinedProperties: true });
-const db = admin.firestore();
 
-exports.saveTraveler = functions.https.onRequest((req, res) => {
-  cors(req, res, async () => {
-    try {
-      const { phoneNumber, from, to, flightDetails } = req.body;
+// Express apps
+const travelerApp = express();
+const senderApp = express();
 
-      if (!phoneNumber)
-        return res.status(400).json({ error: "Phone number missing" });
+travelerApp.use(cors({ origin: true }));
+travelerApp.use(express.json());
 
-      await db.collection("travelers").doc(phoneNumber).set(
-        {
-          from,
-          to,
-          flightDetails,
-          createdAt: new Date().toISOString(),
-        },
-        { merge: true }
-      );
+senderApp.use(cors({ origin: true }));
+senderApp.use(express.json());
 
-      return res.json({
-        success: true,
-        message: "Traveler saved successfully",
-      });
-    } catch (err) {
-      console.error("Error saving traveler:", err);
-      return res.status(500).json({ error: err.message });
-    }
-  });
+// ✅ saveTraveler API (POST /)
+travelerApp.post("/", async (req, res) => {
+  try {
+    const { phoneNumber, from, to, flightDetails } = req.body;
+
+    if (!phoneNumber)
+      return res.status(400).json({ error: "Missing phone number" });
+
+    const docRef = admin
+      .firestore()
+      .collection("users")
+      .doc(phoneNumber)
+      .collection("traveler")
+      .doc(); // auto-id
+
+    await docRef.set(
+      {
+        from,
+        to,
+        flightDetails,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Traveler saved successfully",
+      docId: docRef.id,
+    });
+  } catch (err) {
+    console.error("Traveler Save Error:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
+
+// ✅ saveSender API (POST /)
+senderApp.post("/", async (req, res) => {
+  try {
+    const { phoneNumber, panVerified, from, to, itemDetails } = req.body;
+
+    if (!phoneNumber)
+      return res.status(400).json({ error: "Missing phone number" });
+
+    const docRef = admin
+      .firestore()
+      .collection("users")
+      .doc(phoneNumber)
+      .collection("sender")
+      .doc(); // auto-id
+
+    await docRef.set(
+      {
+        panVerified: !!panVerified,
+        from,
+        to,
+        itemDetails,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Sender saved successfully",
+      docId: docRef.id,
+    });
+  } catch (err) {
+    console.error("Sender Save Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ✅ Exports
+exports.saveTraveler = functions.https.onRequest(travelerApp);
+exports.saveSender = functions.https.onRequest(senderApp);

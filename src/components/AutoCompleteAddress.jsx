@@ -160,14 +160,20 @@ export default function AutoCompleteAddress() {
   }, [fromCoords, toCoords]);
 
   const handleNext = () => {
-    if (!fromAddress || !toAddress) return alert("Please select both locations");
+    if (!fromAddress || !toAddress) return;
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       navigate("/from-address", {
-        state: { phoneNumber, fromAddress, toAddress, distance },
+        state: {
+          phoneNumber,
+          userType,
+          fromPlace: fromPlaceRef.current,
+          toPlace: toPlaceRef.current,
+          distance,
+        },
       });
-    }, 800);
+    }, 1200);
   };
 
   return (

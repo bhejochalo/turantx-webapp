@@ -51,6 +51,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 export default function AutoCompleteAddress() {
   const navigate = useNavigate();
   const location = useLocation();
+  const userType = location.state?.userType || ""; // ✅ traveler or sender
   const phoneNumber = location.state?.phoneNumber || "";
 
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
@@ -148,7 +149,7 @@ export default function AutoCompleteAddress() {
     setTimeout(() => {
       setLoading(false);
       navigate("/from-address", {
-        state: { phoneNumber, fromAddress, toAddress, distance },
+        state: { phoneNumber, fromAddress, toAddress, distance, userType },
       });
     }, 1200);
   };

@@ -1,0 +1,116 @@
+/* === PAN Verification Page === */
+
+.auto-page {
+    background-color: #fff7f1;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Inter", sans-serif;
+  }
+  
+  .auto-card {
+    background: #ffffff;
+    width: 400px;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+  }
+  
+  .auto-logo {
+    width: 100px;
+    margin-bottom: 25px;
+  }
+  
+  .auto-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ff7b29;
+    margin-bottom: 20px;
+  }
+  
+  .field-input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1.4px solid #ddd;
+    outline: none;
+    font-size: 15px;
+    background: #fafafa;
+    transition: 0.3s;
+    text-align: center;
+  }
+  
+  .field-input:focus {
+    border-color: #ffb47d;
+    box-shadow: 0 0 6px rgba(255, 140, 0, 0.3);
+  }
+  
+  .pan-success {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeUp 0.5s ease-in-out;
+  }
+  
+  .success-text {
+    color: #12b76a;
+    font-weight: 600;
+    margin-top: 5px;
+  }
+  
+  .pan-name {
+    color: #333;
+    font-size: 15px;
+    margin-top: 3px;
+  }
+  
+  .next-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 13px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    font-weight: 600;
+    background: #ffd6b2;
+    color: #fff;
+  }
+  
+  .next-btn.active {
+    background: linear-gradient(180deg, #ffb97b, #ff7b29);
+    box-shadow: 0 8px 25px rgba(255, 145, 77, 0.25);
+  }
+  
+  .next-btn.active:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0px);
+    }
+  }
+  

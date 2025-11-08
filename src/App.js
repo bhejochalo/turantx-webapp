@@ -8,6 +8,8 @@ import FromAddress from "./components/FromAddress";
 import ToAddress from "./components/ToAddress";
 import PnrCheck from "./components/PnrCheck";
 import FlightDetails from "./components/FlightDetails";
+import PanVerification from "./components/PanVerification";
+import ItemDetails from "./components/ItemDetails";
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
         <Route path="/from-address" element={<FromAddress />} />
         <Route path="/to-address" element={<ToAddress />} />
         <Route path="/flight-details" element={<FlightDetails />} />
+        <Route path="/pan-verification" element={<PanVerification />} />
+        <Route path="/item-details" element={<ItemDetails />} />
       </Routes>
     </Router>
   );
