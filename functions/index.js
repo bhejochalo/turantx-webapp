@@ -14,7 +14,7 @@ exports.saveTraveler = functions.https.onRequest((req, res) => {
       if (!phoneNumber)
         return res.status(400).json({ error: "Phone number missing" });
 
-      await db.collection("users").doc(phoneNumber).set(
+      await db.collection("travelers").doc(phoneNumber).set(
         {
           from,
           to,
