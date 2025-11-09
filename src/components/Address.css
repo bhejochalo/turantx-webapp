@@ -64,4 +64,77 @@
     color: #ff7a29;
     font-weight: 700;
   }
+  .addr-input.error {
+    border: 1.5px solid #ff4d4d !important;
+    background-color: #fff6f6;
+  }
   
+  .error-msg {
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+  /* Make select (dropdown) look identical to text inputs */
+.addr-input,
+.addr-input[type="text"],
+.addr-input[type="number"],
+.addr-input[type="email"],
+.addr-input[type="tel"],
+.addr-input[type="password"],
+select.addr-input {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: "Inter", sans-serif;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  background-color: #fff;
+  color: #333;
+  appearance: none; /* Remove browser default arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Add a custom dropdown arrow for select */
+select.addr-input {
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.25 7.5L10 12.25L14.75 7.5H5.25z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+  cursor: pointer;
+}
+
+/* Focus animation */
+.addr-input:focus,
+select.addr-input:focus {
+  border-color: #ff7b29;
+  box-shadow: 0 0 0 2px rgba(255, 123, 41, 0.15);
+  outline: none;
+}
+
+/* Error state (same as before) */
+.addr-input.error {
+  border-color: #ff4d4d !important;
+  background-color: #fff6f6;
+}
+
+/* Error message styling */
+.error-msg {
+  color: #ff4d4d;
+  font-size: 13.5px;
+  margin-top: -5px;
+  margin-bottom: 10px;
+}
+
+/* Optional distance bubble (unchanged) */
+.distance-bubble {
+  background: #fff6f0;
+  color: #ff7b29;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: inline-block;
+  margin: 10px 0;
+}

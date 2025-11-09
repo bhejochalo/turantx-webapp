@@ -3,13 +3,23 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./Address.css";
 import Loader from "./Loader";
 
+const indianStates = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman and Nicobar Islands", "Chandigarh", "Delhi", "Jammu and Kashmir",
+  "Ladakh", "Lakshadweep", "Puducherry"
+];
+
 export default function FromAddress() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
   const phoneNumber = state?.phoneNumber;
   const userType = state?.userType;
-  const fromAddress = state?.fromAddress || ""; // ✅ from previous page
+  const fromAddress = state?.fromAddress || "";
   const distance = state?.distance || "";
 
   const [loading] = useState(false);
@@ -24,10 +34,10 @@ export default function FromAddress() {
     longitude: null,
   });
 
-  // ✅ Autofill From Address fields if available from AutoComplete
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     if (fromAddress) {
-      // Try to break address roughly into parts
       const parts = fromAddress.split(",");
       setFrom((prev) => ({
         ...prev,
@@ -42,18 +52,24 @@ export default function FromAddress() {
 
   const handleChange = (e) => {
     setFrom({ ...from, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
+  };
+
+  const validateFields = () => {
+    let newErrors = {};
+    Object.keys(from).forEach((key) => {
+      if (!from[key] && key !== "latitude" && key !== "longitude")
+        newErrors[key] = "Required";
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleNext = () => {
-    if (!from.city || !from.state) {
-      alert("Please fill all required fields!");
-      return;
-    }
-
+    if (!validateFields()) return;
     navigate("/to-address", {
       state: { phoneNumber, userType, from, distance, panDetails: state?.panDetails },
     });
-    
   };
 
   return (
@@ -67,48 +83,60 @@ export default function FromAddress() {
           value={from.houseNumber}
           onChange={handleChange}
           placeholder="House / Flat Number"
-          className="addr-input"
+          className={`addr-input ${errors.houseNumber ? "error" : ""}`}
         />
         <input
           name="street"
           value={from.street}
           onChange={handleChange}
           placeholder="Street / Locality"
-          className="addr-input"
+          className={`addr-input ${errors.street ? "error" : ""}`}
         />
         <input
           name="area"
           value={from.area}
           onChange={handleChange}
           placeholder="Area / Landmark"
-          className="addr-input"
+          className={`addr-input ${errors.area ? "error" : ""}`}
         />
         <input
           name="city"
           value={from.city}
           onChange={handleChange}
           placeholder="City"
-          className="addr-input"
+          className={`addr-input ${errors.city ? "error" : ""}`}
         />
-        <input
+
+        <select
           name="state"
           value={from.state}
           onChange={handleChange}
-          placeholder="State"
-          className="addr-input"
-        />
+          className={`addr-input ${errors.state ? "error" : ""}`}
+        >
+          <option value="">Select State</option>
+          {indianStates.map((s, i) => (
+            <option key={i} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+
         <input
           name="postalCode"
           value={from.postalCode}
           onChange={handleChange}
           placeholder="Postal Code"
-          className="addr-input"
+          className={`addr-input ${errors.postalCode ? "error" : ""}`}
         />
 
-        {/* Optional distance display */}
+        {Object.values(errors).length > 0 && (
+          <p className="error-msg">⚠️ Please fill all required fields.</p>
+        )}
+
         {distance && (
           <div className="distance-bubble">
-            <strong>Approx Distance:</strong> <span className="distance">{distance} km</span>
+            <strong>Approx Distance:</strong>{" "}
+            <span className="distance">{distance} km</span>
           </div>
         )}
 
