@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./TravelerList.css";
-import { collection, doc, getDocs, getDoc } from "firebase/firestore";
+import { collectionGroup, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import Loader from "./Loader";
 
@@ -11,11 +11,10 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLat / 2) ** 2 +
     Math.cos((lat1 * Math.PI) / 180) *
       Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+      Math.sin(dLon / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return parseFloat((R * c).toFixed(1));
 };
@@ -35,36 +34,31 @@ export default function TravelerList() {
       return;
     }
 
-    // Example fallback for testing (replace with your state/props later)
+    // Example fallback
     setSenderCoords({
       from: { lat: 18.5204, lng: 73.8567 }, // Pune
       to: { lat: 19.076, lng: 72.8777 }, // Mumbai
     });
   }, []);
 
-  // ✅ 2️⃣ Fetch travelers from Firestore
+  // ✅ 2️⃣ Fetch ALL Traveler docs in ONE HIT using `collectionGroup`
   useEffect(() => {
-    const fetchTravelers = async () => {
+    const fetchAllTravelers = async () => {
       setLoading(true);
       try {
-        const usersRef = collection(db, "users");
-        const userDocs = await getDocs(usersRef);
-        const travelerList = [];
+        // 🚀 Single Firestore call to fetch ALL “Traveler” subcollections
+        const snapshot = await getDocs(collectionGroup(db, "Traveler"));
+        const allTravelers = [];
 
-        for (const userDoc of userDocs.docs) {
-          const travelerRef = collection(db, "users", userDoc.id, "Traveler");
-          const travelerSnap = await getDocs(travelerRef);
-          travelerSnap.forEach((docSnap) => {
-            const data = docSnap.data();
-            travelerList.push({
-              id: docSnap.id,
-              phone: userDoc.id,
-              ...data,
-            });
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          allTravelers.push({
+            id: docSnap.id,
+            ...data,
           });
-        }
+        });
 
-        setTravelers(travelerList);
+        setTravelers(allTravelers);
       } catch (err) {
         console.error("❌ Error fetching travelers:", err);
       } finally {
@@ -72,12 +66,13 @@ export default function TravelerList() {
       }
     };
 
-    fetchTravelers();
+    fetchAllTravelers();
   }, []);
 
   // ✅ 3️⃣ Calculate distances dynamically
   const getDistancePair = (traveler) => {
     if (!senderCoords) return { from: "–", to: "–" };
+
     const travelerFrom = traveler?.from?.coords;
     const travelerTo = traveler?.to?.coords;
 
@@ -105,32 +100,31 @@ export default function TravelerList() {
     };
   };
 
+  // ✅ 4️⃣ Razorpay booking integration
   const handleBook = async (traveler) => {
     if (!accepted) {
       alert("⚠️ Please accept the booking terms before continuing.");
       return;
     }
-  
-    // ✅ Load Razorpay script dynamically
-    const loadRazorpay = () => {
-      return new Promise((resolve) => {
+
+    const loadRazorpay = () =>
+      new Promise((resolve) => {
         const script = document.createElement("script");
         script.src = "https://checkout.razorpay.com/v1/checkout.js";
         script.onload = () => resolve(true);
         script.onerror = () => resolve(false);
         document.body.appendChild(script);
       });
-    };
-  
+
     const res = await loadRazorpay();
     if (!res) {
       alert("Razorpay SDK failed to load. Please check your connection.");
       return;
     }
-  
-    const amount = 200 * 100; // ₹200 test amount
+
+    const amount = 200 * 100;
     const RAZORPAY_KEY = "rzp_test_4HNx49ek9VPhNQ";
-  
+
     const options = {
       key: RAZORPAY_KEY,
       amount: amount.toString(),
@@ -151,11 +145,10 @@ export default function TravelerList() {
         color: "#ff7b29",
       },
     };
-  
+
     const paymentObject = new window.Razorpay(options);
     paymentObject.open();
   };
-  
 
   return (
     <div className="traveler-page">
