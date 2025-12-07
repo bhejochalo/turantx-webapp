@@ -1,6 +1,8 @@
 // src/firebase.js
-import { initializeApp, getApps, getApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getMessaging, isSupported } from "firebase/messaging";
+
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -11,8 +13,11 @@ const firebaseConfig = {
   appId: "1:528917615335:web:d4e91a3b6f9f2337e5d5b3",
 };
 
-// ✅ Prevent multiple initializations during Hot Reload
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 
-// ✅ Firestore instance
 export const db = getFirestore(app);
+
+// Setup messaging safely (prevents crash on Safari)
+export const messaging = (await isSupported())
+  ? getMessaging(app)
+  : null;

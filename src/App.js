@@ -13,6 +13,7 @@ import ItemDetails from "./components/ItemDetails";
 import TravelerList from "./components/TravelerList";
 import HelpSupport from "./components/HelpSupport";
 import LogoAnimation from "./components/LogoAnimation";
+import TravelerProfile from "./components/TravelerProfile";
 
 function AppRoutes() {
   const location = useLocation();
@@ -39,6 +40,7 @@ function AppRoutes() {
         <Route path="/pan-verification" element={<PanVerification />} />
         <Route path="/item-details" element={<ItemDetails />} />
         <Route path="/traveler-list" element={<TravelerList />} />
+        <Route path="/traveler-profile" element={<TravelerProfile />} />
       </Routes>
 
       {/* ✅ Show Help only after login */}

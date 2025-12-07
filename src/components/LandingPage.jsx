@@ -9,6 +9,7 @@ const LandingPage = () => {
   const [isValid, setIsValid] = useState(false);
   const [showOtpPage, setShowOtpPage] = useState(false);
   const [loading, setLoading] = useState(false);
+  localStorage.setItem("PHONE_NUMBER", phoneNumber);
 
   const handleChange = (e) => {
     const value = e.target.value.replace(/\D/g, "");

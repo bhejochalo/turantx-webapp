@@ -158,4 +158,24 @@
       transform: scale(1);
     }
   }
-  
+  /* Add to SelectionPage.css */
+.select-loading {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #666;
+}
+
+.select-note {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #e3f2fd;
+  border-radius: 8px;
+  border-left: 4px solid #2196f3;
+  font-size: 14px;
+  color: #1565c0;
+}
+
+.select-note p {
+  margin: 0;
+}

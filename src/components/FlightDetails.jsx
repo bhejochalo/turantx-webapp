@@ -45,7 +45,7 @@ export default function FlightDetails() {
       alert("⚠️ Please agree to Terms and Conditions");
       return;
     }
-
+  
     const payload = {
       phoneNumber,
       userType: "TRAVELER",
@@ -54,7 +54,7 @@ export default function FlightDetails() {
       distance,
       flightDetails: form,
     };
-
+  
     setLoading(true);
     try {
       const res = await fetch(
@@ -65,12 +65,12 @@ export default function FlightDetails() {
           body: JSON.stringify(payload),
         }
       );
-
+  
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Server error");
-
+  
       alert("✅ Traveler details saved successfully!");
-      navigate("/success", { state: { phoneNumber } });
+      navigate("/traveler-profile", { state: { phoneNumber } });
     } catch (err) {
       console.error("❌ Error saving traveler:", err);
       alert("Something went wrong while saving traveler details.");
@@ -78,6 +78,7 @@ export default function FlightDetails() {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flight-page">

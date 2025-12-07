@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import SelectionPage from "./SelectionPage";
 import Loader from "./Loader"; // ✅ Import Loader
 import { doc, setDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db } from "../firebase";
 
 const OtpPage = ({ phoneNumber, onBack }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -63,6 +63,7 @@ const OtpPage = ({ phoneNumber, onBack }) => {
       );
 
       console.log("✅ User saved successfully!");
+      localStorage.setItem("PHONE_NUMBER", phoneNumber);
       setVerified(true);
     } catch (error) {
       console.error("❌ Firestore Error:", error);

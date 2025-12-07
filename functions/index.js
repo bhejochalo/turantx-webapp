@@ -6,6 +6,12 @@ admin.initializeApp();
 const db = admin.firestore();
 db.settings({ ignoreUndefinedProperties: true });
 
+// 🔑 helper to generate random 6-digit OTP
+const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+// 🔑 helper to generate uniqueKey (same for traveler + sender)
+const generateKey = () => Math.random().toString(36).substring(2, 10).toUpperCase();
+
 exports.saveUserData = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     try {
@@ -28,7 +34,7 @@ exports.saveUserData = functions.https.onRequest((req, res) => {
         return res.status(400).json({ error: "Missing phoneNumber or userType" });
       }
 
-      // ✅ normalize function to ensure lat/lng always present
+      // normalize lat/lng
       const normalize = (obj) =>
         obj
           ? {
@@ -38,6 +44,7 @@ exports.saveUserData = functions.https.onRequest((req, res) => {
             }
           : null;
 
+      // 🔥 CREATE BASE DATA
       const data = {
         phoneNumber,
         userType,
@@ -52,6 +59,39 @@ exports.saveUserData = functions.https.onRequest((req, res) => {
 
       const collectionName = userType === "SENDER" ? "Sender" : "Traveler";
 
+      // ---------------------------
+      // 🔥 ADD TRAVELER SPECIAL SCHEMA
+      // ---------------------------
+      if (userType === "TRAVELER") {
+        const uniqueKey = generateKey();
+        const firstOtp = generateOtp();
+        const lastOtp = generateOtp();
+
+        data.uniqueKey = uniqueKey;
+        data.status = "WAITING";
+
+        data.FirstMileStatus = "Not Started";
+        data.SecondMileStatus = "Not Started";
+        data.LastMileStatus = "Not Started";
+
+        data.FirstMileOTP = firstOtp;
+        data.LastMileOTP = lastOtp;
+
+        console.log("Generated uniqueKey:", uniqueKey);
+        console.log("Generated OTPs:", firstOtp, lastOtp);
+      }
+
+      // ---------------------------
+      // 🔥 ADD SENDER SCHEMA
+      // ---------------------------
+      if (userType === "SENDER") {
+        // SENDER should always have uniqueKey same as TRAVELER
+        const uniqueKey = req.body.uniqueKey || generateKey();
+        data.uniqueKey = uniqueKey;
+        data.isVerified = false;
+      }
+
+      // Write document
       await db
         .collection("users")
         .doc(phoneNumber)
