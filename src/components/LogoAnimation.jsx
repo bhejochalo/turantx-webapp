@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "./LogoAnimation.css";
-import logo from "../assets/turantx-logo.png";
+import logo from "../assets/turantxlogo.gif";
 
 export default function LogoAnimation({ onFinish }) {
   useEffect(() => {

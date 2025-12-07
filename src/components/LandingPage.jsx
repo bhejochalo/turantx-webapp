@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Loader from "./Loader";
 import OtpPage from "./OtpPage";
 import "./LandingPage.css";
-import logo from "../assets/turantx-logo.png";
+import logo from "../assets/turantxlogo.gif";
 
 const LandingPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
