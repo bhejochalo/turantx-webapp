@@ -418,21 +418,27 @@ export default function TravelerProfile({ location }) {
 
                 </div>
 
-                {/* CONFIRM ARRIVAL — ALWAYS LAST */}
-                <div className="tp-confirm-box">
-                  <label>Confirm Arrival (after reaching home)</label>
+                <div className={`tp-slide-confirm ${isProcessingSlider ? "processing" : ""}`}>
+                  <span className="tp-slide-text">
+                    {isProcessingSlider ? "Initiating Pickup..." : "Slide to Initiate Pickup"}
+                  </span>
+
                   <input
                     type="range"
                     min="0"
                     max="100"
                     value={sliderValue}
+                    disabled={isProcessingSlider}
                     onChange={(e) => {
                       const v = Number(e.target.value);
                       setSliderValue(v);
-                      if (v === 100 && !isProcessingSlider) confirmArrival();
+                      if (v === 100 && !isProcessingSlider) {
+                        confirmArrival(); // SAME FUNCTION
+                      }
                     }}
                   />
                 </div>
+
 
                 {/* BORZO ORDER (UNCHANGED) */}
                 <div className="tp-borzo">

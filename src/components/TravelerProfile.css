@@ -342,3 +342,53 @@
   width: 100%;
   margin-top: 6px;
 }
+/* --- SLIDE TO CONFIRM --- */
+.tp-slide-confirm {
+  position: relative;
+  margin-top: 20px;
+  background: #ffe8dc;
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.tp-slide-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f25c05;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Slider */
+.tp-slide-confirm input[type="range"] {
+  width: 100%;
+  appearance: none;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    #f25c05 0%,
+    #ffd8c4 0%
+  );
+  outline: none;
+}
+
+/* Thumb */
+.tp-slide-confirm input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #f25c05;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Disabled state */
+.tp-slide-confirm.processing {
+  opacity: 0.7;
+  pointer-events: none;
+}
