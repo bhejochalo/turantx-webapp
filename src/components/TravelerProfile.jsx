@@ -37,7 +37,7 @@ export default function TravelerProfile({ location }) {
   const [otpInput, setOtpInput] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const mounted = useRef(true);
-  
+
 
   // helper: traveler doc ref path
   const travelerDocRef = phoneNumber
@@ -283,21 +283,41 @@ export default function TravelerProfile({ location }) {
 
   // ---- UI helpers ----
   const renderAddressBlock = (typeLabel, typeKey) => {
-    const addr = traveler?.[typeKey] || {};
-    const full = addr.fullAddress || buildFullAddress(addr) || "Not specified";
+    // 🔑 handle all possible keys: from / fromAddress / FromAddress
+    const addr =
+      traveler?.[typeKey] ||
+      traveler?.[typeKey.toLowerCase()] ||
+      traveler?.[typeKey.charAt(0).toUpperCase() + typeKey.slice(1)] ||
+      {};
+
+    const full =
+      addr.fullAddress ||
+      buildFullAddress(addr) ||
+      "Not specified";
+
     return (
       <div className="tp-address-block">
         <div className="tp-address-head">
           <strong>{typeLabel}</strong>
-          <button onClick={() => openEditAddress(typeKey)} className="tp-btn small">Edit</button>
+          <button
+            onClick={() => openEditAddress(typeKey)}
+            className="tp-btn small"
+          >
+            Edit
+          </button>
         </div>
+
         <div className="tp-address-text">{full}</div>
-        {addr.latitude && addr.longitude && (
-          <div className="tp-coords">Lat: {addr.latitude}, Lng: {addr.longitude}</div>
+
+        {(addr.latitude || addr.longitude) && (
+          <div className="tp-coords">
+            Lat: {addr.latitude ?? "-"}, Lng: {addr.longitude ?? "-"}
+          </div>
         )}
       </div>
     );
   };
+
 
   // ----- RENDER -----
   return (
@@ -324,8 +344,9 @@ export default function TravelerProfile({ location }) {
           <section className="tp-section">
             <h3>Addresses</h3>
             <div className="tp-addresses">
-              {renderAddressBlock("From (Pickup)", "fromAddress")}
-              {renderAddressBlock("To (Drop)", "toAddress")}
+              {renderAddressBlock("From (Pickup)", "from")}
+              {renderAddressBlock("To (Drop)", "to")}
+
             </div>
           </section>
 
