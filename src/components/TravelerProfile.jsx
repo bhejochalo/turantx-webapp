@@ -37,6 +37,7 @@ export default function TravelerProfile({ location }) {
   const [otpInput, setOtpInput] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const mounted = useRef(true);
+  
 
   // helper: traveler doc ref path
   const travelerDocRef = phoneNumber
@@ -418,9 +419,14 @@ export default function TravelerProfile({ location }) {
 
                 </div>
 
-                <div className={`tp-slide-confirm ${isProcessingSlider ? "processing" : ""}`}>
-                  <span className="tp-slide-text">
-                    {isProcessingSlider ? "Initiating Pickup..." : "Slide to Initiate Pickup"}
+                <div className={`ios-slide ${isProcessingSlider ? "done" : ""}`}>
+                  <div
+                    className="ios-track"
+                    style={{ width: `${sliderValue}%` }}
+                  />
+
+                  <span className="ios-text">
+                    {isProcessingSlider ? "Pickup Initiated" : "Slide to Initiate Pickup"}
                   </span>
 
                   <input
@@ -432,12 +438,14 @@ export default function TravelerProfile({ location }) {
                     onChange={(e) => {
                       const v = Number(e.target.value);
                       setSliderValue(v);
+
                       if (v === 100 && !isProcessingSlider) {
                         confirmArrival(); // SAME FUNCTION
                       }
                     }}
                   />
                 </div>
+
 
 
                 {/* BORZO ORDER (UNCHANGED) */}
