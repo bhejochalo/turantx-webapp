@@ -305,9 +305,9 @@ export default function TravelerProfile({ location }) {
         <h2>Traveler Profile</h2>
         <div className="tp-sub">Phone: {phoneNumber || "Not logged in"}</div>
         <div className="tp-topbar">
-  {/* ROLE SWITCH */}
-  <RoleSwitch phoneNumber={phoneNumber} />
-</div>
+          {/* ROLE SWITCH */}
+          <RoleSwitch phoneNumber={phoneNumber} />
+        </div>
       </div>
 
       {loading ? (
@@ -354,10 +354,73 @@ export default function TravelerProfile({ location }) {
             </div>
 
             {activeTab === "status" && (
+
               <div className="tp-status">
-                {/* Slider confirm */}
-                <div className="tp-slider">
-                  <label>Confirm Arrival (when you reach home)</label>
+
+                {/* MILE LIST */}
+                <div className="tp-mile-list">
+
+                  {/* FIRST MILE */}
+                  <div className="tp-mile-row">
+                    <div className="tp-mile-left">
+                      <strong>First Mile</strong>
+                      <span className="tp-mile-status">
+                        {traveler.FirstMileStatus || "Not started"}
+                      </span>
+                    </div>
+
+                    {/* ACTUAL OTP (DISPLAY ONLY) */}
+                    {traveler.FirstMileOTP && (
+                      <div className="tp-mile-right">
+                        <span className="tp-otp-badge">
+                          OTP: {traveler.FirstMileOTP}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* SECOND MILE */}
+                  <div className="tp-mile-row">
+                    <div className="tp-mile-left">
+                      <strong>Second Mile</strong>
+                      <span className="tp-mile-status">
+                        {traveler.SecondMileStatus || "Not started"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* LAST MILE */}
+                  <div className="tp-mile-row">
+                    <div className="tp-mile-left">
+                      <strong>Last Mile</strong>
+                      <span className="tp-mile-status">
+                        {traveler.LastMileStatus || "Not started"}
+                      </span>
+                    </div>
+
+                    {traveler.LastMileStatus !== "Completed" && (
+                      <div className="tp-mile-right">
+                        <input
+                          className="tp-mile-input"
+                          placeholder="Enter OTP"
+                          value={otpInput}
+                          onChange={(e) => setOtpInput(e.target.value)}
+                        />
+                        <button
+                          className="tp-btn small"
+                          onClick={verifyLastMileOtp}
+                        >
+                          Verify
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+
+                {/* CONFIRM ARRIVAL — ALWAYS LAST */}
+                <div className="tp-confirm-box">
+                  <label>Confirm Arrival (after reaching home)</label>
                   <input
                     type="range"
                     min="0"
@@ -371,95 +434,31 @@ export default function TravelerProfile({ location }) {
                   />
                 </div>
 
-                {/* OTP section */}
-                <div className="tp-mile-list">
-
-{/* FIRST MILE */}
-<div className="tp-mile-row">
-  <div className="tp-mile-info">
-    <strong>First Mile</strong>
-    <span>{traveler.FirstMileStatus || "Not started"}</span>
-  </div>
-
-  {traveler.FirstMileStatus !== "Completed" && traveler.FirstMileOTP && (
-    <div className="tp-mile-otp">
-      <input
-        placeholder="First mile OTP"
-        value={otpInput}
-        onChange={(e) => setOtpInput(e.target.value)}
-      />
-      <button
-        className="tp-btn small"
-        onClick={async () => {
-          if (otpInput === traveler.FirstMileOTP) {
-            await updateDoc(travelerDocRef, {
-              FirstMileStatus: "Completed",
-              SecondMileStatus: "In Progress",
-            });
-            setOtpInput("");
-            fetchTraveler();
-          } else {
-            alert("Invalid OTP");
-          }
-        }}
-      >
-        Verify
-      </button>
-    </div>
-  )}
-</div>
-
-{/* SECOND MILE (slider stays same) */}
-<div className="tp-mile-row">
-  <div className="tp-mile-info">
-    <strong>Second Mile</strong>
-    <span>{traveler.SecondMileStatus || "Not started"}</span>
-  </div>
-</div>
-
-{/* LAST MILE */}
-<div className="tp-mile-row">
-  <div className="tp-mile-info">
-    <strong>Last Mile</strong>
-    <span>{traveler.LastMileStatus || "Not started"}</span>
-  </div>
-
-  {traveler.LastMileStatus !== "Completed" && (
-    <div className="tp-mile-otp">
-      <input
-        placeholder="Last mile OTP"
-        value={otpInput}
-        onChange={(e) => setOtpInput(e.target.value)}
-      />
-      <button
-        onClick={verifyLastMileOtp}
-        className="tp-btn small"
-      >
-        Verify
-      </button>
-    </div>
-  )}
-</div>
-
-</div>
-
-                {/* Borzo order / tracking */}
+                {/* BORZO ORDER (UNCHANGED) */}
                 <div className="tp-borzo">
                   <h4>Borzo Order</h4>
                   {borzoOrder ? (
                     <>
                       <div><strong>ID:</strong> {borzoOrder.id}</div>
-                      <div><strong>Status:</strong> {(borzoOrder.order && borzoOrder.order.status) || borzoOrder.status}</div>
-                      {borzoOrder.order?.tracking_url ? (
-                        <div>
-                          <a href={borzoOrder.order.tracking_url} target="_blank" rel="noreferrer">Open Tracking</a>
-                        </div>
-                      ) : null}
+                      <div>
+                        <strong>Status:</strong>{" "}
+                        {(borzoOrder.order && borzoOrder.order.status) || borzoOrder.status}
+                      </div>
+                      {borzoOrder.order?.tracking_url && (
+                        <a
+                          href={borzoOrder.order.tracking_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Open Tracking
+                        </a>
+                      )}
                     </>
                   ) : (
                     <div>No active order found</div>
                   )}
                 </div>
+
               </div>
             )}
 

@@ -270,3 +270,75 @@
   border: 1px solid #ffc8b0;
   font-size: 13px;
 }
+/* --- MILE LIST (CLEAN UX) --- */
+.tp-mile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tp-mile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff4ec;
+  border: 1px solid #ffd8c4;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+.tp-mile-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tp-mile-status {
+  font-size: 13px;
+  color: #666;
+}
+
+.tp-mile-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* OTP badge (display only) */
+.tp-otp-badge {
+  background: #f25c05;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* OTP input */
+.tp-mile-input {
+  width: 110px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ffc8b0;
+  font-size: 13px;
+}
+
+/* Confirm arrival box */
+.tp-confirm-box {
+  margin-top: 18px;
+  padding: 12px;
+  background: #fffaf6;
+  border: 1px dashed #f25c05;
+  border-radius: 14px;
+}
+
+.tp-confirm-box label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.tp-confirm-box input[type="range"] {
+  width: 100%;
+  margin-top: 6px;
+}
