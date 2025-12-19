@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase"; // make sure this exports Firestore (modular)
 import "./TravelerProfile.css";
+import RoleSwitch from "./RoleSwitch";
 
 export default function TravelerProfile({ location }) {
   // Try router state first (if using react-router navigation), fallback to localStorage
@@ -303,6 +304,10 @@ export default function TravelerProfile({ location }) {
       <div className="tp-topbar">
         <h2>Traveler Profile</h2>
         <div className="tp-sub">Phone: {phoneNumber || "Not logged in"}</div>
+        <div className="tp-topbar">
+  {/* ROLE SWITCH */}
+  <RoleSwitch phoneNumber={phoneNumber} />
+</div>
       </div>
 
       {loading ? (

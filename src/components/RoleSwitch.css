@@ -1,0 +1,50 @@
+.role-switch {
+    position: relative;
+    width: 130px;
+    height: 36px;
+    background: #ffe8dc;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px;
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.15);
+    user-select: none;
+  }
+  
+  .switch-thumb {
+    position: absolute;
+    width: 60px;
+    height: 28px;
+    background: #f25c05;
+    border-radius: 16px;
+    left: 4px;
+    transition: all 0.3s ease;
+  }
+  
+  .switch-thumb.right {
+    left: 66px;
+  }
+  
+  .role-switch .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    z-index: 2;
+    width: 50%;
+    text-align: center;
+  }
+  
+  .role-switch .label.right {
+    color: #fff;
+  }
+  
+  .switch-thumb.right ~ .label.right {
+    color: #fff;
+  }
+  
+  .switch-thumb:not(.right) ~ .label.left {
+    color: #fff;
+  }
+  
