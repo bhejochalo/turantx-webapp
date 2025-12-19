@@ -355,11 +355,6 @@ export default function TravelerProfile({ location }) {
 
             {activeTab === "status" && (
               <div className="tp-status">
-                <div><strong>Overall status:</strong> {traveler.status || "N/A"}</div>
-                <div><strong>1st Mile:</strong> {traveler.FirstMileStatus || traveler.firstMileStatus || "Not specified"}</div>
-                <div><strong>2nd Mile:</strong> {traveler.SecondMileStatus || "Not specified"}</div>
-                <div><strong>Last Mile:</strong> {traveler.LastMileStatus || "Not specified"}</div>
-
                 {/* Slider confirm */}
                 <div className="tp-slider">
                   <label>Confirm Arrival (when you reach home)</label>
@@ -377,17 +372,76 @@ export default function TravelerProfile({ location }) {
                 </div>
 
                 {/* OTP section */}
-                <div className="tp-otp">
-                  <label>Last-mile OTP (enter to complete delivery)</label>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <input
-                      value={otpInput}
-                      onChange={(e) => setOtpInput(e.target.value)}
-                      placeholder="Enter OTP"
-                    />
-                    <button onClick={verifyLastMileOtp} className="tp-btn small">Verify</button>
-                  </div>
-                </div>
+                <div className="tp-mile-list">
+
+{/* FIRST MILE */}
+<div className="tp-mile-row">
+  <div className="tp-mile-info">
+    <strong>First Mile</strong>
+    <span>{traveler.FirstMileStatus || "Not started"}</span>
+  </div>
+
+  {traveler.FirstMileStatus !== "Completed" && traveler.FirstMileOTP && (
+    <div className="tp-mile-otp">
+      <input
+        placeholder="First mile OTP"
+        value={otpInput}
+        onChange={(e) => setOtpInput(e.target.value)}
+      />
+      <button
+        className="tp-btn small"
+        onClick={async () => {
+          if (otpInput === traveler.FirstMileOTP) {
+            await updateDoc(travelerDocRef, {
+              FirstMileStatus: "Completed",
+              SecondMileStatus: "In Progress",
+            });
+            setOtpInput("");
+            fetchTraveler();
+          } else {
+            alert("Invalid OTP");
+          }
+        }}
+      >
+        Verify
+      </button>
+    </div>
+  )}
+</div>
+
+{/* SECOND MILE (slider stays same) */}
+<div className="tp-mile-row">
+  <div className="tp-mile-info">
+    <strong>Second Mile</strong>
+    <span>{traveler.SecondMileStatus || "Not started"}</span>
+  </div>
+</div>
+
+{/* LAST MILE */}
+<div className="tp-mile-row">
+  <div className="tp-mile-info">
+    <strong>Last Mile</strong>
+    <span>{traveler.LastMileStatus || "Not started"}</span>
+  </div>
+
+  {traveler.LastMileStatus !== "Completed" && (
+    <div className="tp-mile-otp">
+      <input
+        placeholder="Last mile OTP"
+        value={otpInput}
+        onChange={(e) => setOtpInput(e.target.value)}
+      />
+      <button
+        onClick={verifyLastMileOtp}
+        className="tp-btn small"
+      >
+        Verify
+      </button>
+    </div>
+  )}
+</div>
+
+</div>
 
                 {/* Borzo order / tracking */}
                 <div className="tp-borzo">

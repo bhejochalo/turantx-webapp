@@ -229,4 +229,44 @@
     margin-top: 12px;
   }
   
-  
+  /* --- MILE LIST --- */
+.tp-mile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tp-mile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff4ec;
+  border: 1px solid #ffd8c4;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.tp-mile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tp-mile-info span {
+  font-size: 13px;
+  color: #666;
+}
+
+.tp-mile-otp {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tp-mile-otp input {
+  width: 110px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ffc8b0;
+  font-size: 13px;
+}
