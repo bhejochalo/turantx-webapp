@@ -3,6 +3,8 @@ import "./TravelerList.css";
 import { collectionGroup, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import Loader from "./Loader";
+import { useNavigate } from "react-router-dom";
+
 
 // ✅ Haversine distance calculator (in km)
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -25,6 +27,7 @@ export default function TravelerList() {
   const [selectedTraveler, setSelectedTraveler] = useState(null);
   const [accepted, setAccepted] = useState(false);
   const [senderCoords, setSenderCoords] = useState(null);
+  const navigate = useNavigate();
 
   // ✅ 1️⃣ Get sender location (from state or Firestore)
   useEffect(() => {
@@ -134,8 +137,28 @@ export default function TravelerList() {
       image: "https://i.imgur.com/QzBfZpL.png",
       handler: function (response) {
         console.log("✅ Payment Successful:", response);
-        alert("✅ Payment Successful! Your booking is confirmed.");
-      },
+      
+        // ✅ Save booking info (SenderProfile ko chahiye hoga)
+        localStorage.setItem(
+          "BOOKED_TRAVELER",
+          JSON.stringify({
+            travelerPhone: traveler.phoneNumber,
+            uniqueKey: traveler.uniqueKey,
+            bookingId: response.razorpay_payment_id,
+            bookedAt: Date.now()
+          })
+        );
+      
+        alert("✅ Payment Successful! Redirecting to Sender Profile…");
+      
+        // ✅ Redirect to Sender Profile
+        navigate("/sender-profile", {
+          state: {
+            traveler,
+            paymentId: response.razorpay_payment_id
+          }
+        });
+      },      
       prefill: {
         name: "TurantX User",
         email: "user@example.com",

@@ -14,6 +14,7 @@ import TravelerList from "./components/TravelerList";
 import HelpSupport from "./components/HelpSupport";
 import LogoAnimation from "./components/LogoAnimation";
 import TravelerProfile from "./components/TravelerProfile";
+import SenderProfile from "./components/SenderProfile";
 
 function AppRoutes() {
   const location = useLocation();
@@ -41,6 +42,7 @@ function AppRoutes() {
         <Route path="/item-details" element={<ItemDetails />} />
         <Route path="/traveler-list" element={<TravelerList />} />
         <Route path="/traveler-profile" element={<TravelerProfile />} />
+        <Route path="/sender-profile" element={<SenderProfile />} />
       </Routes>
 
       {/* ✅ Show Help only after login */}
