@@ -135,30 +135,38 @@ export default function SenderProfile() {
       <h2 className="title">Sender Profile</h2>
       <p className="phone">Phone: {phoneNumber}</p>
 
-      {/* ===== FROM / TO + FLIGHT ===== */}
-      <div className="card">
-        <div className="row between">
-          <div>
-            <p className="label">From</p>
-            <p>{traveler?.from?.city}, {traveler?.from?.state}</p>
-          </div>
-        </div>
+{/* ===== ROUTE + FLIGHT CARD ===== */}
+<div className="route-card">
+  <div className="route-row">
+    <div className="route-point">
+      <span className="route-label">From</span>
+      <span className="route-city">
+        {traveler?.from?.city}, {traveler?.from?.state}
+      </span>
+    </div>
 
-        <div className="row between">
-          <div>
-            <p className="label">To</p>
-            <p>{traveler?.to?.city}, {traveler?.to?.state}</p>
-          </div>
-        </div>
+    <div className="route-plane">
+      ✈️
+      <span className="route-line" />
+    </div>
 
-        <div className="flight-line">
-          <p>✈ Airline: {traveler?.flightDetails?.airline}</p>
-          <p>📅 Date: {traveler?.flightDetails?.travelDate}</p>
-          <p>🕒 Departure: {traveler?.flightDetails?.departureTime}</p>
-          <p>🎒 Carry: {traveler?.flightDetails?.carryType}</p>
-          <p>⚖ Baggage: {traveler?.flightDetails?.baggageSpace} kg</p>
-        </div>
-      </div>
+    <div className="route-point right">
+      <span className="route-label">To</span>
+      <span className="route-city">
+        {traveler?.to?.city}, {traveler?.to?.state}
+      </span>
+    </div>
+  </div>
+
+  <div className="flight-info">
+    <div>✈ Airline: <b>{traveler?.flightDetails?.airline}</b></div>
+    <div>📅 Date: {traveler?.flightDetails?.travelDate}</div>
+    <div>🕒 Departure: {traveler?.flightDetails?.departureTime}</div>
+    <div>🎒 Carry: {traveler?.flightDetails?.carryType}</div>
+    <div>⚖ Baggage: {traveler?.flightDetails?.baggageSpace} kg</div>
+  </div>
+</div>
+
 
       {/* ===== TABS ===== */}
       <div className="tabs">
