@@ -1,7 +1,8 @@
+/* ---------- PAGE ---------- */
 .sender-wrapper {
   max-width: 420px;
   margin: auto;
-  padding: 20px;
+  padding: 16px;
 }
 
 .title {
@@ -11,13 +12,158 @@
 
 .phone {
   text-align: center;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* ---------- CARD ---------- */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.between {
+  justify-content: space-between;
+}
+
+.label {
+  font-size: 12px;
+  color: #888;
+}
+
+.flight-line {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+/* ---------- TABS ---------- */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 8px;
+  border-radius: 20px;
+  border: none;
+  background: #eee;
+  cursor: pointer;
+}
+
+.tabs .active {
+  background: #ff7b29;
+  color: #fff;
+}
+
+/* ---------- BUTTONS ---------- */
+.edit-btn {
+  background: #ff7b29;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #ccc;
+  color: #333;
+}
+
+/* ---------- MODAL OVERLAY ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* ---------- MODAL CARD ---------- */
+.modal-card {
+  background: #fff;
+  width: 100%;
+  max-width: 360px;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  animation: popIn 0.2s ease-out;
+}
+
+.modal-card h4 {
+  margin-bottom: 14px;
+  text-align: center;
+  color: #ff7b29;
+}
+
+/* ---------- INPUTS ---------- */
+.modal-card input {
+  width: 100%;
+  padding: 10px;
   margin-bottom: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+/* ---------- MODAL ACTIONS ---------- */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+}
+
+/* ---------- MUTED CARD ---------- */
+.card.muted {
+  text-align: center;
+  color: #999;
+  background: #f5f5f5;
+}
+
+/* ---------- ANIMATION ---------- */
+@keyframes popIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.sender-wrapper {
+  max-width: 420px;
+  margin: auto;
+  padding: 16px;
 }
 
 .card {
   background: #fff;
-  padding: 15px;
-  border-radius: 12px;
+  padding: 14px;
+  border-radius: 14px;
   margin-bottom: 14px;
   box-shadow: 0 2px 8px rgba(0,0,0,.08);
 }
@@ -34,7 +180,6 @@
   border-radius: 20px;
   border: none;
   background: #eee;
-  cursor: pointer;
 }
 
 .tabs .active {
@@ -43,57 +188,38 @@
 }
 
 button {
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
   background: #ff7b29;
   color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
 }
 
-input {
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-card {
+  background: white;
+  width: 90%;
+  max-width: 360px;
+  padding: 18px;
+  border-radius: 16px;
+}
+
+.modal-card input {
   width: 100%;
+  margin-bottom: 10px;
   padding: 10px;
-  margin-top: 8px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
 }
 
-.muted {
-  opacity: 0.6;
-}
-
-.info {
-  color: green;
-  font-size: 14px;
-}
-.row {
+.modal-actions {
   display: flex;
   gap: 10px;
 }
-
-.between {
-  justify-content: space-between;
-  align-items: center;
-}
-
-.label {
-  font-size: 12px;
-  color: #888;
-}
-
-.flight-line {
-  margin-top: 8px;
-  font-size: 13px;
-  color: #444;
-}
-
-.edit-btn {
-  background: #ff7b29;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-}
-
