@@ -198,3 +198,25 @@ button.cancel {
   padding: 40px;
   font-size: 16px;
 }
+.traveler-card {
+  font-size: 14px;
+}
+
+.traveler-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.traveler-row span:first-child {
+  font-weight: 500;
+  color: #777;
+}
+
+.map-card iframe {
+  width: 100%;
+  height: 220px;
+  border-radius: 12px;
+  border: none;
+}

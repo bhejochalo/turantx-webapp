@@ -216,22 +216,76 @@ export default function SenderProfile() {
         </>
       )}
 
-      {/* ===== TRAVELER TAB ===== */}
-      {activeTab === "traveler" && (
-        <>
-          {traveler?.status !== "WAITING" ? (
-            <div className="card">
-              <h4>🧑 Traveler Info</h4>
-              <p>Name: {traveler?.flightDetails?.firstName} {traveler?.flightDetails?.lastName}</p>
-              <p>Phone: {traveler?.phoneNumber}</p>
-            </div>
-          ) : (
-            <div className="card muted">
-              Traveler details visible after acceptance
-            </div>
-          )}
-        </>
-      )}
+{activeTab === "traveler" && (
+  <>
+    <div className="card traveler-card">
+      <h4>🧑 Traveler Information</h4>
+
+      <div className="traveler-row">
+        <span>Name</span>
+        <span>
+          {traveler?.flightDetails?.firstName}{" "}
+          {traveler?.flightDetails?.lastName}
+        </span>
+      </div>
+
+      <div className="traveler-row">
+        <span>Phone</span>
+        <span>{traveler?.phoneNumber}</span>
+      </div>
+
+      <div className="traveler-row">
+        <span>Airline</span>
+        <span>{traveler?.flightDetails?.airline}</span>
+      </div>
+
+      <div className="traveler-row">
+        <span>Travel Date</span>
+        <span>{traveler?.flightDetails?.travelDate}</span>
+      </div>
+
+      <div className="traveler-row">
+        <span>Departure</span>
+        <span>{traveler?.flightDetails?.departureTime}</span>
+      </div>
+
+      <div className="traveler-row">
+        <span>Carry Type</span>
+        <span>{traveler?.flightDetails?.carryType}</span>
+      </div>
+
+      <div className="traveler-row">
+        <span>Baggage</span>
+        <span>{traveler?.flightDetails?.baggageSpace} kg</span>
+      </div>
+
+      <div className="traveler-row">
+        <span>From</span>
+        <span>
+          {traveler?.from?.city}, {traveler?.from?.state}
+        </span>
+      </div>
+
+      <div className="traveler-row">
+        <span>To</span>
+        <span>
+          {traveler?.to?.city}, {traveler?.to?.state}
+        </span>
+      </div>
+    </div>
+
+    {/* GOOGLE MAP */}
+    <div className="card map-card">
+      <h4>📍 Destination Map</h4>
+      <iframe
+        title="destination-map"
+        src={`https://maps.google.com/maps?q=${traveler?.to?.city || "India"}&z=6&output=embed`}
+        loading="lazy"
+      />
+    </div>
+  </>
+)}
+
 
       {/* ===== MODAL ===== */}
       {editType && (
