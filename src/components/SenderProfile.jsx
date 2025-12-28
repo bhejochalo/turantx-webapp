@@ -216,72 +216,101 @@ export default function SenderProfile() {
         </>
       )}
 
-{activeTab === "traveler" && (
+{activeTab === "traveler" && traveler && (
   <>
-    <div className="card traveler-card">
-      <h4>🧑 Traveler Information</h4>
-
-      <div className="traveler-row">
-        <span>Name</span>
-        <span>
-          {traveler?.flightDetails?.firstName}{" "}
-          {traveler?.flightDetails?.lastName}
-        </span>
-      </div>
-
-      <div className="traveler-row">
-        <span>Phone</span>
-        <span>{traveler?.phoneNumber}</span>
-      </div>
-
-      <div className="traveler-row">
-        <span>Airline</span>
-        <span>{traveler?.flightDetails?.airline}</span>
-      </div>
-
-      <div className="traveler-row">
-        <span>Travel Date</span>
-        <span>{traveler?.flightDetails?.travelDate}</span>
-      </div>
-
-      <div className="traveler-row">
-        <span>Departure</span>
-        <span>{traveler?.flightDetails?.departureTime}</span>
-      </div>
-
-      <div className="traveler-row">
-        <span>Carry Type</span>
-        <span>{traveler?.flightDetails?.carryType}</span>
-      </div>
-
-      <div className="traveler-row">
-        <span>Baggage</span>
-        <span>{traveler?.flightDetails?.baggageSpace} kg</span>
-      </div>
-
-      <div className="traveler-row">
-        <span>From</span>
-        <span>
-          {traveler?.from?.city}, {traveler?.from?.state}
-        </span>
-      </div>
-
-      <div className="traveler-row">
-        <span>To</span>
-        <span>
-          {traveler?.to?.city}, {traveler?.to?.state}
+    {/* ===== TRAVELER PROFILE ===== */}
+    <div className="card traveler-profile">
+      <div className="traveler-header">
+        <div className="avatar">👤</div>
+        <div>
+          <h4>
+            {traveler.firstName} {traveler.lastName}
+          </h4>
+          <p className="sub">📞 {traveler.phoneNumber}</p>
+        </div>
+        <span className={`badge ${traveler.status === "WAITING" ? "waiting" : "active"}`}>
+          {traveler.status}
         </span>
       </div>
     </div>
 
-    {/* GOOGLE MAP */}
-    <div className="card map-card">
+    {/* ===== JOURNEY CARD ===== */}
+    <div className="card journey-card">
+      <div className="journey-row">
+        <div>
+          <span className="label">FROM</span>
+          <p className="city">
+            {traveler.from?.city}, {traveler.from?.state}
+          </p>
+        </div>
+
+        <div className="plane">✈️</div>
+
+        <div>
+          <span className="label">TO</span>
+          <p className="city">
+            {traveler.to?.city}, {traveler.to?.state}
+          </p>
+        </div>
+      </div>
+
+      <div className="journey-meta">
+        <span>🛫 {traveler.airline}</span>
+        <span>📅 {traveler.travelDate}</span>
+        <span>🕒 {traveler.departureTime}</span>
+        <span>🎒 {traveler.carryType}</span>
+        <span>⚖ {traveler.baggageSpace} kg</span>
+      </div>
+    </div>
+
+    {/* ===== STATUS TIMELINE ===== */}
+    <div className="card">
+      <h4>🚚 Delivery Progress</h4>
+
+      <div className={`timeline-item ${traveler.FirstMileStatus === "Completed" ? "done" : ""}`}>
+        <span>📦 First Mile</span>
+        <small>OTP: {traveler.FirstMileOTP}</small>
+      </div>
+
+      <div className={`timeline-item ${traveler.SecondMileStatus === "Completed" ? "done" : ""}`}>
+        <span>✈️ Second Mile</span>
+        <small>{traveler.SecondMileStatus}</small>
+      </div>
+
+      <div className={`timeline-item ${traveler.LastMileStatus === "Completed" ? "done" : ""}`}>
+        <span>🏁 Last Mile</span>
+        <small>OTP: {traveler.LastMileOTP}</small>
+      </div>
+    </div>
+
+    {/* ===== MAP ===== */}
+    <div className="card">
       <h4>📍 Destination Map</h4>
+
       <iframe
-        title="destination-map"
-        src={`https://maps.google.com/maps?q=${traveler?.to?.city || "India"}&z=6&output=embed`}
+        title="map"
+        className="map"
         loading="lazy"
+        src={`https://www.google.com/maps?q=${traveler.to?.latitude || 20},${traveler.to?.longitude || 77}&z=6&output=embed`}
       />
+    </div>
+
+    {/* ===== BOTTOM ACTION BAR ===== */}
+    <div className="bottom-actions">
+      <a href={`tel:${traveler.phoneNumber}`} className="action-btn">
+        📞 Call
+      </a>
+
+      <a
+        target="_blank"
+        rel="noreferrer"
+        className="action-btn secondary"
+        href={`https://www.google.com/maps/dir/?api=1&destination=${traveler.to?.city}`}
+      >
+        🧭 Directions
+      </a>
+
+      <button className="action-btn ghost">🔄 Refresh</button>
     </div>
   </>
 )}

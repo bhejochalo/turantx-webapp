@@ -269,3 +269,122 @@ button.cancel {
   gap: 10px;
   box-shadow: 0 -2px 10px rgba(0,0,0,.08);
 }
+/* ===== TRAVELER PROFILE ===== */
+.traveler-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  font-size: 28px;
+}
+
+.sub {
+  font-size: 13px;
+  color: #777;
+}
+
+/* ===== BADGES ===== */
+.badge {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.badge.waiting {
+  background: #ffe8d6;
+  color: #ff7b29;
+}
+
+.badge.active {
+  background: #e6f7ee;
+  color: #1b9c5a;
+}
+
+/* ===== JOURNEY ===== */
+.journey-card {
+  text-align: center;
+}
+
+.journey-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.city {
+  font-weight: 600;
+}
+
+.plane {
+  font-size: 22px;
+}
+
+.journey-meta {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  font-size: 13px;
+  color: #555;
+}
+
+/* ===== TIMELINE ===== */
+.timeline-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 10px;
+  background: #f5f5f5;
+}
+
+.timeline-item.done {
+  background: #e6f7ee;
+  color: #1b9c5a;
+}
+
+/* ===== MAP ===== */
+.map {
+  width: 100%;
+  height: 220px;
+  border: none;
+  border-radius: 14px;
+}
+
+/* ===== BOTTOM ACTION BAR ===== */
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  box-shadow: 0 -2px 12px rgba(0,0,0,.1);
+}
+
+.action-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background: #ff7b29;
+  color: white;
+  text-align: center;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.action-btn.secondary {
+  background: #2f80ed;
+}
+
+.action-btn.ghost {
+  background: #eee;
+  color: #333;
+}
