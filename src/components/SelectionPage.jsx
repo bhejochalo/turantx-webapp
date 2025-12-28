@@ -7,61 +7,93 @@ import { db } from "../firebase";
 
 const SelectionPage = ({ phoneNumber }) => {
   const navigate = useNavigate();
-  const [checkingTraveler, setCheckingTraveler] = useState(true);
-  const [travelerExists, setTravelerExists] = useState(false);
 
-  // Check if traveler data exists on component mount
+  const [checking, setChecking] = useState(true);
+  const [travelerExists, setTravelerExists] = useState(false);
+  const [senderExists, setSenderExists] = useState(false);
+
+  // 🔍 Check existing Traveler / Sender
   useEffect(() => {
-    const checkExistingTraveler = async () => {
+    const checkExistingProfiles = async () => {
       if (!phoneNumber) {
-        setCheckingTraveler(false);
+        setChecking(false);
         return;
       }
 
       try {
-        const travelerDocRef = doc(db, "users", phoneNumber, "Traveler", "details");
-        const snap = await getDoc(travelerDocRef);
-        
-        if (snap.exists()) {
+        // 1️⃣ Check Traveler
+        const travelerRef = doc(
+          db,
+          "users",
+          phoneNumber,
+          "Traveler",
+          "details"
+        );
+        const travelerSnap = await getDoc(travelerRef);
+
+        if (travelerSnap.exists()) {
           setTravelerExists(true);
-          // Redirect to traveler profile if data exists
-          navigate("/traveler-profile", { 
-            state: { phoneNumber } 
+          navigate("/traveler-profile", {
+            state: { phoneNumber },
           });
-        } else {
-          setTravelerExists(false);
+          return;
         }
-      } catch (error) {
-        console.error("Error checking traveler data:", error);
-        setTravelerExists(false);
+
+        // 2️⃣ Check Sender
+        const senderRef = doc(
+          db,
+          "users",
+          phoneNumber,
+          "Sender",
+          "details"
+        );
+        const senderSnap = await getDoc(senderRef);
+
+        if (senderSnap.exists()) {
+          setSenderExists(true);
+          navigate("/sender-profile", {
+            state: { phoneNumber },
+          });
+          return;
+        }
+      } catch (err) {
+        console.error("Error checking profiles:", err);
       } finally {
-        setCheckingTraveler(false);
+        setChecking(false);
       }
     };
 
-    checkExistingTraveler();
+    checkExistingProfiles();
   }, [phoneNumber, navigate]);
 
+  // Manual navigation (new user)
   const handleTraveler = () => {
-    navigate("/address-selection", { state: { phoneNumber, userType: "TRAVELER" } });
+    navigate("/address-selection", {
+      state: { phoneNumber, userType: "TRAVELER" },
+    });
   };
 
   const handleSender = () => {
-    navigate("/pan-verification", { state: { phoneNumber, userType: "SENDER" } });
+    navigate("/pan-verification", {
+      state: { phoneNumber, userType: "SENDER" },
+    });
   };
 
-  // Show loading while checking
-  if (checkingTraveler) {
+  // ⏳ Loading
+  if (checking) {
     return (
       <div className="select-container page-transition">
         <div className="select-content">
           <img src={logo} alt="TurantX" className="select-logo" />
-          <div className="select-loading">Checking your profile...</div>
+          <div className="select-loading">
+            Checking your profile…
+          </div>
         </div>
       </div>
     );
   }
 
+  // 🎯 Role selection
   return (
     <div className="select-container page-transition">
       <div className="select-content">
@@ -82,10 +114,12 @@ const SelectionPage = ({ phoneNumber }) => {
           </button>
         </div>
 
-        {/* Show message if traveler data was found but user came back to this page */}
-        {travelerExists && (
+        {(travelerExists || senderExists) && (
           <div className="select-note">
-            <p>We found your existing traveler profile. You can still choose to register as a sender.</p>
+            <p>
+              We found your existing profile. You can still
+              register for another role if you want.
+            </p>
           </div>
         )}
       </div>

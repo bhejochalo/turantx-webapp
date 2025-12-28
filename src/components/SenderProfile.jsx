@@ -3,195 +3,313 @@ import {
   doc,
   getDoc,
   updateDoc,
-  collectionGroup,
-  query,
-  where,
+  collection,
   getDocs,
 } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import "./SenderProfile.css";
 
+const STORAGE_PHONE_KEY = "PHONE_NUMBER";
+
 export default function SenderProfile() {
-  const phoneNumber = localStorage.getItem("PHONE_NUMBER");
+  const navigate = useNavigate();
+
+  // ---------------- STATE ----------------
+  const [phoneNumber, setPhoneNumber] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [sender, setSender] = useState(null);
   const [traveler, setTraveler] = useState(null);
-  const [tab, setTab] = useState("status");
-  const [firstMileOtp, setFirstMileOtp] = useState("");
 
-  const senderRef = doc(db, "users", phoneNumber, "Sender", "details");
+  const [activeTab, setActiveTab] = useState("status");
 
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showItemModal, setShowItemModal] = useState(false);
+
+  const [addressForm, setAddressForm] = useState({});
+  const [itemForm, setItemForm] = useState({});
+
+  // ---------------- LOAD PHONE ----------------
   useEffect(() => {
-    loadSender();
+    const pn =
+      sessionStorage.getItem(STORAGE_PHONE_KEY) ||
+      localStorage.getItem(STORAGE_PHONE_KEY);
+
+    setPhoneNumber(pn || null);
   }, []);
 
-  // 🔹 Load Sender
-  const loadSender = async () => {
-    const snap = await getDoc(senderRef);
-    if (snap.exists()) {
-      const data = snap.data();
-      setSender(data);
-
-      if (data.uniqueKey) {
-        loadTravelerByUniqueKey(data.uniqueKey);
-      }
-    }
-  };
-
-  // 🔹 Load Traveler by uniqueKey
-  const loadTravelerByUniqueKey = async (uniqueKey) => {
-    const q = query(
-      collectionGroup(db, "Traveler"),
-      where("uniqueKey", "==", uniqueKey)
-    );
-
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      setTraveler(snap.docs[0].data());
-    }
-  };
-
-  // 🔹 Verify First Mile OTP (Sender enters)
-  const verifyFirstMileOtp = async () => {
-    if (firstMileOtp !== traveler?.FirstMileOTP) {
-      alert("❌ Invalid OTP");
+  // ---------------- LOAD SENDER + TRAVELER ----------------
+  useEffect(() => {
+    if (!phoneNumber) {
+      setLoading(false);
       return;
     }
 
-    // update sender
-    await updateDoc(senderRef, {
-      FirstMileStatus: "Completed",
-      SecondMileStatus: "In Progress",
-    });
+    const loadAll = async () => {
+      try {
+        // -------- SENDER --------
+        const senderRef = doc(db, "users", phoneNumber, "Sender", "details");
+        const senderSnap = await getDoc(senderRef);
 
-    // update traveler
-    const travelerRef = doc(
-      db,
-      "users",
-      traveler.phoneNumber,
-      "Traveler",
-      "details"
-    );
+        if (!senderSnap.exists()) {
+          setLoading(false);
+          return;
+        }
 
-    await updateDoc(travelerRef, {
-      FirstMileStatus: "Completed",
-      SecondMileStatus: "In Progress",
-    });
+        const senderData = senderSnap.data();
+        setSender(senderData);
 
-    alert("✅ First Mile Completed");
-    loadSender();
+        // -------- TRAVELER (MATCH BY uniqueKey) --------
+        if (senderData.uniqueKey) {
+          const usersSnap = await getDocs(collection(db, "users"));
+
+          for (const userDoc of usersSnap.docs) {
+            const travelerRef = doc(
+              db,
+              "users",
+              userDoc.id,
+              "Traveler",
+              "details"
+            );
+            const tSnap = await getDoc(travelerRef);
+
+            if (
+              tSnap.exists() &&
+              tSnap.data().uniqueKey === senderData.uniqueKey
+            ) {
+              setTraveler({
+                phoneNumber: userDoc.id,
+                ...tSnap.data(),
+              });
+              break;
+            }
+          }
+        }
+      } catch (e) {
+        console.error("SenderProfile load error:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAll();
+  }, [phoneNumber]);
+
+  // ---------------- HELPERS ----------------
+  const formatAddress = (a) =>
+    a
+      ? [
+          a.houseNumber,
+          a.street,
+          a.area,
+          a.city,
+          a.state,
+          a.postalCode,
+        ]
+          .filter(Boolean)
+          .join(", ")
+      : "N/A";
+
+  const saveAddress = async () => {
+    const ref = doc(db, "users", phoneNumber, "Sender", "details");
+    await updateDoc(ref, { from: addressForm });
+    setSender({ ...sender, from: addressForm });
+    setShowAddressModal(false);
   };
 
-  if (!sender) return <div className="center">Loading…</div>;
+  const saveItem = async () => {
+    const ref = doc(db, "users", phoneNumber, "Sender", "details");
+    await updateDoc(ref, { itemDetails: itemForm });
+    setSender({ ...sender, itemDetails: itemForm });
+    setShowItemModal(false);
+  };
 
+  // ---------------- UI STATES ----------------
+  if (loading) {
+    return <div className="loader">Loading…</div>;
+  }
+
+  if (!phoneNumber) {
+    return (
+      <div className="session-expired">
+        <h3>Session expired</h3>
+        <button onClick={() => navigate("/")}>Go to Login</button>
+      </div>
+    );
+  }
+
+  // ---------------- UI ----------------
   return (
     <div className="sender-page">
-      <h2 className="title">Sender Profile</h2>
-      <p className="subtitle">Phone: {phoneNumber}</p>
+      <h2>Sender Profile</h2>
+      <p className="phone">Phone: {phoneNumber}</p>
 
       {/* FLIGHT STATUS */}
       <div className="card">
-        <h3>✈️ Flight Status</h3>
+        <h4>✈️ Flight Status</h4>
         <p>Airline: {traveler?.flightDetails?.airline || "N/A"}</p>
-        <p>Flight No: {traveler?.flightDetails?.pnr || "N/A"}</p>
         <p>Status: {traveler?.status || "WAITING"}</p>
       </div>
 
       {/* TABS */}
       <div className="tabs">
         <button
-          className={tab === "status" ? "active" : ""}
-          onClick={() => setTab("status")}
+          className={activeTab === "status" ? "active" : ""}
+          onClick={() => setActiveTab("status")}
         >
           Status
         </button>
         <button
-          className={tab === "traveler" ? "active" : ""}
-          onClick={() => setTab("traveler")}
-          disabled={!traveler}
+          className={activeTab === "traveler" ? "active" : ""}
+          onClick={() => setActiveTab("traveler")}
         >
           Traveler
         </button>
       </div>
 
       {/* STATUS TAB */}
-      {tab === "status" && (
+      {activeTab === "status" && (
         <>
-          {/* DELIVERY STATUS */}
           <div className="card">
-            <h3>🚚 Delivery Status</h3>
-
+            <h4>🚚 Delivery Status</h4>
             <p>First Mile: {traveler?.FirstMileStatus || "Not Started"}</p>
-
-            {traveler?.FirstMileStatus === "In Progress" && (
-              <div className="otp-row">
-                <input
-                  placeholder="Enter First Mile OTP"
-                  value={firstMileOtp}
-                  onChange={(e) => setFirstMileOtp(e.target.value)}
-                />
-                <button onClick={verifyFirstMileOtp}>Verify</button>
-              </div>
-            )}
-
             <p>Second Mile: {traveler?.SecondMileStatus || "Not Started"}</p>
-
             <p>Last Mile: {traveler?.LastMileStatus || "Not Started"}</p>
-
-            {traveler?.LastMileOTP && (
-              <p className="otp-show">
-                Delivery OTP: <b>{traveler.LastMileOTP}</b>
-              </p>
-            )}
           </div>
 
-          {/* SENDER ADDRESSES */}
           <div className="card">
-            <h3>🏠 Sender Addresses</h3>
-            <p>
-              <b>From:</b>{" "}
-              {sender.from
-                ? `${sender.from.houseNumber}, ${sender.from.street}, ${sender.from.city}`
-                : "N/A"}
-            </p>
-            <p>
-              <b>To:</b>{" "}
-              {sender.to
-                ? `${sender.to.houseNumber}, ${sender.to.street}, ${sender.to.city}`
-                : "N/A"}
-            </p>
-            <button>Edit Address</button>
+            <h4>🏠 Sender Address</h4>
+            <p>{formatAddress(sender?.from)}</p>
+            <button
+              onClick={() => {
+                setAddressForm(sender?.from || {});
+                setShowAddressModal(true);
+              }}
+            >
+              Edit Address
+            </button>
           </div>
 
-          {/* ITEM DETAILS */}
           <div className="card">
-            <h3>📦 Item Details</h3>
-            {sender.itemDetails ? (
-              <>
-                <p>Item: {sender.itemDetails.itemName}</p>
-                <p>Weight: {sender.itemDetails.totalWeight}</p>
-                <p>Price: ₹{sender.itemDetails.price}</p>
-                <p>Instructions: {sender.itemDetails.instructions}</p>
-              </>
-            ) : (
-              <p>No item details</p>
-            )}
-            <button>Edit Item</button>
+            <h4>📦 Item Details</h4>
+            <p>Item: {sender?.itemDetails?.itemName || "N/A"}</p>
+            <p>
+              Weight: {sender?.itemDetails?.totalWeight || "N/A"}
+            </p>
+            <p>Price: ₹{sender?.itemDetails?.price || "N/A"}</p>
+            <button
+              onClick={() => {
+                setItemForm(sender?.itemDetails || {});
+                setShowItemModal(true);
+              }}
+            >
+              Edit Item
+            </button>
           </div>
         </>
       )}
 
       {/* TRAVELER TAB */}
-      {tab === "traveler" && traveler && (
-        <div className="card">
-          <h3>👤 Traveler Information</h3>
-          <p>Name: {traveler.flightDetails?.firstName}</p>
-          <p>Phone: {traveler.phoneNumber}</p>
-          <p>Airline: {traveler.flightDetails?.airline}</p>
-          <p>Weight Carrying: {traveler.flightDetails?.baggageSpace} kg</p>
+      {activeTab === "traveler" && (
+        <>
+          {traveler?.status === "Request Accepted By Traveler" ? (
+            <div className="card">
+              <h4>🧑 Traveler Details</h4>
+              <p>
+                Name: {traveler?.flightDetails?.firstName || "N/A"}
+              </p>
+              <p>Phone: {traveler?.phoneNumber}</p>
+              <p>Destination: {traveler?.to?.city || "N/A"}</p>
+            </div>
+          ) : (
+            <div className="card muted">
+              Traveler details visible after acceptance
+            </div>
+          )}
+        </>
+      )}
 
-          <div className="map-placeholder">
-            📍 Current Location (map integration next)
+      {/* ADDRESS MODAL */}
+      {showAddressModal && (
+        <div className="modal">
+          <div className="modal-card">
+            <input
+              placeholder="House No"
+              value={addressForm.houseNumber || ""}
+              onChange={(e) =>
+                setAddressForm({
+                  ...addressForm,
+                  houseNumber: e.target.value,
+                })
+              }
+            />
+            <input
+              placeholder="Street"
+              value={addressForm.street || ""}
+              onChange={(e) =>
+                setAddressForm({
+                  ...addressForm,
+                  street: e.target.value,
+                })
+              }
+            />
+            <input
+              placeholder="City"
+              value={addressForm.city || ""}
+              onChange={(e) =>
+                setAddressForm({
+                  ...addressForm,
+                  city: e.target.value,
+                })
+              }
+            />
+            <button onClick={saveAddress}>Save</button>
+            <button onClick={() => setShowAddressModal(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ITEM MODAL */}
+      {showItemModal && (
+        <div className="modal">
+          <div className="modal-card">
+            <input
+              placeholder="Item Name"
+              value={itemForm.itemName || ""}
+              onChange={(e) =>
+                setItemForm({
+                  ...itemForm,
+                  itemName: e.target.value,
+                })
+              }
+            />
+            <input
+              placeholder="Total Weight"
+              value={itemForm.totalWeight || ""}
+              onChange={(e) =>
+                setItemForm({
+                  ...itemForm,
+                  totalWeight: e.target.value,
+                })
+              }
+            />
+            <input
+              placeholder="Price"
+              value={itemForm.price || ""}
+              onChange={(e) =>
+                setItemForm({
+                  ...itemForm,
+                  price: e.target.value,
+                })
+              }
+            />
+            <button onClick={saveItem}>Save</button>
+            <button onClick={() => setShowItemModal(false)}>
+              Cancel
+            </button>
           </div>
         </div>
       )}
