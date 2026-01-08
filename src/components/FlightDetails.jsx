@@ -11,6 +11,8 @@ export default function FlightDetails() {
   const from = state?.from;
   const to = state?.to;
   const distance = state?.distance || "";
+  const [showTerms, setShowTerms] = useState(false);
+
 
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -27,9 +29,18 @@ export default function FlightDetails() {
     agreeTerms: false,
   });
 
-  const airlines = ["Air India","Air India Express", "IndiGo", "SpiceJet", "Vistara", "AirAsia India", "Akasa Air"];
-  const carryOptions = ["Documents","Laptop","Medicines","Electronics","Clothes","Books","Gifts"];
-  const spaceAvail = [ "All","Cabin","Luggage", "Personal", "Bag", "None"];
+  const airlines = ["Air India", "Air India Express", "IndiGo", "SpiceJet", "Vistara", "AirAsia India", "Akasa Air"];
+  const carryOptions = [
+    { label: "Documents", enabled: true },
+    { label: "Laptop", enabled: false },
+    { label: "Medicines", enabled: false },
+    { label: "Electronics", enabled: false },
+    { label: "Clothes", enabled: false },
+    { label: "Books", enabled: false },
+    { label: "Gifts", enabled: false },
+  ];
+
+  const spaceAvail = ["All", "Cabin", "Luggage", "Personal", "Bag", "None"];
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -45,7 +56,7 @@ export default function FlightDetails() {
       alert("⚠️ Please agree to Terms and Conditions");
       return;
     }
-  
+
     const payload = {
       phoneNumber,
       userType: "TRAVELER",
@@ -54,7 +65,7 @@ export default function FlightDetails() {
       distance,
       flightDetails: form,
     };
-  
+
     setLoading(true);
     try {
       const res = await fetch(
@@ -65,10 +76,10 @@ export default function FlightDetails() {
           body: JSON.stringify(payload),
         }
       );
-  
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Server error");
-  
+
       alert("✅ Traveler details saved successfully!");
       navigate("/traveler-profile", { state: { phoneNumber } });
     } catch (err) {
@@ -78,7 +89,7 @@ export default function FlightDetails() {
       setLoading(false);
     }
   };
-  
+
 
   return (
     <div className="flight-page">
@@ -97,8 +108,24 @@ export default function FlightDetails() {
             ))}
           </select>
 
-          <input type="date" name="travelDate" value={form.travelDate} onChange={handleChange} />
-          <input type="time" name="departureTime" value={form.departureTime} onChange={handleChange} />
+          <label className="label">Select date you'll leave home</label>
+          <input
+            type="date"
+            name="travelDate"
+            value={form.travelDate}
+            onChange={handleChange}
+          />
+
+          <label className="label">
+            Select time you'll leave home for the airport
+          </label>
+          <input
+            type="time"
+            name="departureTime"
+            value={form.departureTime}
+            onChange={handleChange}
+          />
+
           <input type="number" name="baggageSpace" placeholder="Free Space in Baggage (kg)" value={form.baggageSpace} onChange={handleChange} />
 
           <select name="spaceAvailableWhen" value={form.spaceAvailableWhen} onChange={handleChange}>
@@ -111,9 +138,17 @@ export default function FlightDetails() {
           <select name="carryType" value={form.carryType} onChange={handleChange}>
             <option value="">What Can You Carry?</option>
             {carryOptions.map((c) => (
-              <option key={c}>{c}</option>
+              <option
+                key={c.label}
+                value={c.label}
+                disabled={!c.enabled}
+                style={!c.enabled ? { color: "#aaa" } : {}}
+              >
+                {c.label}
+              </option>
             ))}
           </select>
+
 
           <textarea name="remarks" placeholder="Add Remarks (optional)" value={form.remarks} onChange={handleChange} />
 
@@ -122,12 +157,52 @@ export default function FlightDetails() {
           </label>
 
           <label>
-            <input type="checkbox" name="agreeTerms" checked={form.agreeTerms} onChange={handleChange} /> I agree to Terms & Conditions
+            <input
+              type="checkbox"
+              name="agreeTerms"
+              checked={form.agreeTerms}
+              onChange={() => setShowTerms(true)}
+            />
+            I agree to Terms & Conditions
           </label>
 
           <button className="verify-btn" onClick={handleSubmit}>Verify & Continue</button>
         </div>
       </div>
+      {showTerms && (
+  <div className="terms-overlay">
+    <div className="terms-modal">
+      <h3>Terms & Conditions</h3>
+
+      <p>
+        By continuing, you agree that:
+        <br />• You are responsible for items you carry
+        <br />• You will not carry illegal or restricted items
+        <br />• TurantX acts only as a facilitator
+        <br />• Final responsibility lies with the traveler
+      </p>
+
+      <div className="terms-actions">
+        <button
+          onClick={() => setShowTerms(false)}
+          className="cancel-btn"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={() => {
+            setForm({ ...form, agreeTerms: true });
+            setShowTerms(false);
+          }}
+          className="accept-btn"
+        >
+          Accept
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
