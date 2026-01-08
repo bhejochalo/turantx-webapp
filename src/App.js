@@ -16,6 +16,7 @@ import LogoAnimation from "./components/LogoAnimation";
 import TravelerProfile from "./components/TravelerProfile";
 import SenderProfile from "./components/SenderProfile";
 import TravelerWaitlist from "./components/TravelerWaitlist";
+import SenderWaitlist from "./components/SenderWaitlist";
 import AppLayout from "./components/AppLayout";
 
 function AppRoutes() {
@@ -46,6 +47,7 @@ function AppRoutes() {
         <Route path="/traveler-profile" element={<TravelerProfile />} />
         <Route path="/sender-profile" element={<SenderProfile />} />
         <Route path="/traveler-waitlist" element={<TravelerWaitlist />} />
+        <Route path="/sender-waitlist" element={<SenderWaitlist />} />
       </Routes>
 
       {/* ✅ Show Help only after login */}
