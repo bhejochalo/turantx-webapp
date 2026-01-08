@@ -81,7 +81,7 @@ export default function FlightDetails() {
       if (!res.ok) throw new Error(data.error || "Server error");
 
       alert("✅ Traveler details saved successfully!");
-      navigate("/traveler-profile", { state: { phoneNumber } });
+      navigate("/traveler-waitlist", { state: { phoneNumber } });
     } catch (err) {
       console.error("❌ Error saving traveler:", err);
       alert("Something went wrong while saving traveler details.");

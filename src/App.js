@@ -15,6 +15,8 @@ import HelpSupport from "./components/HelpSupport";
 import LogoAnimation from "./components/LogoAnimation";
 import TravelerProfile from "./components/TravelerProfile";
 import SenderProfile from "./components/SenderProfile";
+import TravelerWaitlist from "./components/TravelerWaitlist";
+import AppLayout from "./components/AppLayout";
 
 function AppRoutes() {
   const location = useLocation();
@@ -25,7 +27,7 @@ function AppRoutes() {
 
   return (
     <>
-      <Routes>
+      <Routes element={<AppLayout />}>
         <Route
           path="/"
           element={<LogoAnimation onFinish={() => (window.location.href = "/intro")} />}
@@ -43,6 +45,7 @@ function AppRoutes() {
         <Route path="/traveler-list" element={<TravelerList />} />
         <Route path="/traveler-profile" element={<TravelerProfile />} />
         <Route path="/sender-profile" element={<SenderProfile />} />
+        <Route path="/traveler-waitlist" element={<TravelerWaitlist />} />
       </Routes>
 
       {/* ✅ Show Help only after login */}
