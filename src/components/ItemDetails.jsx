@@ -13,7 +13,19 @@ export default function ItemDetails() {
   const distance = state?.distance || "";
   const panDetails = state?.panDetails || {};
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showTermsAlert, setShowTermsAlert] = useState(false);
+  const [showFieldAlert, setShowFieldAlert] = useState(false);
 
+  const isValidWeight = (kg, gram) => {
+    const kgVal = parseInt(kg || "0", 10);
+    const gramVal = parseInt(gram || "0", 10);
+  
+    if (isNaN(kgVal) || isNaN(gramVal)) return false;
+    if (kgVal < 0 || gramVal < 0) return false;
+  
+    return kgVal > 0 || gramVal > 0;
+  };
+  
 
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState({
@@ -117,9 +129,46 @@ export default function ItemDetails() {
   return (
     <div className="item-container page-transition">
       {loading && <Loader />}
+      {showTermsAlert && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <h3>Please accept the Terms</h3>
+
+            <p>
+              To continue, please read and accept the terms and conditions related to
+              our pilot delivery service.
+            </p>
+
+            <button
+              className="modal-btn"
+              onClick={() => setShowTermsAlert(false)}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="item-card">
         <h3 className="item-title">📦 Item Details</h3>
+        {showFieldAlert && (
+          <div className="modal-overlay">
+            <div className="modal-card">
+              <h3>Missing Details</h3>
+
+              <p>
+                Please fill all the required item and delivery details to continue.
+              </p>
+
+              <button
+                className="modal-btn"
+                onClick={() => setShowFieldAlert(false)}
+              >
+                Okay
+              </button>
+            </div>
+          </div>
+        )}
 
         <input
           name="itemName"
@@ -197,16 +246,34 @@ export default function ItemDetails() {
             🔒 Secure payment powered by Razorpay
           </p>
         </div>
-
         <button
-          className="item-next"
-          disabled={!acceptedTerms}
-          onClick={handleSubmit}
-        >
-          Verify & Continue
-        </button>
+  className="item-next"
+  onClick={() => {
+    if (
+      !item.itemName.trim() ||
+      !item.deliveryOption ||
+      !isValidWeight(item.weightKg, item.weightGram)
+    ) {
+      setShowFieldAlert(true);
+      return;
+    }
+
+    if (!acceptedTerms) {
+      setShowTermsAlert(true);
+      return;
+    }
+
+    handleSubmit();
+  }}
+>
+  Verify & Continue
+</button>
+
+
+
 
       </div>
     </div>
   );
+  
 }
