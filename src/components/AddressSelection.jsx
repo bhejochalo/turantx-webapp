@@ -180,17 +180,34 @@ export default function AutoCompleteAddress() {
         <div className="route-info">
   <span className="route-label">Operating Cities</span>
   <div className="route-cities">
-    Pune · Mumbai · Delhi · Bangalore
+    <span>Pune</span>
+    <span>Mumbai</span>
+    <span>Delhi</span>
+    <span>Bangalore</span>
   </div>
 </div>
 
 
-        {error && <div className="route-error">{error}</div>}
+{error && (
+  <div className="route-error">
+    <span className="error-icon">⚠️</span>
+    {error}
+  </div>
+)}
 
         <div className="auto-fields">
-          <input ref={fromRef} placeholder="From address" />
-          <input ref={toRef} placeholder="To address" />
-        </div>
+  <input
+    ref={fromRef}
+    className="auto-input"
+    placeholder="From address"
+  />
+  <input
+    ref={toRef}
+    className="auto-input"
+    placeholder="To address"
+  />
+</div>
+
 
         {distance && (
           <div className="distance-box">
