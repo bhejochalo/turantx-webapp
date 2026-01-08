@@ -27,9 +27,9 @@ export default function FlightDetails() {
     agreeTerms: false,
   });
 
-  const airlines = ["Air India", "IndiGo", "SpiceJet", "Vistara", "Go First", "AirAsia India"];
-  const carryOptions = ["Cabin", "Luggage", "Personal Bag", "All"];
-  const spaceAvail = ["Before Flight", "After Flight", "Anytime"];
+  const airlines = ["Air India","Air India Express", "IndiGo", "SpiceJet", "Vistara", "AirAsia India", "Akasa Air"];
+  const carryOptions = ["Documents","Laptop","Medicines","Electronics","Clothes","Books","Gifts"];
+  const spaceAvail = [ "All","Cabin","Luggage", "Personal", "Bag", "None"];
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -102,7 +102,7 @@ export default function FlightDetails() {
           <input type="number" name="baggageSpace" placeholder="Free Space in Baggage (kg)" value={form.baggageSpace} onChange={handleChange} />
 
           <select name="spaceAvailableWhen" value={form.spaceAvailableWhen} onChange={handleChange}>
-            <option value="">When is Space Available?</option>
+            <option value="">Where Space is Available?</option>
             {spaceAvail.map((s) => (
               <option key={s}>{s}</option>
             ))}

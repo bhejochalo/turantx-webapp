@@ -49,7 +49,7 @@ const LandingPage = () => {
           className={`landing-input ${isValid ? "active" : ""}`}
         />
         <button className={`landing-btn ${isValid ? "active" : ""}`} onClick={handleSendOtp}>
-          Send OTP
+          Next
         </button>
       </div>
     </div>
