@@ -1,60 +1,233 @@
-.addr-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #fff7f1 0%, #fffaf7 100%);
-    padding: 40px;
+/* =========================
+   PAGE LAYOUT
+========================= */
+.auto-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fff7f1 0%, #fffaf7 100%);
+  padding: 40px;
+  font-family: "Inter", sans-serif;
+}
+
+/* =========================
+   CARD
+========================= */
+.auto-card {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =========================
+   LOGO + TITLE
+========================= */
+.auto-logo {
+  width: 90px;
+  margin-bottom: 10px;
+}
+
+.auto-title {
+  color: #ff914d;
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+/* =========================
+   INFO / ERROR TEXT
+========================= */
+.route-info {
+  width: 100%;
+  margin: 14px 0 16px;
+  padding: 12px 14px;
+  border-radius: 16px;
+
+  background: linear-gradient(
+    180deg,
+    #fff7f1,
+    #fff1e6
+  );
+
+  text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 145, 77, 0.15);
+}
+
+
+.route-error {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #d93025;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.auto-fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.auto-fields input {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1px solid #e6e6e6;
+  font-size: 14px;
+  background: #fafafa;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.auto-fields input::placeholder {
+  color: #999;
+}
+
+.auto-fields input:focus {
+  border-color: #ff914d;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 145, 77, 0.15);
+}
+
+/* =========================
+   DISTANCE BOX
+========================= */
+.distance-box {
+  margin-top: 16px;
+  background: #fff3e8;
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  width: 100%;
+}
+
+.distance-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.plane-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+  animation: fly 1.6s ease-in-out infinite;
+}
+
+.distance-inner h3 {
+  color: #ff7a29;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.distance-inner p {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Plane animation */
+@keyframes fly {
+  0% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  100% { transform: translateX(-4px); }
+}
+
+/* =========================
+   NEXT BUTTON
+========================= */
+.next-btn {
+  margin-top: 18px;
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #ffb78a, #ff914d);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 12px 30px rgba(255, 145, 77, 0.18);
+  transition: all 0.3s ease;
+}
+
+.next-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(255, 145, 77, 0.25);
+}
+
+.next-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   MOBILE TWEAK
+========================= */
+@media (max-width: 480px) {
+  .auto-card {
+    padding: 24px 18px;
   }
-  
-  .addr-card {
-    width: 680px;
-    background: #fff;
-    border-radius: 16px;
-    padding: 36px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
+
+  .auto-title {
+    font-size: 17px;
   }
-  
-  .addr-logo {
-    width: 120px;
-    margin-bottom: 10px;
-  }
-  
-  .addr-title {
-    color: #ff914d;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-  
-  .addr-input {
-    width: 100%;
-    padding: 14px 16px;
-    border-radius: 10px;
-    border: 1px solid #e9e9ec;
-    background: #f7f7f9;
-    outline: none;
-    font-size: 14px;
-  }
-  
-  .addr-next {
-    margin-top: 20px;
-    padding: 14px 20px;
-    border-radius: 24px;
-    background: linear-gradient(180deg, #ffb78a, #ff914d);
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    box-shadow: 0 12px 30px rgba(255, 145, 77, 0.18);
-    transition: 0.3s;
-  }
-  
-  .addr-next:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 40px rgba(255, 145, 77, 0.25);
-  }
-  
+}
+.auto-input {
+  width: 100% !important;
+  height: 44px !important;
+  padding: 0 14px !important;
+
+  border-radius: 14px !important;
+  border: 1px solid #e6e6e6 !important;
+
+  background: #fafafa !important;
+  font-size: 14px !important;
+  line-height: 44px !important;
+
+  box-sizing: border-box !important;
+  outline: none !important;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  transition: all 0.2s ease;
+}
+
+.auto-input::placeholder {
+  color: #999;
+}
+
+.auto-input:focus {
+  border-color: #ff914d !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(255, 145, 77, 0.15) !important;
+}
+
+.route-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #ff914d;
+  margin-bottom: 4px;
+}
+
+.route-cities {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
