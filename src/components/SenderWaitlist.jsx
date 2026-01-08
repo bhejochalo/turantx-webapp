@@ -19,10 +19,18 @@ export default function SenderWaitlist() {
           If a match comes up, we’ll reach out to you on <strong>WhatsApp</strong>.
         </p>
 
+        <p>
+          If you want to raise query there is <strong>Help and Support</strong> button at bottom right corner. We will respond within an hour.
+        </p>
+
         <div className="waitlist-note">
           Please note: matches are subject to availability.
         </div>
       </div>
+            {/* ✅ FOOTER */}
+            <footer className="app-footer">
+        © {new Date().getFullYear()} TurantX Solutions Pvt Ltd
+      </footer>
     </div>
   );
 }

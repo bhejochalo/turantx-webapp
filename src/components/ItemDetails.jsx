@@ -12,6 +12,8 @@ export default function ItemDetails() {
   const to = state?.to;
   const distance = state?.distance || "";
   const panDetails = state?.panDetails || {};
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
 
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState({
@@ -30,13 +32,13 @@ export default function ItemDetails() {
         script.onerror = () => resolve(false);
         document.body.appendChild(script);
       });
-  
+
     const res = await loadRazorpay();
     if (!res) {
       alert("Razorpay SDK failed to load");
       return;
     }
-  
+
     const options = {
       key: "rzp_test_4HNx49ek9VPhNQ",
       amount: 200 * 100,
@@ -45,7 +47,7 @@ export default function ItemDetails() {
       description: "Urgent document delivery (Pilot)",
       handler: function (response) {
         console.log("✅ Payment Success", response);
-  
+
         navigate("/sender-waitlist", {
           state: {
             paymentId: response.razorpay_payment_id,
@@ -56,11 +58,11 @@ export default function ItemDetails() {
         color: "#ff7b29",
       },
     };
-  
+
     const paymentObject = new window.Razorpay(options);
     paymentObject.open();
   };
-  
+
   const handleChange = (e) =>
     setItem({ ...item, [e.target.name]: e.target.value });
 
@@ -69,9 +71,9 @@ export default function ItemDetails() {
       alert("⚠️ Please fill all required fields");
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       const payload = {
         phoneNumber,
@@ -85,9 +87,9 @@ export default function ItemDetails() {
           totalWeight: `${item.weightKg || 0}kg ${item.weightGram || 0}g`,
         },
       };
-  
+
       console.log("📦 Sending payload:", payload);
-  
+
       const res = await fetch(
         "https://us-central1-bhejochalo-3d292.cloudfunctions.net/saveUserData",
         {
@@ -96,13 +98,13 @@ export default function ItemDetails() {
           body: JSON.stringify(payload),
         }
       );
-  
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Server error");
-  
+
       // ✅ ONLY AFTER SUCCESS → open Razorpay
       await openRazorpay();
-  
+
     } catch (err) {
       console.error("❌ Error saving sender:", err);
       alert("Something went wrong while saving details.");
@@ -110,7 +112,7 @@ export default function ItemDetails() {
       setLoading(false);
     }
   };
-  
+
 
   return (
     <div className="item-container page-transition">
@@ -165,10 +167,45 @@ export default function ItemDetails() {
           onChange={handleChange}
           placeholder="Special Instructions (optional)"
         />
+        <div className="trust-box">
 
-        <button className="item-next" onClick={handleSubmit}>
+          <h4>What happens next?</h4>
+          <ul>
+            <li>Your request is added to our sender waitlist</li>
+            <li>We check for matching flight travellers</li>
+            <li>If a match is found, we’ll contact you on WhatsApp</li>
+            <li>No obligation to proceed</li>
+          </ul>
+
+          <h4>Why is payment required?</h4>
+          <ul>
+            <li>Covers verification & coordination cost</li>
+            <li>Prevents spam and fake requests</li>
+            <li><strong>Refunded if no match is found</strong></li>
+          </ul>
+
+          <label className="terms-checkbox">
+            <input
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+            />
+            I understand and agree to the terms above
+          </label>
+
+          <p className="secure-text">
+            🔒 Secure payment powered by Razorpay
+          </p>
+        </div>
+
+        <button
+          className="item-next"
+          disabled={!acceptedTerms}
+          onClick={handleSubmit}
+        >
           Verify & Continue
         </button>
+
       </div>
     </div>
   );

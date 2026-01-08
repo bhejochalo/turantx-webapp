@@ -59,4 +59,42 @@
     transform: translateY(-2px);
     box-shadow: 0 16px 40px rgba(255, 145, 77, 0.25);
   }
+  .trust-box {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 14px;
+    background: #fff7f1;
+    font-size: 13px;
+    color: #444;
+  }
+  
+  .trust-box h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 10px 0 6px;
+    color: #ff7b29;
+  }
+  
+  .trust-box ul {
+    padding-left: 18px;
+    margin: 0 0 10px;
+  }
+  
+  .trust-box li {
+    margin-bottom: 4px;
+  }
+  
+  .terms-checkbox {
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  .secure-text {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #777;
+  }
   
