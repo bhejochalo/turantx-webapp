@@ -10,6 +10,9 @@ export default function LandingPage() {
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
 
+  const [mode, setMode] = useState("LOGIN"); // LOGIN | SIGNUP
+  const [showAlreadyModal, setShowAlreadyModal] = useState(false);
+
   localStorage.setItem("PHONE_NUMBER", phoneNumber);
 
   const handleChange = (e) => {
@@ -18,12 +21,25 @@ export default function LandingPage() {
     setIsValid(/^[6-9]\d{9}$/.test(value));
   };
 
+  const mockUserExists = (phone) => {
+    // 🔥 TEMP MOCK — later Firestore check
+    return phone === "9999999999";
+  };
+
   const handleContinue = () => {
     if (!isValid) return;
+
+    // 🚨 SIGNUP but already exists
+    if (mode === "SIGNUP" && mockUserExists(phoneNumber)) {
+      setShowAlreadyModal(true);
+      return;
+    }
+
     setLoading(true);
 
     setTimeout(() => {
-      sessionStorage.setItem("AUTH_OK", "true"); // 🔐 temp auth
+      sessionStorage.setItem("AUTH_OK", "true");
+      sessionStorage.setItem("AUTH_MODE", mode);
       setLoading(false);
       setShowOtp(true);
     }, 1200);
@@ -34,7 +50,7 @@ export default function LandingPage() {
 
   return (
     <div className="login-wrapper">
-      {/* LEFT BRAND PANEL */}
+      {/* LEFT BRAND */}
       <div className="login-left">
         <div className="brand-content">
           <h1>
@@ -57,12 +73,29 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* RIGHT LOGIN CARD */}
+      {/* RIGHT LOGIN */}
       <div className="login-right">
         <div className="login-card">
           <img src={logo} alt="TurantX" className="login-logo" />
 
-          <h2>Login to TurantX</h2>
+          {/* 🔁 TOGGLE */}
+          <div className="login-toggle">
+            <button
+              className={mode === "LOGIN" ? "active" : ""}
+              onClick={() => setMode("LOGIN")}
+            >
+              Login
+            </button>
+            <button
+              className={mode === "SIGNUP" ? "active" : ""}
+              onClick={() => setMode("SIGNUP")}
+            >
+              Sign Up
+            </button>
+          </div>
+
+          <h2>{mode === "LOGIN" ? "Login to TurantX" : "Create TurantX Account"}</h2>
+
           <p className="login-subtitle">
             Enter your mobile number to continue
           </p>
@@ -82,7 +115,7 @@ export default function LandingPage() {
             onClick={handleContinue}
             disabled={!isValid}
           >
-            Continue
+            {mode === "LOGIN" ? "Continue" : "Sign Up"}
           </button>
 
           <p className="login-note">
@@ -92,6 +125,38 @@ export default function LandingPage() {
           </p>
         </div>
       </div>
+
+      {/* 🔔 ALREADY REGISTERED MODAL */}
+      {showAlreadyModal && (
+        <div className="modal-backdrop">
+          <div className="modal-card">
+            <h3>Already Registered</h3>
+            <p>
+              This mobile number is already registered with TurantX.
+              <br />
+              Please log in instead.
+            </p>
+
+            <div className="modal-actions">
+              <button
+                className="secondary"
+                onClick={() => setShowAlreadyModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="primary"
+                onClick={() => {
+                  setShowAlreadyModal(false);
+                  setMode("LOGIN");
+                }}
+              >
+                Go to Login
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
