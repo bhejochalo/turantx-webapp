@@ -164,11 +164,17 @@ export default function LandingPage() {
   className={`login-btn ${
     isValid && termsAccepted ? "active" : ""
   }`}
-  onClick={handleContinue}
   disabled={!isValid || !termsAccepted}
 >
-  {mode === "LOGIN" ? "Continue" : "Sign Up"}
+  {!isValid
+    ? "Enter mobile number"
+    : !termsAccepted
+    ? "Accept Terms to Continue"
+    : mode === "LOGIN"
+    ? "Continue"
+    : "Sign Up"}
 </button>
+
 
 
 
@@ -192,10 +198,10 @@ export default function LandingPage() {
     I agree to TurantX Terms & Privacy Policy
   </label>
 </div>
-{showTermsHint && (
-  <p className="terms-hint">
-    Please read and accept the Terms & Conditions to continue
-  </p>
+{isValid && !termsAccepted && (
+  <div className="terms-hint">
+    Please accept the Terms & Conditions to continue
+  </div>
 )}
 
 

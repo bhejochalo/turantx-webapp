@@ -337,6 +337,7 @@
 .terms-hint {
   margin-top: 6px;
   font-size: 12px;
+  margin-left: 26px;
   color: #ff7a29;
   animation: fadeIn 0.2s ease-in;
 }
