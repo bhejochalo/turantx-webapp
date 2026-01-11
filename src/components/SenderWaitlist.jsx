@@ -4,6 +4,7 @@ import RequestTimeline from "./RequestTimeline";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import logo from "../assets/turantx-logo.png";
+import TrustStatusBox from "./TrustStatusBox";
 
 
 export default function SenderWaitlist() {
@@ -11,6 +12,33 @@ export default function SenderWaitlist() {
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState(null);
   const [opsReviewed, setOpsReviewed] = useState(false);
+  const [trust, setTrust] = useState({});
+  const [activeTab, setActiveTab] = useState("STATUS");
+
+
+  const getETA = (status, opsReviewed) => {
+    if (status === "MATCH_FOUND") return "Matched";
+    if (opsReviewed) return "1–3 hours";
+    return "2–6 hours";
+  };
+  const STATUS_UI = {
+    SEARCHING: {
+      text: "Our operations team is checking for matching travelers",
+      icon: "🔄",
+      step: 4,
+    },
+    SHORTLISTED: {
+      text: "A suitable traveler has been shortlisted",
+      icon: "🧩",
+      step: 4,
+    },
+    MATCH_FOUND: {
+      text: "Match confirmed. We’ll contact you shortly on WhatsApp",
+      icon: "🎉",
+      step: 5,
+    },
+  };
+  
 
   useEffect(() => {
     const phone = localStorage.getItem("PHONE_NUMBER");
@@ -39,6 +67,7 @@ export default function SenderWaitlist() {
       console.log("📦 DETAILS DATA:", data);
   
       setStatus(data.requestStatus || "SEARCHING");
+      setTrust(data.trustStatus || {});
       setOpsReviewed(!!data.opsReviewed);
       setSummary({
         requestId: data.uniqueKey,
@@ -59,14 +88,7 @@ export default function SenderWaitlist() {
   
 
   const getStep = () => {
-    switch (status) {
-      case "SEARCHING":
-        return 4; // Searching for Match
-      case "MATCH_FOUND":
-        return 5; // We'll notify on WhatsApp
-      default:
-        return 3; // Added to Waitlist
-    }
+    return STATUS_UI[status]?.step || 3;
   };
   
 
@@ -84,6 +106,36 @@ export default function SenderWaitlist() {
     <div className="waitlist-page">
       <div className="waitlist-card">
       <img src={logo} alt="TurantX" className="waitlist-logo" />
+      <div className="tabs">
+  <button
+    className={activeTab === "STATUS" ? "tab active" : "tab"}
+    onClick={() => setActiveTab("STATUS")}
+  >
+    Status
+  </button>
+
+  <button
+    className={activeTab === "REQUEST" ? "tab active" : "tab"}
+    onClick={() => setActiveTab("REQUEST")}
+  >
+    Request
+  </button>
+
+  <button
+    className={activeTab === "PAYMENT" ? "tab active" : "tab"}
+    onClick={() => setActiveTab("PAYMENT")}
+  >
+    Payment
+  </button>
+
+  <button
+    className={activeTab === "SAFETY" ? "tab active" : "tab"}
+    onClick={() => setActiveTab("SAFETY")}
+  >
+    Safety
+  </button>
+</div>
+
         <h2>✅ Thanks for sharing the details</h2>
 
         <p>
@@ -153,13 +205,76 @@ export default function SenderWaitlist() {
             </p>
           </>
         )}
+        <div className="eta-card">
+  ⏱️ Estimated matching time:{" "}
+  <strong>{getETA(status, opsReviewed)}</strong>
+</div>
+
+<div className="refund-banner">
+  <div className="refund-icon">🛡️</div>
+
+  <div className="refund-text">
+    <strong>Refund Guarantee</strong>
+    <p>
+      If no suitable traveller is found within <b>24 hours</b>,
+      your payment will be <b>automatically refunded</b>.
+    </p>
+  </div>
+</div>
+<div className="whatsapp-box">
+  <div className="whatsapp-icon">💬</div>
+
+  <div className="whatsapp-content">
+    <strong>Next Step: WhatsApp Verification</strong>
+
+    <p>
+      Our team will contact you via
+      <strong> TurantX Official WhatsApp Business</strong>
+      <br />
+      <span className="time">
+        Expected response: within 1–2 hours
+      </span>
+    </p>
+
+    <p className="note">
+      Please do not message random numbers claiming to be TurantX.
+      We will always reach out from our verified business account.
+    </p>
+  </div>
+</div>
+
+<div className="verify-banner">
+  <div className="verify-icon">🛡️</div>
+
+  <div className="verify-text">
+    <strong>Verified Travelers Only</strong>
+    <p>
+      Every traveler on TurantX is manually verified using
+      <b> PAN, government ID and flight details</b>.
+      <br />
+      No unverified traveler is allowed on the platform.
+    </p>
+  </div>
+</div>
 
         <p>
           For any queries, use the <strong>Help & Support</strong> button at the
           bottom right. We usually respond within an hour.
         </p>
+        {STATUS_UI[status] && (
+  <div className="ops-banner">
+    <span className="ops-icon">
+      {STATUS_UI[status].icon}
+    </span>
+
+    <div className="ops-text">
+      {STATUS_UI[status].text}
+    </div>
+  </div>
+)}
 
         <RequestTimeline currentStep={getStep()} />
+        <TrustStatusBox trust={trust} />
 
         <div className="waitlist-note">
           Please note: matches are subject to availability.

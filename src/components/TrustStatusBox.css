@@ -1,0 +1,39 @@
+.trust-box {
+    width: 100%;
+    margin: 16px 0;
+    padding: 16px;
+  
+    background: #f8fafc;
+    border-radius: 16px;
+  
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+  }
+  
+  .trust-box h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #0f172a;
+  }
+  
+  .trust-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  
+  .trust-row.done {
+    color: #166534;
+  }
+  
+  .trust-row.pending {
+    color: #92400e;
+  }
+  
+  .trust-row .icon {
+    font-weight: bold;
+  }
+  

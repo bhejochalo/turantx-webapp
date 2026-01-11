@@ -8,6 +8,7 @@ import { db } from "../firebase";
 export default function TravelerWaitlist() {
   const [status, setStatus] = useState("SEARCHING");
   const [loading, setLoading] = useState(true);
+  const [opsReviewed, setOpsReviewed] = useState(false);
 
   useEffect(() => {
     const phone = localStorage.getItem("PHONE_NUMBER");
@@ -36,6 +37,7 @@ export default function TravelerWaitlist() {
       console.log("📦 Traveler data:", data);
 
       setStatus(data.requestStatus || "SEARCHING");
+      setOpsReviewed(!!data.opsReviewed);
       setLoading(false);
     });
 
@@ -82,6 +84,12 @@ export default function TravelerWaitlist() {
             </p>
           </>
         )}
+        {opsReviewed && (
+  <div className="ops-badge">
+    <span className="dot-green"></span>
+    Reviewed by TurantX Operations
+  </div>
+)}
 
         {status === "MATCH_FOUND" && (
           <>
@@ -99,6 +107,33 @@ export default function TravelerWaitlist() {
         )}
 
         <RequestTimeline currentStep={getStep()} />
+        <div className="whatsapp-banner">
+  <div className="wa-icon">✔️</div>
+
+  <div className="wa-text">
+    <strong>Official WhatsApp Only</strong>
+    <p>
+      We will contact you <b>only</b> from TurantX’s verified
+      WhatsApp Business account.
+      <br />
+      Please ignore messages from personal numbers.
+    </p>
+  </div>
+</div>
+<div className="verify-banner">
+  <div className="verify-icon">🛡️</div>
+
+  <div className="verify-text">
+    <strong>Verified Travelers Only</strong>
+    <p>
+      Every traveler on TurantX is manually verified using
+      <b> PAN, government ID and flight details</b>.
+      <br />
+      No unverified traveler is allowed on the platform.
+    </p>
+  </div>
+</div>
+
       </div>
 
       {/* FOOTER */}
