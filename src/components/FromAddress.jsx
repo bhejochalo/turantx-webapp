@@ -12,6 +12,7 @@ const indianStates = [
   "Andaman and Nicobar Islands", "Chandigarh", "Delhi", "Jammu and Kashmir",
   "Ladakh", "Lakshadweep", "Puducherry"
 ];
+const ENABLED_STATES = ["Maharashtra", "Karnataka", "Delhi"];
 
 export default function FromAddress() {
   const navigate = useNavigate();
@@ -107,19 +108,32 @@ export default function FromAddress() {
           className={`addr-input ${errors.city ? "error" : ""}`}
         />
 
-        <select
-          name="state"
-          value={from.state}
-          onChange={handleChange}
-          className={`addr-input ${errors.state ? "error" : ""}`}
-        >
-          <option value="">Select State</option>
-          {indianStates.map((s, i) => (
-            <option key={i} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+<select
+  name="state"
+  value={from.state}
+  onChange={handleChange}
+  className={`addr-input ${errors.state ? "error" : ""}`}
+>
+  <option value="">Select State</option>
+
+  {indianStates.map((s, i) => {
+    const isEnabled = ENABLED_STATES.includes(s);
+
+    return (
+      <option
+        key={i}
+        value={s}
+        disabled={!isEnabled}
+        style={{
+          color: isEnabled ? "#000" : "#aaa",
+        }}
+      >
+        {s} {!isEnabled ? " (Coming Soon)" : ""}
+      </option>
+    );
+  })}
+</select>
+
 
         <input
           name="postalCode"
