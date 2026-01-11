@@ -18,7 +18,6 @@ import SenderProfile from "./components/SenderProfile";
 import TravelerWaitlist from "./components/TravelerWaitlist";
 import SenderWaitlist from "./components/SenderWaitlist";
 import AppLayout from "./components/AppLayout";
-
 function AppRoutes() {
   const location = useLocation();
 

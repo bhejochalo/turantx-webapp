@@ -78,8 +78,11 @@ export default function ToAddress() {
       setLoading(false);
       if (userType === "TRAVELER") {
         navigate("/flight-details", { state: { phoneNumber, userType, from, to, distance } });
-      } else {
+      } else if(userType == "SENDER"){
         navigate("/item-details", { state: { phoneNumber, userType, from, to, distance, panDetails: state?.panDetails } });
+      }
+      else{
+        console.log("User type undefined!", userType);
       }
     }, 800);
   };

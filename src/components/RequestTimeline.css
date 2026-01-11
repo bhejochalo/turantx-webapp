@@ -1,0 +1,65 @@
+.timeline-card {
+    width: 100%;
+    margin-top: 16px;
+    padding: 18px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  }
+  
+  .timeline-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: #333;
+  }
+  
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+  }
+  
+  .dot.done {
+    background: #34a853;
+    border-color: #34a853;
+  }
+  
+  .dot.active {
+    background: #ff914d;
+    border-color: #ff914d;
+  }
+  
+  .label {
+    font-size: 14px;
+    color: #999;
+  }
+  
+  .label.done {
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .label.active {
+    color: #ff914d;
+    font-weight: 600;
+  }
+  

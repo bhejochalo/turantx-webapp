@@ -1,34 +1,119 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./SenderWaitlist.css";
+import RequestTimeline from "./RequestTimeline";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function SenderWaitlist() {
+  const [status, setStatus] = useState("SEARCHING");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const phone = localStorage.getItem("PHONE_NUMBER");
+    console.log("📞 PHONE:", phone);
+  
+    if (!phone) {
+      setLoading(false);
+      return;
+    }
+  
+    // ✅ CORRECT PATH (capital S)
+    const detailsRef = doc(db, "users", phone, "Sender", "details");
+    console.log("🔥 Listening on:", detailsRef.path);
+  
+    const unsub = onSnapshot(detailsRef, (snap) => {
+      console.log("📡 SNAPSHOT FIRED");
+  
+      if (!snap.exists()) {
+        console.log("❌ DETAILS DOC NOT FOUND");
+        setStatus("SEARCHING");
+        setLoading(false);
+        return;
+      }
+  
+      const data = snap.data();
+      console.log("📦 DETAILS DATA:", data);
+  
+      setStatus(data.requestStatus || "SEARCHING");
+      setLoading(false);
+    });
+  
+    return () => unsub();
+  }, []);
+  
+
+  const getStep = () => {
+    switch (status) {
+      case "SEARCHING":
+        return 4; // Searching for Match
+      case "MATCH_FOUND":
+        return 5; // We'll notify on WhatsApp
+      default:
+        return 3; // Added to Waitlist
+    }
+  };
+  
+
+  if (loading) {
+    return (
+      <div className="waitlist-page">
+        <div className="waitlist-card">
+          <p>Loading your request status…</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="waitlist-page">
       <div className="waitlist-card">
         <h2>✅ Thanks for sharing the details</h2>
 
         <p>
-          We’re currently running a pilot for <strong>urgent document delivery</strong> via flight travellers.
+          We’re currently running a pilot for{" "}
+          <strong>urgent document delivery</strong> via flight travellers.
         </p>
 
-        <p>
-          We’ll check if a suitable traveller is available for your route and timing.
-        </p>
+        {status === "SEARCHING" && (
+          <>
+            <p>
+              We’re checking if a suitable traveller is available for your route
+              and timing.
+            </p>
+            <p>
+              If a match comes up, we’ll reach out to you on{" "}
+              <strong>WhatsApp</strong>.
+            </p>
+          </>
+        )}
+
+        {status === "MATCH_FOUND" && (
+          <>
+            <p>
+              🎉 <strong>Good news!</strong> We’ve found a suitable traveller
+              for your request.
+            </p>
+            <p>
+              Our team will contact you shortly on{" "}
+              <strong>WhatsApp</strong> to proceed.
+            </p>
+          </>
+        )}
 
         <p>
-          If a match comes up, we’ll reach out to you on <strong>WhatsApp</strong>.
+          For any queries, use the <strong>Help & Support</strong> button at the
+          bottom right. We usually respond within an hour.
         </p>
 
-        <p>
-          If you want to raise query there is <strong>Help and Support</strong> button at bottom right corner. We will respond within an hour.
-        </p>
+        <RequestTimeline currentStep={getStep()} />
 
         <div className="waitlist-note">
           Please note: matches are subject to availability.
         </div>
       </div>
-            {/* ✅ FOOTER */}
-            <footer className="app-footer">
+
+      {/* FOOTER */}
+      <footer className="app-footer">
         © {new Date().getFullYear()} TurantX Solutions Pvt Ltd
       </footer>
     </div>

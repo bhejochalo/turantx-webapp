@@ -1,7 +1,7 @@
 import React from "react";
 import "./TravelerWaitlist.css";
 import logo from "../assets/turantx-logo.png";
-
+import RequestTimeline from "./RequestTimeline";
 export default function TravelerWaitlist() {
   return (
     <div className="waitlist-page">
@@ -19,10 +19,7 @@ export default function TravelerWaitlist() {
           There is <strong>no obligation</strong> to accept any request.
           You’re always in control.
         </p>
-
-        <div className="waitlist-badge">
-          ⏳ Waiting for a match
-        </div>
+        <RequestTimeline currentStep={3} />
       </div>
 
       {/* ✅ FOOTER */}
