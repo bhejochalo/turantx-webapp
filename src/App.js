@@ -18,6 +18,7 @@ import SenderProfile from "./components/SenderProfile";
 import TravelerWaitlist from "./components/TravelerWaitlist";
 import SenderWaitlist from "./components/SenderWaitlist";
 import AppLayout from "./components/AppLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
 function AppRoutes() {
   const location = useLocation();
 
@@ -35,7 +36,15 @@ function AppRoutes() {
          <Route path="/intro" element={<IntroPage />} />
         <Route path="/login" element={<LandingPage />} />
         <Route path="/otp" element={<OtpPage />} />
-        <Route path="/selection" element={<SelectionPage />} />
+        <Route
+  path="/selection"
+  element={
+    <ProtectedRoute allowIf={["AUTH_OK"]}>
+      <SelectionPage />
+    </ProtectedRoute>
+  }
+/>
+
         <Route path="/address-selection" element={<AddressSelection />} />
         <Route path="/from-address" element={<FromAddress />} />
         <Route path="/to-address" element={<ToAddress />} />
