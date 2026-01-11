@@ -1,0 +1,54 @@
+.terms-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  
+  .terms-modal {
+    background: #fff;
+    width: 90%;
+    max-width: 520px;
+    max-height: 80vh;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .terms-header {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .terms-content {
+    padding: 16px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  .terms-content h4 {
+    margin-top: 16px;
+  }
+  
+  .terms-footer {
+    padding: 16px;
+    border-top: 1px solid #eee;
+  }
+  
+  .terms-check {
+    display: block;
+    margin-bottom: 12px;
+  }
+  
+  .terms-check.disabled {
+    opacity: 0.5;
+  }
+  
+  .terms-actions {
+    text-align: right;
+  }
+  

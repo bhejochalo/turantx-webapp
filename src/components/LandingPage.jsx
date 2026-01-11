@@ -5,17 +5,23 @@ import Loader from "./Loader";
 import OtpPage from "./OtpPage";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import TermsModal from "./TermsModal";
 
 export default function LandingPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
-
+  const [showTerms, setShowTerms] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);  
   const [mode, setMode] = useState("LOGIN"); // LOGIN | SIGNUP
   const [showAlreadyModal, setShowAlreadyModal] = useState(false);
   const [showNotFoundModal, setShowNotFoundModal] = useState(false);
+  const [canAcceptTerms, setCanAcceptTerms] = useState(false);
 
+  const showTermsHint = isValid && !termsAccepted;
+
+  
   localStorage.setItem("PHONE_NUMBER", phoneNumber);
 
   /* ---------------- HELPERS ---------------- */
@@ -154,20 +160,110 @@ export default function LandingPage() {
             maxLength={10}
             className={isValid ? "active" : ""}
           />
+<button
+  className={`login-btn ${
+    isValid && termsAccepted ? "active" : ""
+  }`}
+  onClick={handleContinue}
+  disabled={!isValid || !termsAccepted}
+>
+  {mode === "LOGIN" ? "Continue" : "Sign Up"}
+</button>
 
-          <button
-            className={`login-btn ${isValid ? "active" : ""}`}
-            onClick={handleContinue}
-            disabled={!isValid}
-          >
-            {mode === "LOGIN" ? "Continue" : "Sign Up"}
-          </button>
 
-          <p className="login-note">
-            By continuing, you agree to TurantX’s
-            <br />
-            <span>Terms & Privacy Policy</span>
-          </p>
+
+
+<div className="terms-row">
+  <label className="terms-checkbox">
+  <input
+  type="checkbox"
+  checked={termsAccepted}
+  onChange={(e) => {
+    if (e.target.checked) {
+      // user wants to check → open modal
+      setShowTerms(true);
+      setCanAcceptTerms(false);
+    } else {
+      // user unchecked manually
+      setTermsAccepted(false);
+    }
+  }}
+/>
+    I agree to TurantX Terms & Privacy Policy
+  </label>
+</div>
+{showTermsHint && (
+  <p className="terms-hint">
+    Please read and accept the Terms & Conditions to continue
+  </p>
+)}
+
+
+{showTerms && (
+  <div className="modal-backdrop">
+    <div className="modal-card terms-modal">
+      <h3>Terms & Conditions</h3>
+
+      <div
+        className="terms-scroll"
+        onScroll={(e) => {
+          const { scrollTop, scrollHeight, clientHeight } = e.target;
+
+          // 🔥 user reached bottom
+          if (scrollTop + clientHeight >= scrollHeight - 10) {
+            setCanAcceptTerms(true);
+          }
+        }}
+      >
+        <p>
+          • TurantX connects senders with verified flight travelers<br /><br />
+          • We do not carry items ourselves<br /><br />
+          • Only legal documents are allowed<br /><br />
+          • Travelers are PAN & ID verified<br /><br />
+          • Flights are manually reviewed by operations team<br /><br />
+          • Payment is refunded if no match is found within 24 hours<br /><br />
+          • TurantX acts only as a facilitator and not a courier service<br /><br />
+          • Final responsibility lies with the sender & traveler<br /><br />
+          • No illegal, restricted or dangerous items are allowed<br /><br />
+          • Violation may result in permanent ban<br /><br />
+          • By continuing, you legally agree to all above terms
+        </p>
+
+        {!canAcceptTerms && (
+          <div className="scroll-hint">
+            ⬇️ Please scroll to read all terms
+          </div>
+        )}
+      </div>
+
+      <div className="modal-actions">
+        <button
+          className="secondary"
+          onClick={() => {
+            setShowTerms(false);
+            setTermsAccepted(false);
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+          className={`primary ${canAcceptTerms ? "active" : ""}`}
+          disabled={!canAcceptTerms}
+          onClick={() => {
+            setTermsAccepted(true);
+            setShowTerms(false);
+          }}
+        >
+          I Agree
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
         </div>
       </div>
 
