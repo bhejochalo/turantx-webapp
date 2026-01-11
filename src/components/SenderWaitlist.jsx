@@ -5,6 +5,8 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import logo from "../assets/turantx-logo.png";
 import TrustStatusBox from "./TrustStatusBox";
+import { generateInvoicePDF } from "../utils/invoiceGenerator";
+
 
 export default function SenderWaitlist() {
   const [status, setStatus] = useState("SEARCHING");
@@ -225,6 +227,34 @@ export default function SenderWaitlist() {
                 </p>
               </div>
             </div>
+            <div className="invoice-card">
+  <h4>Invoice & Receipt</h4>
+
+  <p>
+    Download your official TurantX payment receipt for records,
+    reimbursements or compliance.
+  </p>
+
+  <button
+    className="download-btn"
+    onClick={() =>
+      generateInvoicePDF({
+        requestId: summary.requestId,
+        phone: localStorage.getItem("PHONE_NUMBER"),
+        fromCity: summary.fromCity,
+        toCity: summary.toCity,
+        item: summary.itemName,
+        weight: summary.weight,
+        delivery: summary.deliveryType,
+        paymentId: "RAZORPAY_TXN_ID", // replace later dynamically
+        amount: 200,
+        createdAt: new Date().toISOString(),
+      })
+    }
+  >
+    ⬇️ Download Invoice (PDF)
+  </button>
+</div>
           </>
         )}
 
@@ -243,6 +273,7 @@ export default function SenderWaitlist() {
                 </p>
               </div>
             </div>
+
           </>
         )}
 

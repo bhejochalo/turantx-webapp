@@ -246,4 +246,22 @@
         background: linear-gradient(180deg, #ffb78a, #ff914d);
         color: white;
       }
+      .invoice-card {
+        background: #fff7f1;
+        border-radius: 14px;
+        padding: 16px;
+        margin-top: 12px;
+      }
+      
+      .download-btn {
+        margin-top: 10px;
+        width: 100%;
+        padding: 10px;
+        border-radius: 12px;
+        border: none;
+        background: #ff914d;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+      }
       
