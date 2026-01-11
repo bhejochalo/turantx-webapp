@@ -3,6 +3,7 @@ import "./SenderWaitlist.css";
 import RequestTimeline from "./RequestTimeline";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
+import logo from "../assets/turantx-logo.png";
 
 export default function SenderWaitlist() {
   const [status, setStatus] = useState("SEARCHING");
@@ -67,6 +68,7 @@ export default function SenderWaitlist() {
   return (
     <div className="waitlist-page">
       <div className="waitlist-card">
+      <img src={logo} alt="TurantX" className="waitlist-logo" />
         <h2>✅ Thanks for sharing the details</h2>
 
         <p>
