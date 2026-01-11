@@ -88,6 +88,7 @@ export default function TravelerWaitlist() {
             <p className="waitlist-text">
               🎉 <strong>Great news!</strong> A delivery request matches your
               route.
+              You're added to the traveller waitlist. we'll notify you on whatsapp if a suitable request comes up. no obligation to accept
             </p>
 
             <p className="waitlist-subtext">
