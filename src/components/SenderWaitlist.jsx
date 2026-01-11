@@ -10,6 +10,8 @@ export default function SenderWaitlist() {
   const [status, setStatus] = useState("SEARCHING");
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState(null);
+  const [opsReviewed, setOpsReviewed] = useState(false);
+
   useEffect(() => {
     const phone = localStorage.getItem("PHONE_NUMBER");
     console.log("📞 PHONE:", phone);
@@ -37,6 +39,7 @@ export default function SenderWaitlist() {
       console.log("📦 DETAILS DATA:", data);
   
       setStatus(data.requestStatus || "SEARCHING");
+      setOpsReviewed(!!data.opsReviewed);
       setSummary({
         requestId: data.uniqueKey,
         fromCity: data.from?.city,
@@ -87,6 +90,13 @@ export default function SenderWaitlist() {
           We’re currently running a pilot for{" "}
           <strong>urgent document delivery</strong> via flight travellers.
         </p>
+        {opsReviewed && (
+  <div className="ops-badge">
+    <span className="dot-green"></span>
+    Reviewed by TurantX Operations
+  </div>
+)}
+
         {summary && (
   <div className="request-summary-card">
     <div className="summary-row">
