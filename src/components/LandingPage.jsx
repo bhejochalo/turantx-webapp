@@ -3,6 +3,8 @@ import "./LandingPage.css";
 import logo from "../assets/turantxlogo.gif";
 import Loader from "./Loader";
 import OtpPage from "./OtpPage";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function LandingPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -12,8 +14,22 @@ export default function LandingPage() {
 
   const [mode, setMode] = useState("LOGIN"); // LOGIN | SIGNUP
   const [showAlreadyModal, setShowAlreadyModal] = useState(false);
+  const [showNotFoundModal, setShowNotFoundModal] = useState(false);
 
   localStorage.setItem("PHONE_NUMBER", phoneNumber);
+
+  /* ---------------- HELPERS ---------------- */
+
+  const checkUserExists = async (phone) => {
+    try {
+      const userRef = doc(db, "users", phone);
+      const snap = await getDoc(userRef);
+      return snap.exists();
+    } catch (err) {
+      console.error("Firestore check failed", err);
+      return false;
+    }
+  };
 
   const handleChange = (e) => {
     const value = e.target.value.replace(/\D/g, "");
@@ -21,32 +37,57 @@ export default function LandingPage() {
     setIsValid(/^[6-9]\d{9}$/.test(value));
   };
 
-  const mockUserExists = (phone) => {
-    // 🔥 TEMP MOCK — later Firestore check
-    return phone === "9999999999";
-  };
+  /* ---------------- CONTINUE ---------------- */
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!isValid) return;
-
-    // 🚨 SIGNUP but already exists
-    if (mode === "SIGNUP" && mockUserExists(phoneNumber)) {
+  
+    setLoading(true);
+  
+    // 🔍 FIRST check Firestore
+    const exists = await checkUserExists(phoneNumber);
+  
+    // 🚫 SIGNUP but already exists
+    if (mode === "SIGNUP" && exists) {
+      setLoading(false);
       setShowAlreadyModal(true);
       return;
     }
-
-    setLoading(true);
-
+  
+    // 🚫 LOGIN but not exists
+    if (mode === "LOGIN" && !exists) {
+      setLoading(false);
+      setShowNotFoundModal(true);
+      return;
+    }
+  
+    // ✅ SIGNUP + new user → NOW init
+    if (mode === "SIGNUP" && !exists) {
+      await fetch(
+        "https://us-central1-bhejochalo-3d292.cloudfunctions.net/initUser",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phoneNumber }),
+        }
+      );
+    }
+  
+    // ✅ SUCCESS
     setTimeout(() => {
       sessionStorage.setItem("AUTH_OK", "true");
       sessionStorage.setItem("AUTH_MODE", mode);
       setLoading(false);
       setShowOtp(true);
-    }, 1200);
+    }, 800);
   };
+  
+  /* ---------------- STATES ---------------- */
 
   if (loading) return <Loader />;
   if (showOtp) return <OtpPage phoneNumber={phoneNumber} />;
+
+  /* ---------------- UI ---------------- */
 
   return (
     <div className="login-wrapper">
@@ -78,7 +119,7 @@ export default function LandingPage() {
         <div className="login-card">
           <img src={logo} alt="TurantX" className="login-logo" />
 
-          {/* 🔁 TOGGLE */}
+          {/* MODE TOGGLE */}
           <div className="login-toggle">
             <button
               className={mode === "LOGIN" ? "active" : ""}
@@ -94,7 +135,11 @@ export default function LandingPage() {
             </button>
           </div>
 
-          <h2>{mode === "LOGIN" ? "Login to TurantX" : "Create TurantX Account"}</h2>
+          <h2>
+            {mode === "LOGIN"
+              ? "Login to TurantX"
+              : "Create your TurantX account"}
+          </h2>
 
           <p className="login-subtitle">
             Enter your mobile number to continue
@@ -126,7 +171,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* 🔔 ALREADY REGISTERED MODAL */}
+      {/* 🔔 ALREADY REGISTERED */}
       {showAlreadyModal && (
         <div className="modal-backdrop">
           <div className="modal-card">
@@ -152,6 +197,38 @@ export default function LandingPage() {
                 }}
               >
                 Go to Login
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🚫 ACCOUNT NOT FOUND */}
+      {showNotFoundModal && (
+        <div className="modal-backdrop">
+          <div className="modal-card">
+            <h3>Account Not Found</h3>
+            <p>
+              This mobile number is not registered with TurantX.
+              <br />
+              Please sign up to continue.
+            </p>
+
+            <div className="modal-actions">
+              <button
+                className="secondary"
+                onClick={() => setShowNotFoundModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="primary"
+                onClick={() => {
+                  setShowNotFoundModal(false);
+                  setMode("SIGNUP");
+                }}
+              >
+                Go to Sign Up
               </button>
             </div>
           </div>

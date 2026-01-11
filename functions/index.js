@@ -111,3 +111,43 @@ exports.saveUserData = functions.https.onRequest((req, res) => {
     }
   });
 });
+
+exports.initUser = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    try {
+      if (req.method !== "POST") {
+        return res.status(405).json({ error: "Only POST allowed" });
+      }
+
+      const { phoneNumber } = req.body;
+      if (!phoneNumber) {
+        return res.status(400).json({ error: "phoneNumber required" });
+      }
+
+      const userRef = db.collection("users").doc(phoneNumber);
+      const snap = await userRef.get();
+
+      // 🔁 Already exists → just update lastLogin
+      if (snap.exists) {
+        await userRef.set(
+          { lastLoginAt: new Date().toISOString() },
+          { merge: true }
+        );
+      } else {
+        // 🆕 First time signup
+        await userRef.set({
+          phoneNumber,
+          createdAt: new Date().toISOString(),
+          lastLoginAt: new Date().toISOString(),
+          authCompleted: true,
+        });
+      }
+
+      return res.json({ success: true });
+    } catch (err) {
+      console.error("initUser error:", err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+});
+

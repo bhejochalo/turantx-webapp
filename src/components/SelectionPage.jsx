@@ -8,7 +8,7 @@ import { db } from "../firebase";
 const SelectionPage = ({ phoneNumber }) => {
   const navigate = useNavigate();
 
-  const [checking, setChecking] = useState(true);
+  const [checking, setChecking] = useState(false);
   const [travelerExists, setTravelerExists] = useState(false);
   const [senderExists, setSenderExists] = useState(false);
 
@@ -63,7 +63,7 @@ const SelectionPage = ({ phoneNumber }) => {
       }
     };
 
-    checkExistingProfiles();
+    //checkExistingProfiles();
   }, [phoneNumber, navigate]);
 
   // Manual navigation (new user)
