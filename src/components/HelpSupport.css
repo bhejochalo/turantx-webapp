@@ -102,4 +102,10 @@
       opacity: 1;
     }
   }
+  .help-error {
+    color: #ff4d4d;
+    font-size: 13px;
+    margin-top: -6px;
+    margin-bottom: 8px;
+  }
   

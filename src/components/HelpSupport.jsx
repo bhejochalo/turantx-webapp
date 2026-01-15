@@ -5,6 +5,10 @@ import "./HelpSupport.css";
 
 export default function HelpSupport() {
   const [open, setOpen] = useState(false);
+  const isValidPhone = (value) => /^\d{10}$/.test(value);
+  const [phone, setPhone] = useState("");
+const [error, setError] = useState("");
+
   const [form, setForm] = useState({
     name: "",
     contact: "",
@@ -14,22 +18,44 @@ export default function HelpSupport() {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+  
+    // 🔥 Contact = only 10 digit number
+    if (name === "contact") {
+      const digitsOnly = value.replace(/\D/g, "");
+  
+      if (digitsOnly.length <= 10) {
+        setForm({ ...form, contact: digitsOnly });
+        setError("");
+      }
+      return;
+    }
+  
+    setForm({ ...form, [name]: value });
   };
+  
 
   const handleSubmit = async () => {
     if (!form.name || !form.contact || !form.message) {
-      alert("⚠️ Please fill all required fields");
+      setError("Please fill all required fields");
       return;
     }
-
+  
+    if (!isValidPhone(form.contact)) {
+      setError("Please enter a valid 10-digit mobile number");
+      return;
+    }
+  
+    setError("");
     setLoading(true);
+  
     try {
       await addDoc(collection(db, "help"), {
         ...form,
         status: "Pending",
         createdAt: serverTimestamp(),
       });
+  
       setLoading(false);
       setForm({ name: "", contact: "", queryType: "", message: "" });
       setOpen(false);
@@ -40,7 +66,7 @@ export default function HelpSupport() {
       setLoading(false);
     }
   };
-
+  
   return (
     <>
       {/* Floating Button */}
