@@ -1,0 +1,23 @@
+.whatsapp-help {
+    position: fixed;
+    bottom: 20px; /* HelpSupport ke thoda upar */
+    right: 95px;
+    z-index: 10001; /* Loader se bhi upar */
+  
+    background: #25d366;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 28px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+  
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+    transition: all 0.25s ease;
+  }
+  
+  .whatsapp-help:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 35px rgba(37, 211, 102, 0.5);
+  }
+  

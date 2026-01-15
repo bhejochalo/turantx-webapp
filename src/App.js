@@ -19,50 +19,46 @@ import TravelerWaitlist from "./components/TravelerWaitlist";
 import SenderWaitlist from "./components/SenderWaitlist";
 import AppLayout from "./components/AppLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import WhatsAppHelp from "./components/WhatsAppHelp";
 function AppRoutes() {
   const location = useLocation();
 
-  // Hide HelpSupport on intro & logo animation pages
   const hideHelp =
     location.pathname === "/" || location.pathname === "/intro";
 
   return (
     <>
-      <Routes element={<AppLayout />}>
-        <Route
-          path="/"
-          element={<LogoAnimation onFinish={() => (window.location.href = "/intro")} />}
-        />
-         <Route path="/intro" element={<IntroPage />} />
-        <Route path="/login" element={<LandingPage />} />
-        <Route path="/otp" element={<OtpPage />} />
-        <Route
-  path="/selection"
-  element={
-    <ProtectedRoute allowIf={["AUTH_OK"]}>
-      <SelectionPage />
-    </ProtectedRoute>
-  }
-/>
-
-        <Route path="/address-selection" element={<AddressSelection />} />
-        <Route path="/from-address" element={<FromAddress />} />
-        <Route path="/to-address" element={<ToAddress />} />
-        <Route path="/flight-details" element={<FlightDetails />} />
-        <Route path="/pan-verification" element={<PanVerification />} />
-        <Route path="/item-details" element={<ItemDetails />} />
-        <Route path="/traveler-list" element={<TravelerList />} />
-        <Route path="/traveler-profile" element={<TravelerProfile />} />
-        <Route path="/sender-profile" element={<SenderProfile />} />
-        <Route path="/traveler-waitlist" element={<TravelerWaitlist />} />
-        <Route path="/sender-waitlist" element={<SenderWaitlist />} />
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<LogoAnimation onFinish={() => (window.location.href = "/intro")} />} />
+          <Route path="/intro" element={<IntroPage />} />
+          <Route path="/login" element={<LandingPage />} />
+          <Route path="/otp" element={<OtpPage />} />
+          <Route path="/selection" element={<SelectionPage />} />
+          <Route path="/address-selection" element={<AddressSelection />} />
+          <Route path="/from-address" element={<FromAddress />} />
+          <Route path="/to-address" element={<ToAddress />} />
+          <Route path="/flight-details" element={<FlightDetails />} />
+          <Route path="/pan-verification" element={<PanVerification />} />
+          <Route path="/item-details" element={<ItemDetails />} />
+          <Route path="/traveler-list" element={<TravelerList />} />
+          <Route path="/traveler-profile" element={<TravelerProfile />} />
+          <Route path="/sender-profile" element={<SenderProfile />} />
+          <Route path="/traveler-waitlist" element={<TravelerWaitlist />} />
+          <Route path="/sender-waitlist" element={<SenderWaitlist />} />
+        </Route>
       </Routes>
 
-      {/* ✅ Show Help only after login */}
-      {!hideHelp && <HelpSupport />}
+      {!hideHelp && (
+        <>
+          <HelpSupport />
+          <WhatsAppHelp />
+        </>
+      )}
     </>
   );
 }
+
 
 export default function App() {
   return (
