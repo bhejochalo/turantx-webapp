@@ -1,4 +1,4 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import "./AppFooter.css";
 
 export default function AppFooter() {
@@ -17,22 +17,22 @@ export default function AppFooter() {
         <div className="footer-links">
           <div>
             <span>Company</span>
-            <a>About Us</a>
-            <a>How It Works</a>
-            <a>Why TurantX</a>
+            <Link to="/info/about">About Us</Link>
+            <Link to="/info/how-it-works">How It Works</Link>
+            <Link to="/info/why-turantx">Why TurantX</Link>
           </div>
 
           <div>
             <span>Support</span>
-            <a>Help & Support</a>
-            <a>Contact Us</a>
-            <a>Safety & Trust</a>
+            <Link to="/info/help">Help & Support</Link>
+            <Link to="/info/contact">Contact Us</Link>
+            <Link to="/info/safety">Safety & Trust</Link>
           </div>
 
           <div>
             <span>Legal</span>
-            <a>Terms & Conditions</a>
-            <a>Privacy Policy</a>
+            <Link to="/info/terms">Terms & Conditions</Link>
+            <Link to="/info/privacy">Privacy Policy</Link>
           </div>
         </div>
       </div>

@@ -190,6 +190,15 @@
   margin-bottom: 18px;
   font-size: 14px;
 }
+@media (max-width: 900px) {
+  body {
+    background: #fff7f1;
+  }
+
+  .login-wrapper {
+    background: #fff7f1;
+  }
+}
 
 .login-card input.active {
   border-color: #ff914d;
@@ -257,6 +266,12 @@
   cursor: pointer;
   border-radius: 22px;
   color: #777;
+}
+@media (max-width: 768px) {
+  .app-header {
+    height: 56px;
+    padding: 0 16px;
+  }
 }
 
 .login-toggle button.active {

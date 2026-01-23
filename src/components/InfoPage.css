@@ -1,0 +1,28 @@
+.info-page {
+    flex: 1;
+    padding: 60px 20px;
+    background: #fafafa;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .info-card {
+    max-width: 820px;
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  }
+  
+  .info-card h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  .info-card pre {
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-family: inherit;
+    color: #555;
+  }
+  

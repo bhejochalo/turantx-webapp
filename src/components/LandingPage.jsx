@@ -5,6 +5,7 @@ import Loader from "./Loader";
 import OtpPage from "./OtpPage";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import AppHeader from "./AppHeader";
 
 export default function LandingPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -90,6 +91,8 @@ export default function LandingPage() {
   /* ---------------- UI ---------------- */
 
   return (
+    <>
+        <AppHeader />
     <div className="login-wrapper">
       {/* LEFT BRAND */}
       <div className="login-left">
@@ -97,7 +100,7 @@ export default function LandingPage() {
           <h1>
             Fast. Trusted.
             <br />
-            Human-Powered Delivery ✈️
+            Human-Powered Delivery
           </h1>
 
           <p>
@@ -235,5 +238,6 @@ export default function LandingPage() {
         </div>
       )}
     </div>
+    </>
   );
 }

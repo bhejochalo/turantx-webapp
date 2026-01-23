@@ -1,0 +1,77 @@
+.app-header {
+    height: 64px;
+    padding: 0 20px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1002;
+  }
+  
+  .logo {
+    font-weight: 700;
+    font-size: 20px;
+    color: #ff7a29;
+  }
+  
+  .logo span {
+    color: #111;
+  }
+  
+  .nav-links a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .hamburger {
+    font-size: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #111;
+  }
+  
+  /* MOBILE MENU */
+  .mobile-menu {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 20px;
+    z-index: 1001;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  }
+  
+  .mobile-menu a {
+    display: block;
+    padding: 14px 0;
+    font-size: 16px;
+    color: #222;
+    text-decoration: none;
+    border-bottom: 1px solid #eee;
+  }
+  
+  /* RESPONSIVE */
+  .desktop-only {
+    display: flex;
+  }
+  
+  .mobile-only {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .desktop-only {
+      display: none;
+    }
+    .mobile-only {
+      display: block;
+    }
+  }
+  
