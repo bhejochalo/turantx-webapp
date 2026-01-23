@@ -21,7 +21,7 @@ export default function ToAddress() {
   const phoneNumber = state?.phoneNumber;
   const userType = state?.userType;
   const from = state?.from;
-  const toPlace = state?.toPlace;
+  const toAddress = state?.toAddress || "";
   const distance = state?.distance || "";
 
   const [loading, setLoading] = useState(false);
@@ -39,23 +39,20 @@ export default function ToAddress() {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    if (toPlace) {
-      const comps = toPlace.address_components || [];
-      const get = (type) =>
-        comps.find((c) => c.types.includes(type))?.long_name || "";
-
-      setTo({
-        houseNumber: "",
-        street: get("route") || toPlace.name || "",
-        area: get("sublocality_level_1") || get("locality") || "",
-        city: get("locality") || get("administrative_area_level_2"),
-        state: get("administrative_area_level_1"),
-        postalCode: get("postal_code"),
-        latitude: toPlace.geometry?.location?.lat(),
-        longitude: toPlace.geometry?.location?.lng(),
-      });
+    if (toAddress) {
+      const parts = toAddress.split(",");
+  
+      setTo((prev) => ({
+        ...prev,
+        street: parts[0]?.trim() || "",
+        area: parts[1]?.trim() || "",
+        city: parts[2]?.trim() || "",
+        state: parts[3]?.trim() || "",
+        postalCode: parts[4]?.replace(/\D/g, "") || "",
+      }));
     }
-  }, [toPlace]);
+  }, [toAddress]);
+  
 
   const handleChange = (e) => {
     setTo({ ...to, [e.target.name]: e.target.value });
@@ -105,7 +102,7 @@ export default function ToAddress() {
 
         <select
   name="state"
-  value={from.state}
+  value={to.state}
   onChange={handleChange}
   className={`addr-input ${errors.state ? "error" : ""}`}
 >

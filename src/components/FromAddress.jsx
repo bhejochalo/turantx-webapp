@@ -24,6 +24,7 @@ export default function FromAddress() {
   const distance = state?.distance || "";
 
   const [loading] = useState(false);
+  const toAddress = state?.toAddress || "";
   const [from, setFrom] = useState({
     houseNumber: "",
     street: "",
@@ -69,8 +70,9 @@ export default function FromAddress() {
   const handleNext = () => {
     if (!validateFields()) return;
     navigate("/to-address", {
-      state: { phoneNumber, userType, from, distance, panDetails: state?.panDetails },
+      state: { phoneNumber, userType, from, distance, toAddress }
     });
+    
   };
 
   return (
