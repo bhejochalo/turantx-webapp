@@ -1,6 +1,6 @@
 import React from "react";
 import "./Loader.css";
-import logo from "../assets/turantx-logo.png"; // or use flight icon
+import logo from "../assets/turantxloader.png"; // or use flight icon
 
 const Loader = () => {
   return (

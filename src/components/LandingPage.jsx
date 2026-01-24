@@ -35,6 +35,16 @@ export default function LandingPage() {
     }
   };
 
+  const waitMinLoader = async (startTime, min = 2500) => {
+    const elapsed = Date.now() - startTime;
+  
+    if (elapsed < min) {
+      await new Promise((res) =>
+        setTimeout(res, min - elapsed)
+      );
+    }
+  };
+
   // ✅ Check traveler / sender inside user
   const getUserRole = async (phone) => {
     try {
@@ -67,51 +77,54 @@ export default function LandingPage() {
 
   const handleContinue = async () => {
     if (!isValid) return;
-
+  
+    const startTime = Date.now(); // ⏱ start timer
     setLoading(true);
-
+  
     // 🔍 Check main user
     const exists = await checkUserExists(phoneNumber);
-
+  
     // 🚫 SIGNUP but exists
     if (mode === "SIGNUP" && exists) {
+      await waitMinLoader(startTime);
       setLoading(false);
       setShowAlreadyModal(true);
       return;
     }
-
+  
     // 🚫 LOGIN but not exists
     if (mode === "LOGIN" && !exists) {
+      await waitMinLoader(startTime);
       setLoading(false);
       setShowNotFoundModal(true);
       return;
     }
-
+  
     // ✅ LOGIN + already exists → check role
     if (mode === "LOGIN" && exists) {
       const role = await getUserRole(phoneNumber);
-
+  
+      await waitMinLoader(startTime);
       setLoading(false);
-
+  
       if (role === "TRAVELER") {
         navigate("/traveler-waitlist", {
           state: { phoneNumber },
         });
         return;
       }
-
+  
       if (role === "SENDER") {
         navigate("/sender-waitlist", {
           state: { phoneNumber },
         });
         return;
       }
-
-      // fallback → OTP
+  
       setShowOtp(true);
       return;
     }
-
+  
     // ✅ SIGNUP + new user → init
     if (mode === "SIGNUP" && !exists) {
       await fetch(
@@ -123,17 +136,17 @@ export default function LandingPage() {
         }
       );
     }
-
+  
     // ✅ New signup → OTP
-    setTimeout(() => {
-      sessionStorage.setItem("AUTH_OK", "true");
-      sessionStorage.setItem("AUTH_MODE", mode);
-
-      setLoading(false);
-      setShowOtp(true);
-    }, 800);
+    await waitMinLoader(startTime);
+  
+    sessionStorage.setItem("AUTH_OK", "true");
+    sessionStorage.setItem("AUTH_MODE", mode);
+  
+    setLoading(false);
+    setShowOtp(true);
   };
-
+  
   /* ---------------- STATES ---------------- */
 
   if (loading) return <Loader />;
@@ -152,17 +165,17 @@ export default function LandingPage() {
             <h1>
               Fast. Trusted.
               <br />
-              Human-Powered Document Delivery
+              Human-Powered Delivery
             </h1>
 
             <p>
-            Send urgent documents with verified flight travellers.
+              Send urgent items with verified flight travelers.
               <br />
-              Or carry documents on your flight and earn money.
+              No cargo delays. No couriers.
             </p>
 
             <ul className="trust-points">
-              <li>✔ PAN & ID verified travellers</li>
+              <li>✔ PAN & ID verified travelers</li>
               <li>✔ Flights manually reviewed</li>
               <li>✔ Refund guaranteed if no match</li>
             </ul>
