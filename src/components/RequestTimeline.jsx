@@ -4,7 +4,7 @@ import "./RequestTimeline.css";
 export default function RequestTimeline({ currentStep = 1 }) {
   const steps = [
     "Details Submitted",
-    "Verification Completed",
+    "Verification Ongoing",
     "Added to Waitlist",
     "Searching for Match",
     "We’ll notify you on WhatsApp",
