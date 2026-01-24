@@ -12,29 +12,22 @@ export default function TravelerWaitlist() {
 
   useEffect(() => {
     const phone = localStorage.getItem("PHONE_NUMBER");
-    console.log("📞 TRAVELER PHONE:", phone);
 
     if (!phone) {
       setLoading(false);
       return;
     }
 
-    // ✅ Correct Firestore path
     const travelerRef = doc(db, "users", phone, "Traveler", "details");
-    console.log("🔥 Listening on:", travelerRef.path);
 
     const unsub = onSnapshot(travelerRef, (snap) => {
-      console.log("📡 Traveler snapshot fired");
-
       if (!snap.exists()) {
-        console.log("❌ Traveler details not found");
         setStatus("SEARCHING");
         setLoading(false);
         return;
       }
 
       const data = snap.data();
-      console.log("📦 Traveler data:", data);
 
       setStatus(data.requestStatus || "SEARCHING");
       setOpsReviewed(!!data.opsReviewed);
@@ -47,10 +40,10 @@ export default function TravelerWaitlist() {
   const getStep = () => {
     switch (status) {
       case "MATCH_FOUND":
-        return 5; // We'll notify you on WhatsApp
+        return 5;
       case "SEARCHING":
       default:
-        return 4; // Searching for Match
+        return 4;
     }
   };
 
@@ -84,12 +77,13 @@ export default function TravelerWaitlist() {
             </p>
           </>
         )}
+
         {opsReviewed && (
-  <div className="ops-badge">
-    <span className="dot-green"></span>
-    Reviewed by TurantX Operations
-  </div>
-)}
+          <div className="ops-badge">
+            <span className="dot-green"></span>
+            Reviewed by TurantX Operations
+          </div>
+        )}
 
         {status === "MATCH_FOUND" && (
           <>
@@ -107,36 +101,36 @@ export default function TravelerWaitlist() {
         )}
 
         <RequestTimeline currentStep={getStep()} />
+
         <div className="whatsapp-banner">
-  <div className="wa-icon">✔️</div>
+          <div className="wa-icon">✔️</div>
 
-  <div className="wa-text">
-    <strong>Official WhatsApp Only</strong>
-    <p>
-      We will contact you <b>only</b> from TurantX’s verified
-      WhatsApp Business account.
-      <br />
-      Please ignore messages from personal numbers.
-    </p>
-  </div>
-</div>
-<div className="verify-banner">
-  <div className="verify-icon">🛡️</div>
+          <div className="wa-text">
+            <strong>Official WhatsApp Only</strong>
+            <p>
+              We will contact you <b>only</b> from TurantX’s verified
+              WhatsApp Business account.
+              <br />
+              Please ignore messages from personal numbers.
+            </p>
+          </div>
+        </div>
 
-  <div className="verify-text">
-    <strong>Verified Travelers Only</strong>
-    <p>
-      Every traveler on TurantX is manually verified using
-      <b> PAN, government ID and flight details</b>.
-      <br />
-      No unverified traveler is allowed on the platform.
-    </p>
-  </div>
-</div>
+        <div className="verify-banner">
+          <div className="verify-icon">🛡️</div>
 
+          <div className="verify-text">
+            <strong>Verified Travelers Only</strong>
+            <p>
+              Every traveler on TurantX is manually verified using
+              <b> PAN, government ID and flight details</b>.
+              <br />
+              No unverified traveler is allowed on the platform.
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* FOOTER */}
       <footer className="app-footer">
         © {new Date().getFullYear()} TurantX Solutions Pvt Ltd
       </footer>
