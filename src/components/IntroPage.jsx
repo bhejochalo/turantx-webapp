@@ -4,16 +4,16 @@ import { useNavigate } from "react-router-dom";
 
 const slides = [
   {
-    title: "Send Items Faster",
-    text: "Your item travels with real passengers — not in cargo delays.",
+    title: "Same-Day Documents",
+    text: "Documents move with travellers already flying your route.",
   },
   {
     title: "Earn While You Travel",
-    text: "Travelers earn money for carrying verified parcels.",
+    text: "Just carry documents on your scheduled flight and earn.",
   },
   {
-    title: "Instant Matches",
-    text: "We connect senders with travelers flying the same route.",
+    title: "Route-based matching",
+    text: "We notify you only when a suitable route match is available.",
   },
 ];
 

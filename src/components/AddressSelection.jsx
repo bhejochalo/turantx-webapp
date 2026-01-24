@@ -180,10 +180,8 @@ export default function AutoCompleteAddress() {
         <div className="route-info">
   <span className="route-label">Operating Cities</span>
   <div className="route-cities">
-    <span>Pune</span>
-    <span>Mumbai</span>
-    <span>Delhi</span>
-    <span>Bangalore</span>
+  <span>• Bangalore • Mumbai • Delhi • Pune</span>
+   
   </div>
 </div>
 

@@ -154,7 +154,7 @@ export default function ItemDetails() {
       )}
 
       <div className="item-card">
-        <h3 className="item-title">📦 Item Details</h3>
+        <h3 className="item-title">📦 Document Details</h3>
         {showFieldAlert && (
           <div className="modal-overlay">
             <div className="modal-card">
@@ -178,7 +178,7 @@ export default function ItemDetails() {
           name="itemName"
           value={item.itemName}
           onChange={handleChange}
-          placeholder="Item Name"
+          placeholder="Document type (e.g. Agreement, Application)"
         />
 
         <div className="weight-group">
@@ -230,12 +230,12 @@ export default function ItemDetails() {
             <li>No obligation to proceed</li>
           </ul>
 
-          <h4>Why is payment required?</h4>
+         {/* h4>Why is payment required?</h4>
           <ul>
             <li>Covers verification & coordination cost</li>
             <li>Prevents spam and fake requests</li>
             <li><strong>Refunded if no match is found</strong></li>
-          </ul>
+          </ul> */}
 
           <label className="terms-checkbox">
             <input
@@ -247,7 +247,7 @@ export default function ItemDetails() {
           </label>
 
           <p className="secure-text">
-            🔒 Secure payment powered by Razorpay
+          Pilot offer: First 100 document deliveries at no cost.
           </p>
         </div>
         <button

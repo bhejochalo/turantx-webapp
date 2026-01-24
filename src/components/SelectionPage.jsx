@@ -101,12 +101,12 @@ const SelectionPage = ({ phoneNumber }) => {
 
         <h2 className="select-title">Choose Your Role</h2>
         <p className="select-subtitle">
-          Travel smart. Deliver smarter. Earn rewards on every trip.
+        Connecting senders and travellers to deliver urgent documents during our pilot.
         </p>
 
         <div className="select-buttons">
           <button className="select-btn traveler" onClick={handleTraveler}>
-            ✈️ I'm a Traveler
+            ✈️ I'm a Traveller
           </button>
 
           <button className="select-btn sender" onClick={handleSender}>

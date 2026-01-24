@@ -209,11 +209,11 @@ export default function SenderWaitlist() {
             <div className="refund-banner">
               <div className="refund-icon">🛡️</div>
               <div className="refund-text">
-                <strong>Refund Guarantee</strong>
+                <strong>Payment</strong>
                 <p>
-                  If no suitable traveller is found within <b>24 hours</b>, your
-                  payment will be <b>automatically refunded</b>.
+                  This is a pilot service — <b>no payment is taken</b> at this stage.
                 </p>
+
               </div>
             </div>
 

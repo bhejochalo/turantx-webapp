@@ -11,14 +11,27 @@ export const infoContent = {
     },
   
     "how-it-works": {
-      title: "How TurantX Works",
+      title: "How TurantX Works (Pilot Phase)",
       body: `
-  1. Sender posts delivery requirement
-  2. Verified traveler matches the route
-  3. Secure handover & confirmation
-  4. Guaranteed refund if no match
+    1. Sender posts a document delivery request  
+       Share pickup and destination cities for urgent document delivery.
+    
+    2. Verified traveler matches the route and earns  
+       A traveler already flying the same route accepts the request and earns by carrying your
+       documents.
+    
+    3. Direct handover with shared details  
+       During the pilot, the sender hands over the documents directly to the traveler.  
+       Pickup and delivery contact details are shared securely over WhatsApp.
+    
+    4. Receiver collects documents at destination  
+       The receiver collects the documents from the traveler in the destination city.
+    
+    5. No match? No charges during the pilot  
+       If no suitable traveler is found, the request is cancelled at no cost.
       `,
     },
+    
   
     "why-turantx": {
       title: "Why TurantX",

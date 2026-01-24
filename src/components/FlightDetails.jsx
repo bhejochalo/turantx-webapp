@@ -57,8 +57,7 @@ export default function FlightDetails() {
     "All Bags",
     "Cabin Bag",
     "Luggage Bag",
-    "Personal Bag",
-    "No Bag Space",
+    "Personal Bag"
   ];
 
   // ✅ Handle change (block negative kg)
