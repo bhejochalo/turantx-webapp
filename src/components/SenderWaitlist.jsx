@@ -247,7 +247,7 @@ export default function SenderWaitlist() {
         weight: summary.weight,
         delivery: summary.deliveryType,
         paymentId: "RAZORPAY_TXN_ID", // replace later dynamically
-        amount: 200,
+        amount: 0.00,
         createdAt: new Date().toISOString(),
       })
     }

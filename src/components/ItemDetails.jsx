@@ -35,45 +35,45 @@ export default function ItemDetails() {
     deliveryOption: "",
     instructions: "",
   });
-  const openRazorpay = async () => {
-    const loadRazorpay = () =>
-      new Promise((resolve) => {
-        const script = document.createElement("script");
-        script.src = "https://checkout.razorpay.com/v1/checkout.js";
-        script.onload = () => resolve(true);
-        script.onerror = () => resolve(false);
-        document.body.appendChild(script);
-      });
+  // const openRazorpay = async () => {
+  //   const loadRazorpay = () =>
+  //     new Promise((resolve) => {
+  //       const script = document.createElement("script");
+  //       script.src = "https://checkout.razorpay.com/v1/checkout.js";
+  //       script.onload = () => resolve(true);
+  //       script.onerror = () => resolve(false);
+  //       document.body.appendChild(script);
+  //     });
 
-    const res = await loadRazorpay();
-    if (!res) {
-      alert("Razorpay SDK failed to load");
-      return;
-    }
+  //   const res = await loadRazorpay();
+  //   if (!res) {
+  //     alert("Razorpay SDK failed to load");
+  //     return;
+  //   }
 
-    const options = {
-      key: "rzp_test_4HNx49ek9VPhNQ",
-      amount: 200 * 100,
-      currency: "INR",
-      name: "TurantX",
-      description: "Urgent document delivery (Pilot)",
-      handler: function (response) {
-        console.log("✅ Payment Success", response);
+  //   const options = {
+  //     key: "rzp_test_4HNx49ek9VPhNQ",
+  //     amount: 200 * 100,
+  //     currency: "INR",
+  //     name: "TurantX",
+  //     description: "Urgent document delivery (Pilot)",
+  //     handler: function (response) {
+  //       console.log("✅ Payment Success", response);
 
-        navigate("/sender-waitlist", {
-          state: {
-            paymentId: response.razorpay_payment_id,
-          },
-        });
-      },
-      theme: {
-        color: "#ff7b29",
-      },
-    };
+  //       navigate("/sender-waitlist", {
+  //         state: {
+  //           paymentId: response.razorpay_payment_id,
+  //         },
+  //       });
+  //     },
+  //     theme: {
+  //       color: "#ff7b29",
+  //     },
+  //   };
 
-    const paymentObject = new window.Razorpay(options);
-    paymentObject.open();
-  };
+  //   const paymentObject = new window.Razorpay(options);
+  //   paymentObject.open();
+  // };
 
   const handleChange = (e) =>
     setItem({ ...item, [e.target.name]: e.target.value });
@@ -115,7 +115,11 @@ export default function ItemDetails() {
       if (!res.ok) throw new Error(data.error || "Server error");
 
       // ✅ ONLY AFTER SUCCESS → open Razorpay
-      await openRazorpay();
+      navigate("/sender-waitlist", {
+        state: {
+          phoneNumber,
+        },
+      });
 
     } catch (err) {
       console.error("❌ Error saving sender:", err);
