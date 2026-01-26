@@ -264,7 +264,7 @@ export default function FlightDetails() {
           {/* Remarks */}
           <textarea
             name="remarks"
-            placeholder="Add Remarks (optional)"
+            placeholder="Eg: Please place the documents in a polythene cover for safety. (Add any other instructions here)"
             value={form.remarks}
             onChange={handleChange}
           />
@@ -371,7 +371,7 @@ export default function FlightDetails() {
     paddingRight: "6px",
   }}
 >
-  <h4>Terms & Conditions</h4>
+  
   <p><strong>Last updated:</strong> 24-Jan-2026</p>
 
   <p>

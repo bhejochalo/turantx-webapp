@@ -306,7 +306,7 @@ export default function ItemDetails() {
     paddingRight: "6px",
   }}
 >
-  <h4>Terms & Conditions</h4>
+  
   <p><strong>Last updated:</strong> 24-Jan-2026</p>
 
   <p>

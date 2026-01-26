@@ -109,5 +109,11 @@
       text-decoration: none;
       color: #333;
     }
+
+    .section-title {
+      color: #ff914d;
+      font-weight: 600;
+    }
+    
   }
   

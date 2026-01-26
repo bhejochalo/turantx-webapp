@@ -165,17 +165,17 @@ export default function LandingPage() {
             <h1>
               Fast. Trusted.
               <br />
-              Human-Powered Delivery
+              Human-Powered Document Delivery
             </h1>
 
             <p>
-              Send urgent items with verified flight travelers.
+              Send urgent items with verified flight travellers.
               <br />
-              No cargo delays. No couriers.
+              Or carry documents on your flight and earn money.
             </p>
 
             <ul className="trust-points">
-              <li>✔ PAN & ID verified travelers</li>
+              <li>✔ PAN & ID verified travellers</li>
               <li>✔ Flights manually reviewed</li>
               <li>✔ Refund guaranteed if no match</li>
             </ul>
