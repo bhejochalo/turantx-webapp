@@ -43,23 +43,25 @@ If no suitable traveler is found, the request is cancelled at no cost.
   ✔ Cost-effective & fast
       `,
     },
-  
+    
     help: {
       title: "Help & Support",
-      body: `
-    For any issue related to booking, payments, or account,
-    reach out to us via Help & Support or WhatsApp.
+      body: `For any issue related to booking,
+    payments, or account,
+    reach out to us via
+    Help & Support or WhatsApp.
     
-    Support hours: 10 AM – 8 PM IST
-      `,
+    Support hours:
+    10 AM – 11 PM IST`,
     },
+    
     
   
     contact: {
       title: "Contact Us",
       body: `
   📧 Email: support@turantx.com
-  📞 Phone: +91-9XXXXXXXXX
+  📞 Phone: +91 987654-5520
   📍 India
       `,
     },
@@ -166,10 +168,11 @@ For any questions regarding these Terms, please contact:
   
     privacy: {
       title: "Privacy Policy",
-      body: `
-  We respect your privacy. User data is encrypted and never shared
-  without consent.
-      `,
+      body: `We respect your privacy.
+    User data is encrypted
+    and never shared without
+    your consent.`,
     },
+    
   };
   
