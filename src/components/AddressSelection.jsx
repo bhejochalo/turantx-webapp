@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const GOOGLE_SCRIPT_ID = "google-maps-script";
 
-const ALLOWED_CITIES = ["pune", "mumbai", "delhi", "bangalore", "bengaluru"];
+const ALLOWED_CITIES = ["pune", "mumbai", "delhi", "bangalore", "bengaluru", "patna"];
 
 function loadGoogleMaps(apiKey) {
   return new Promise((resolve, reject) => {
@@ -180,7 +180,7 @@ export default function AutoCompleteAddress() {
         <div className="route-info">
   <span className="route-label">Operating Cities</span>
   <div className="route-cities">
-  <span>• Bangalore • Mumbai • Delhi • Pune</span>
+  <span>• Bangalore • Mumbai • Delhi • Pune .Patna</span>
    
   </div>
 </div>
