@@ -179,9 +179,8 @@ export default function AutoCompleteAddress() {
         {/* ✅ CLEAN INFO */}
         <div className="route-info">
   <span className="route-label">Operating Cities</span>
-  <div className="route-cities">
+  <div className="route-cities" style={{fontSize : "12px"}}>
   <span>• Bangalore • Mumbai • Delhi • Pune • Patna</span>
-   
   </div>
 </div>
 

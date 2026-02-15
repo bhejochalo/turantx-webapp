@@ -12,7 +12,7 @@ const indianStates = [
   "Andaman and Nicobar Islands", "Chandigarh", "Delhi", "Jammu and Kashmir",
   "Ladakh", "Lakshadweep", "Puducherry"
 ];
-const ENABLED_STATES = ["Maharashtra", "Karnataka", "Delhi"];
+const ENABLED_STATES = ["Maharashtra", "Karnataka", "Delhi", "Bihar"];
 
 export default function FromAddress() {
   const navigate = useNavigate();
