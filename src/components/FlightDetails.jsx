@@ -30,6 +30,7 @@ export default function FlightDetails() {
     remarks: "",
     checkParcel: false,
     agreeTerms: false,
+    pnr: "",    
   });
 
   // ✅ Airlines + Others
@@ -68,6 +69,14 @@ export default function FlightDetails() {
 
     if (name === "baggageSpace" && value < 0) return;
 
+    if (name === "pnr") {
+      setForm({
+        ...form,
+        pnr: value.toUpperCase(),
+      });
+      return;
+    }
+
     setForm({
       ...form,
       [name]: type === "checkbox" ? checked : value,
@@ -86,6 +95,11 @@ export default function FlightDetails() {
       return;
     }
 
+    if (!form.pnr) {
+      alert("⚠️ Please enter PNR number");
+      return;
+    }
+    
     if (!form.agreeTerms) {
       alert("⚠️ Please agree to Terms and Conditions");
       return;
@@ -173,6 +187,13 @@ export default function FlightDetails() {
               <option key={a}>{a}</option>
             ))}
           </select>
+
+          <input
+  name="pnr"
+  placeholder="Enter PNR Number"
+  value={form.pnr}
+  onChange={handleChange}
+/>
 
           {/* Others input */}
           {form.airline === "Others" && (
