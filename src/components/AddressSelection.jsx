@@ -99,7 +99,7 @@ export default function AutoCompleteAddress() {
     const city = extractCity(place.formatted_address);
     if (!city) {
       reset(type);
-      setError("We currently operate only in Pune, Mumbai, Delhi & Bangalore.");
+      setError("We currently operate only in Pune, Mumbai, Delhi, Bangalore & Patna.");
       return;
     }
 
@@ -180,7 +180,7 @@ export default function AutoCompleteAddress() {
         <div className="route-info">
   <span className="route-label">Operating Cities</span>
   <div className="route-cities">
-  <span>• Bangalore • Mumbai • Delhi • Pune .Patna</span>
+  <span>• Bangalore • Mumbai • Delhi • Pune • Patna</span>
    
   </div>
 </div>
