@@ -62,7 +62,7 @@ export default function TravelerWaitlist() {
       <div className="waitlist-card">
         <img src={logo} alt="TurantX" className="waitlist-logo" />
 
-        <h2>You’re Added to the Traveler Waitlist 🎉</h2>
+        <h2>You’re Added to the Traveller Waitlist 🎉</h2>
 
         {status === "SEARCHING" && (
           <>
@@ -120,12 +120,12 @@ export default function TravelerWaitlist() {
           <div className="verify-icon">🛡️</div>
 
           <div className="verify-text">
-            <strong>Verified Travelers Only</strong>
+            <strong>Verified Travellers Only</strong>
             <p>
-              Every traveler on TurantX is manually verified using
+              Every traveller on TurantX is manually verified using
               <b> PAN, government ID and flight details</b>.
               <br />
-              No unverified traveler is allowed on the platform.
+              No unverified traveller is allowed on the platform.
             </p>
           </div>
         </div>

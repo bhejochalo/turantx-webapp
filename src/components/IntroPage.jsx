@@ -42,8 +42,8 @@ export default function IntroPage() {
           ))}
         </div>
 
-        <button className="continue-btn" onClick={() => navigate("/login")}>
-          Continue to TurantX →
+        <button className="continue-btn" disabled>
+          Launching on 19th Feb 2026
         </button>
       </div>
     </div>
