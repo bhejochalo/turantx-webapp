@@ -7,7 +7,7 @@ export default function ItemDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  const phoneNumber = state?.phoneNumber;
+  const phoneNumber = state?.phoneNumber || localStorage.getItem("PHONE_NUMBER") || "";
   const from = state?.from;
   const to = state?.to;
   const distance = state?.distance || "";
@@ -30,6 +30,10 @@ export default function ItemDetails() {
 
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState({
+    senderName: "",
+    sendingDate: "",
+    lastDropTime: "",
+    lastPickupTime: "",
     itemName: "",
     weightKg: "",
     weightGram: "",
@@ -155,7 +159,8 @@ export default function ItemDetails() {
       )}
 
       <div className="item-card">
-        <h3 className="item-title">📦 Document Details</h3>
+        <h3 className="item-title">📦 Tell us about your parcel</h3>
+        <p className="item-subtitle">Just a few quick details and you're all set</p>
         {showFieldAlert && (
           <div className="modal-overlay">
             <div className="modal-card">
@@ -175,28 +180,98 @@ export default function ItemDetails() {
           </div>
         )}
 
-        <input
-          name="itemName"
-          value={item.itemName}
-          onChange={handleChange}
-          placeholder="Document type (e.g. Agreement, Application)"
-        />
-
-        <div className="weight-group">
+        <div>
+          <div className="field-label">
+            Sender's Full Name *
+            <span className="help-icon" data-tip="Enter the full legal name of the person sending the parcel.">?</span>
+          </div>
           <input
-            name="weightKg"
-            value={item.weightKg}
+            name="senderName"
+            value={item.senderName}
             onChange={handleChange}
-            placeholder="Weight (kg)"
-          />
-          <input
-            name="weightGram"
-            value={item.weightGram}
-            onChange={handleChange}
-            placeholder="Weight (grams)"
+            placeholder="e.g. Rahul Sharma"
           />
         </div>
 
+        <div>
+          <div className="field-label">
+            Date of Parcel Sending *
+            <span className="help-icon" data-tip="The date you plan to hand over the parcel to the traveller.">?</span>
+          </div>
+          <input
+            type="date"
+            name="sendingDate"
+            value={item.sendingDate}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="weight-group">
+          <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+            <div className="field-label">
+              Last time to drop parcel *
+              <span className="help-icon" data-tip={"The latest time by which you must hand the parcel to the traveller at the agreed meeting point."}>?</span>
+            </div>
+            <input
+              type="time"
+              name="lastDropTime"
+              value={item.lastDropTime}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+            <div className="field-label">
+              Last time for pickup *
+              <span className="help-icon" data-tip={"The latest time by which the receiver must collect the parcel from the traveller at the destination."}>?</span>
+            </div>
+            <input
+              type="time"
+              name="lastPickupTime"
+              value={item.lastPickupTime}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="field-label">
+            Document Type *
+            <span className="help-icon" data-tip="Describe what kind of document this is (e.g. Legal agreement, Application form, Certificate, Passport copy).">?</span>
+          </div>
+          <input
+            name="itemName"
+            value={item.itemName}
+            onChange={handleChange}
+            placeholder="e.g. Agreement, Application"
+          />
+        </div>
+
+        <div>
+          <div className="field-label">
+            Parcel Weight
+            <span className="help-icon" data-tip="Approximate weight of the parcel. Helps the traveller plan for baggage. At least one unit (kg or grams) is required.">?</span>
+          </div>
+          <div className="weight-group">
+            <input
+              name="weightKg"
+              value={item.weightKg}
+              onChange={handleChange}
+              placeholder="Weight (kg)"
+            />
+            <input
+              name="weightGram"
+              value={item.weightGram}
+              onChange={handleChange}
+              placeholder="Weight (grams)"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="field-label">
+            Delivery Option *
+            <span className="help-icon" data-tip={"Self Drop & Pick: You book a parcel service (e.g. Dunzo, Rapido, Porter) to drop the parcel to the traveller. On the other end, the receiver also arranges their own pickup from the traveller."}>?</span>
+          </div>
         <select
           name="deliveryOption"
           value={item.deliveryOption}
@@ -214,12 +289,15 @@ export default function ItemDetails() {
             Auto Drop & Pick (Coming Soon)
           </option>
         </select>
+        </div>
 
         <textarea
           name="instructions"
           value={item.instructions}
           onChange={handleChange}
-          placeholder="Special Instructions (optional)"
+          placeholder="Any special instructions? (optional)"
+          rows={3}
+          style={{ resize: "none" }}
         />
         <div className="trust-box">
 
@@ -239,19 +317,18 @@ export default function ItemDetails() {
           </ul> */}
 
           <label className="terms-checkbox">
-          <input
-  type="checkbox"
-  checked={acceptedTerms}
-  onChange={() => {
-    if (!acceptedTerms) {
-      setShowTermsModal(true);
-    } else {
-      setAcceptedTerms(false);
-    }
-  }}
-/>
-
-            I understand and agree to the terms and conditions
+            <input
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={() => {
+                if (!acceptedTerms) {
+                  setShowTermsModal(true);
+                } else {
+                  setAcceptedTerms(false);
+                }
+              }}
+            />
+            <span>I understand and agree to the terms and conditions</span>
           </label>
 
           <p className="secure-text">
@@ -262,6 +339,10 @@ export default function ItemDetails() {
   className="item-next"
   onClick={() => {
     if (
+      !item.senderName.trim() ||
+      !item.sendingDate ||
+      !item.lastDropTime ||
+      !item.lastPickupTime ||
       !item.itemName.trim() ||
       !item.deliveryOption ||
       !isValidWeight(item.weightKg, item.weightGram)

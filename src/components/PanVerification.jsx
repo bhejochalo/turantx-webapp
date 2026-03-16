@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 export default function PanVerification() {
   const { state } = useLocation();
 
-  const phoneNumber = state?.phoneNumber;
+  const phoneNumber = state?.phoneNumber || localStorage.getItem("PHONE_NUMBER") || "";
   const userType = "SENDER";
 
   return (

@@ -18,9 +18,8 @@ export default function FromAddress() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  const phoneNumber = state?.phoneNumber;
+  const phoneNumber = state?.phoneNumber || localStorage.getItem("PHONE_NUMBER") || "";
   const userType = state?.userType;
-  const fromAddress = state?.fromAddress || "";
   const distance = state?.distance || "";
 
   const [loading] = useState(false);
@@ -38,19 +37,38 @@ export default function FromAddress() {
 
   const [errors, setErrors] = useState({});
 
+  // Parse using Google address_components (reliable, language-independent)
+  const parseComponents = (components) => {
+    const get = (...types) => {
+      for (const type of types) {
+        const c = components.find((c) => c.types.includes(type));
+        if (c) return c.long_name;
+      }
+      return "";
+    };
+
+    const houseNumber = [get("subpremise"), get("premise")].filter(Boolean).join(", ");
+    const street      = get("route", "sublocality_level_2");
+    const area        = get("sublocality_level_1", "sublocality", "neighborhood");
+    const city        = get("locality", "administrative_area_level_2");
+    const stateName   = get("administrative_area_level_1");
+    const postalCode  = get("postal_code");
+
+    // Match state to enabled dropdown option
+    const matchedState = indianStates.find(
+      (s) => s.toLowerCase() === stateName.toLowerCase()
+    ) || stateName;
+
+    return { houseNumber, street, area, city, state: matchedState, postalCode };
+  };
+
   useEffect(() => {
-    if (fromAddress) {
-      const parts = fromAddress.split(",");
-      setFrom((prev) => ({
-        ...prev,
-        street: parts[0]?.trim() || "",
-        area: parts[1]?.trim() || "",
-        city: parts[2]?.trim() || "",
-        state: parts[3]?.trim() || "",
-        postalCode: parts[4]?.replace(/\D/g, "") || "",
-      }));
+    const fromComponents = state?.fromComponents || [];
+    if (fromComponents.length > 0) {
+      const parsed = parseComponents(fromComponents);
+      setFrom((prev) => ({ ...prev, ...parsed }));
     }
-  }, [fromAddress]);
+  }, [state]);
 
   const handleChange = (e) => {
     setFrom({ ...from, [e.target.name]: e.target.value });
@@ -70,7 +88,7 @@ export default function FromAddress() {
   const handleNext = () => {
     if (!validateFields()) return;
     navigate("/to-address", {
-      state: { phoneNumber, userType, from, distance, toAddress }
+      state: { phoneNumber, userType, from, distance, toAddress, toComponents: state?.toComponents || [] }
     });
     
   };
@@ -81,69 +99,80 @@ export default function FromAddress() {
       <div className="addr-card">
         <h3 className="addr-title">From Address</h3>
 
-        <input
-          name="houseNumber"
-          value={from.houseNumber}
-          onChange={handleChange}
-          placeholder="House / Flat Number"
-          className={`addr-input ${errors.houseNumber ? "error" : ""}`}
-        />
-        <input
-          name="street"
-          value={from.street}
-          onChange={handleChange}
-          placeholder="Street / Locality"
-          className={`addr-input ${errors.street ? "error" : ""}`}
-        />
-        <input
-          name="area"
-          value={from.area}
-          onChange={handleChange}
-          placeholder="Area / Landmark"
-          className={`addr-input ${errors.area ? "error" : ""}`}
-        />
-        <input
-          name="city"
-          value={from.city}
-          onChange={handleChange}
-          placeholder="City"
-          className={`addr-input ${errors.city ? "error" : ""}`}
-        />
+        <div className="addr-field">
+          <label className="addr-label">House / Flat Number</label>
+          <input
+            name="houseNumber"
+            value={from.houseNumber}
+            onChange={handleChange}
+            placeholder="e.g. 12B, Flat 3"
+            className={`addr-input ${errors.houseNumber ? "error" : ""}`}
+          />
+        </div>
 
-<select
-  name="state"
-  value={from.state}
-  onChange={handleChange}
-  className={`addr-input ${errors.state ? "error" : ""}`}
->
-  <option value="">Select State</option>
+        <div className="addr-field">
+          <label className="addr-label">Street / Locality</label>
+          <input
+            name="street"
+            value={from.street}
+            onChange={handleChange}
+            placeholder="e.g. MG Road"
+            className={`addr-input ${errors.street ? "error" : ""}`}
+          />
+        </div>
 
-  {indianStates.map((s, i) => {
-    const isEnabled = ENABLED_STATES.includes(s);
+        <div className="addr-field">
+          <label className="addr-label">Area / Landmark</label>
+          <input
+            name="area"
+            value={from.area}
+            onChange={handleChange}
+            placeholder="e.g. Near City Mall"
+            className={`addr-input ${errors.area ? "error" : ""}`}
+          />
+        </div>
 
-    return (
-      <option
-        key={i}
-        value={s}
-        disabled={!isEnabled}
-        style={{
-          color: isEnabled ? "#000" : "#aaa",
-        }}
-      >
-        {s} {!isEnabled ? " (Coming Soon)" : ""}
-      </option>
-    );
-  })}
-</select>
+        <div className="addr-field">
+          <label className="addr-label">City</label>
+          <input
+            name="city"
+            value={from.city}
+            onChange={handleChange}
+            placeholder="e.g. Mumbai"
+            className={`addr-input ${errors.city ? "error" : ""}`}
+          />
+        </div>
 
+        <div className="addr-field">
+          <label className="addr-label">State</label>
+          <select
+            name="state"
+            value={from.state}
+            onChange={handleChange}
+            className={`addr-input ${errors.state ? "error" : ""}`}
+          >
+            <option value="">Select State</option>
+            {indianStates.map((s, i) => {
+              const isEnabled = ENABLED_STATES.includes(s);
+              return (
+                <option key={i} value={s} disabled={!isEnabled} style={{ color: isEnabled ? "#000" : "#aaa" }}>
+                  {s} {!isEnabled ? " (Coming Soon)" : ""}
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-        <input
-          name="postalCode"
-          value={from.postalCode}
-          onChange={handleChange}
-          placeholder="Postal Code"
-          className={`addr-input ${errors.postalCode ? "error" : ""}`}
-        />
+        <div className="addr-field">
+          <label className="addr-label">Postal Code</label>
+          <input
+            name="postalCode"
+            value={from.postalCode}
+            onChange={handleChange}
+            placeholder="e.g. 400001"
+            className={`addr-input ${errors.postalCode ? "error" : ""}`}
+          />
+        </div>
 
         {Object.values(errors).length > 0 && (
           <p className="error-msg">⚠️ Please fill all required fields.</p>

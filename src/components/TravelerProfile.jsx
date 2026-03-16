@@ -37,12 +37,7 @@ export default function TravelerProfile({ location }) {
   const [otpInput, setOtpInput] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const mounted = useRef(true);
-
-
-  // helper: traveler doc ref path
-  const travelerDocRef = phoneNumber
-    ? doc(db, "users", phoneNumber, "Traveler", "details")
-    : null;
+  const travelerDocRef = useRef(null); // active request doc ref
 
   useEffect(() => {
     mounted.current = true;
@@ -72,16 +67,31 @@ export default function TravelerProfile({ location }) {
   }
 
   async function fetchTraveler() {
-    if (!travelerDocRef) {
+    if (!phoneNumber) {
       console.warn("fetchTraveler: no phoneNumber set");
       setTraveler(null);
       return;
     }
 
     try {
-      const snap = await getDoc(travelerDocRef);
+      // Try requests subcollection first (new structure)
+      const reqsSnap = await getDocs(collection(db, "users", phoneNumber, "TravelerRequests"));
+      let activeRef = null;
+
+      if (!reqsSnap.empty) {
+        const activeDoc = reqsSnap.docs.find((d) => d.data().LastMileStatus !== "Completed")
+          || reqsSnap.docs[reqsSnap.docs.length - 1];
+        activeRef = doc(db, "users", phoneNumber, "TravelerRequests", activeDoc.id);
+      } else {
+        // Fallback to old details doc
+        activeRef = doc(db, "users", phoneNumber, "Traveler", "details");
+      }
+
+      travelerDocRef.current = activeRef;
+
+      const snap = await getDoc(activeRef);
       if (!snap.exists()) {
-        console.warn("No traveler details doc found at users/{phone}/Traveler/details");
+        console.warn("No traveler details doc found");
         setTraveler(null);
         setStatusMessage("No traveler data available.");
         setSender(null);
@@ -92,7 +102,6 @@ export default function TravelerProfile({ location }) {
       const data = snap.data();
       setTraveler(data);
       setFlightForm(data.flightDetails || {});
-      // if uniqueKey present, load sender & borzo order
       const uniqueKey = data.uniqueKey || data.flightDetails?.uniqueKey || "";
       if (uniqueKey) {
         await Promise.all([fetchSenderByUniqueKey(uniqueKey), fetchBorzoByUniqueKey(uniqueKey)]);
@@ -172,7 +181,7 @@ export default function TravelerProfile({ location }) {
   }
 
   async function saveAddress() {
-    if (!travelerDocRef) return alert("No traveler doc reference");
+    if (!travelerDocRef.current) return alert("No traveler doc reference");
     // validate minimal
     if (!addressForm.city || !addressForm.state) {
       return alert("Please fill city and state");
@@ -186,7 +195,7 @@ export default function TravelerProfile({ location }) {
     });
 
     try {
-      await updateDoc(travelerDocRef, updates);
+      await updateDoc(travelerDocRef.current, updates);
       // refresh
       await fetchTraveler();
       setShowEditAddressModal(false);
@@ -218,11 +227,11 @@ export default function TravelerProfile({ location }) {
     setFlightForm((p) => ({ ...p, [name]: type === "checkbox" ? checked : value }));
   }
   async function saveFlightDetails() {
-    if (!travelerDocRef) return alert("No traveler doc reference");
+    if (!travelerDocRef.current) return alert("No traveler doc reference");
     // basic validation
     if (!flightForm.firstName || !flightForm.airline) return alert("Fill required flight fields");
     try {
-      await updateDoc(travelerDocRef, { flightDetails: flightForm });
+      await updateDoc(travelerDocRef.current, { flightDetails: flightForm });
       await fetchTraveler();
       setShowEditFlightModal(false);
       alert("Flight details updated");
@@ -241,8 +250,8 @@ export default function TravelerProfile({ location }) {
     setIsProcessingSlider(true);
     try {
       // Update statuses: SecondMileStatus -> Completed, LastMileStatus -> In Progress
-      if (!travelerDocRef) throw new Error("No traveler doc");
-      await updateDoc(travelerDocRef, {
+      if (!travelerDocRef.current) throw new Error("No traveler doc");
+      await updateDoc(travelerDocRef.current, {
         SecondMileStatus: "Completed",
         LastMileStatus: "In Progress",
       });
@@ -264,8 +273,8 @@ export default function TravelerProfile({ location }) {
     if (!otpInput) return alert("Enter OTP");
     if (otpInput === expected) {
       try {
-        if (!travelerDocRef) throw new Error("No traveler doc");
-        await updateDoc(travelerDocRef, {
+        if (!travelerDocRef.current) throw new Error("No traveler doc");
+        await updateDoc(travelerDocRef.current, {
           LastMileStatus: "Completed",
           status: "Completed",
         });

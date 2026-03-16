@@ -74,7 +74,22 @@
     font-size: 14px;
     margin-top: 4px;
   }
-  /* Make select (dropdown) look identical to text inputs */
+  /* ====== Field wrapper with label ====== */
+.addr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.addr-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Make select (dropdown) look identical to text inputs */
 .addr-input,
 .addr-input[type="text"],
 .addr-input[type="number"],

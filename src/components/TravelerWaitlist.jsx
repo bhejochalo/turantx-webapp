@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./TravelerWaitlist.css";
 import logo from "../assets/turantx-logo.png";
 import RequestTimeline from "./RequestTimeline";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function TravelerWaitlist() {
@@ -12,29 +12,46 @@ export default function TravelerWaitlist() {
 
   useEffect(() => {
     const phone = localStorage.getItem("PHONE_NUMBER");
-
     if (!phone) {
       setLoading(false);
       return;
     }
 
-    const travelerRef = doc(db, "users", phone, "Traveler", "details");
+    let unsub = null;
 
-    const unsub = onSnapshot(travelerRef, (snap) => {
-      if (!snap.exists()) {
-        setStatus("SEARCHING");
-        setLoading(false);
-        return;
+    const startListening = async () => {
+      // Try requests subcollection first (new structure)
+      const reqsSnap = await getDocs(collection(db, "users", phone, "TravelerRequests"));
+      let activeRef = null;
+
+      if (!reqsSnap.empty) {
+        const activeDoc = reqsSnap.docs.find((d) => d.data().LastMileStatus !== "Completed");
+        if (activeDoc) {
+          activeRef = doc(db, "users", phone, "TravelerRequests", activeDoc.id);
+        }
       }
 
-      const data = snap.data();
+      // Fallback to old details doc
+      if (!activeRef) {
+        activeRef = doc(db, "users", phone, "Traveler", "details");
+      }
 
-      setStatus(data.requestStatus || "SEARCHING");
-      setOpsReviewed(!!data.opsReviewed);
-      setLoading(false);
-    });
+      unsub = onSnapshot(activeRef, (snap) => {
+        if (!snap.exists()) {
+          setStatus("SEARCHING");
+          setLoading(false);
+          return;
+        }
 
-    return () => unsub();
+        const data = snap.data();
+        setStatus(data.requestStatus || "SEARCHING");
+        setOpsReviewed(!!data.opsReviewed);
+        setLoading(false);
+      });
+    };
+
+    startListening();
+    return () => { if (unsub) unsub(); };
   }, []);
 
   const getStep = () => {

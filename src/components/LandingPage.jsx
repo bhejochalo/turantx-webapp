@@ -45,25 +45,35 @@ export default function LandingPage() {
     }
   };
 
-  // ✅ Check traveler / sender inside user
-  const getUserRole = async (phone) => {
+  // ✅ Check traveler / sender role + whether delivery is completed
+  const getUserDestination = async (phone) => {
     try {
-      const travelerSnap = await getDocs(
-        collection(db, "users", phone, "Traveler")
-      );
+      // Check Traveler — new requests subcollection first, fallback to details
+      const travelerReqsSnap = await getDocs(collection(db, "users", phone, "TravelerRequests"));
+      if (!travelerReqsSnap.empty) {
+        const hasActive = travelerReqsSnap.docs.some((d) => d.data().LastMileStatus !== "Completed");
+        return { role: "TRAVELER", isCompleted: !hasActive };
+      }
+      const travelerDetailsSnap = await getDoc(doc(db, "users", phone, "Traveler", "details"));
+      if (travelerDetailsSnap.exists()) {
+        return { role: "TRAVELER", isCompleted: travelerDetailsSnap.data().LastMileStatus === "Completed" };
+      }
 
-      if (!travelerSnap.empty) return "TRAVELER";
+      // Check Sender — new requests subcollection first, fallback to details
+      const senderReqsSnap = await getDocs(collection(db, "users", phone, "SenderRequests"));
+      if (!senderReqsSnap.empty) {
+        const hasActive = senderReqsSnap.docs.some((d) => d.data().LastMileStatus !== "Completed");
+        return { role: "SENDER", isCompleted: !hasActive };
+      }
+      const senderDetailsSnap = await getDoc(doc(db, "users", phone, "Sender", "details"));
+      if (senderDetailsSnap.exists()) {
+        return { role: "SENDER", isCompleted: senderDetailsSnap.data().LastMileStatus === "Completed" };
+      }
 
-      const senderSnap = await getDocs(
-        collection(db, "users", phone, "Sender")
-      );
-
-      if (!senderSnap.empty) return "SENDER";
-
-      return null;
+      return { role: null, isCompleted: false };
     } catch (err) {
       console.error("Role check failed", err);
-      return null;
+      return { role: null, isCompleted: false };
     }
   };
 
@@ -102,20 +112,20 @@ export default function LandingPage() {
   
     // ✅ LOGIN + already exists → check role
     if (mode === "LOGIN" && exists) {
-      const role = await getUserRole(phoneNumber);
-  
+      const { role, isCompleted } = await getUserDestination(phoneNumber);
+
       await waitMinLoader(startTime);
       setLoading(false);
-  
+
       if (role === "TRAVELER") {
-        navigate("/traveler-waitlist", {
+        navigate(isCompleted ? "/dashboard" : "/traveler-waitlist", {
           state: { phoneNumber },
         });
         return;
       }
-  
+
       if (role === "SENDER") {
-        navigate("/sender-waitlist", {
+        navigate(isCompleted ? "/dashboard" : "/sender-waitlist", {
           state: { phoneNumber },
         });
         return;

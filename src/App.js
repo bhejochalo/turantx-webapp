@@ -21,6 +21,7 @@ import AppLayout from "./components/AppLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import WhatsAppHelp from "./components/WhatsAppHelp";
 import InfoPage from "./components/InfoPage";
+import Dashboard from "./components/Dashboard";
 function AppRoutes() {
   const location = useLocation();
 
@@ -48,6 +49,7 @@ function AppRoutes() {
           <Route path="/traveler-waitlist" element={<TravelerWaitlist />} />
           <Route path="/sender-waitlist" element={<SenderWaitlist />} />
           <Route path="/info/:type" element={<InfoPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
 

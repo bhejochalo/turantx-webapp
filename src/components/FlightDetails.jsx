@@ -7,7 +7,7 @@ export default function FlightDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  const phoneNumber = state?.phoneNumber;
+  const phoneNumber = state?.phoneNumber || localStorage.getItem("PHONE_NUMBER") || "";
   const from = state?.from;
   const to = state?.to;
   const distance = state?.distance || "";
@@ -123,6 +123,11 @@ export default function FlightDetails() {
     };
 
     setLoading(true);
+
+    console.log("[FlightDetails] phoneNumber from state:", state?.phoneNumber);
+    console.log("[FlightDetails] phoneNumber from localStorage:", localStorage.getItem("PHONE_NUMBER"));
+    console.log("[FlightDetails] phoneNumber being sent:", phoneNumber);
+    console.log("[FlightDetails] full payload:", JSON.stringify(payload));
 
     try {
       const res = await fetch(

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./SenderWaitlist.css";
 import RequestTimeline from "./RequestTimeline";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import logo from "../assets/turantx-logo.png";
 import TrustStatusBox from "./TrustStatusBox";
@@ -55,37 +55,56 @@ export default function SenderWaitlist() {
       return;
     }
 
-    const detailsRef = doc(db, "users", phone, "Sender", "details");
+    let unsub = null;
 
-    const unsub = onSnapshot(detailsRef, (snap) => {
-      if (!snap.exists()) {
-        setStatus("SEARCHING");
-        setLoading(false);
-        return;
+    const startListening = async () => {
+      // Try requests subcollection first (new structure)
+      const reqsSnap = await getDocs(collection(db, "users", phone, "SenderRequests"));
+      let activeRef = null;
+
+      if (!reqsSnap.empty) {
+        const activeDoc = reqsSnap.docs.find((d) => d.data().LastMileStatus !== "Completed");
+        if (activeDoc) {
+          activeRef = doc(db, "users", phone, "SenderRequests", activeDoc.id);
+        }
       }
 
-      const data = snap.data();
+      // Fallback to old details doc
+      if (!activeRef) {
+        activeRef = doc(db, "users", phone, "Sender", "details");
+      }
 
-      setStatus(data.requestStatus || "SEARCHING");
-      setTrust(data.trustStatus || {});
-      setOpsReviewed(!!data.opsReviewed);
+      unsub = onSnapshot(activeRef, (snap) => {
+        if (!snap.exists()) {
+          setStatus("SEARCHING");
+          setLoading(false);
+          return;
+        }
 
-      setSummary({
-        requestId: data.uniqueKey,
-        fromCity: data.from?.city,
-        toCity: data.to?.city,
-        itemName: data.itemDetails?.itemName,
-        weight: data.itemDetails?.totalWeight,
-        deliveryType:
-          data.itemDetails?.deliveryOption === "SELF_DROP_PICK"
-            ? "Self Drop & Pick"
-            : "Auto Drop & Pick",
+        const data = snap.data();
+
+        setStatus(data.requestStatus || "SEARCHING");
+        setTrust(data.trustStatus || {});
+        setOpsReviewed(!!data.opsReviewed);
+
+        setSummary({
+          requestId: data.uniqueKey,
+          fromCity: data.from?.city,
+          toCity: data.to?.city,
+          itemName: data.itemDetails?.itemName,
+          weight: data.itemDetails?.totalWeight,
+          deliveryType:
+            data.itemDetails?.deliveryOption === "SELF_DROP_PICK"
+              ? "Self Drop & Pick"
+              : "Auto Drop & Pick",
+        });
+
+        setLoading(false);
       });
+    };
 
-      setLoading(false);
-    });
-
-    return () => unsub();
+    startListening();
+    return () => { if (unsub) unsub(); };
   }, []);
 
   /* ---------------- LOADING ---------------- */

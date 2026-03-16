@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "./SelectionPage.css";
 import logo from "../assets/turantx-logo.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
-const SelectionPage = ({ phoneNumber }) => {
+const SelectionPage = ({ phoneNumber: propPhone }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const phoneNumber = propPhone || location.state?.phoneNumber || localStorage.getItem("PHONE_NUMBER") || "";
 
   const [checking, setChecking] = useState(false);
   const [travelerExists, setTravelerExists] = useState(false);

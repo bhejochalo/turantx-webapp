@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   doc,
   getDoc,
@@ -25,6 +25,7 @@ export default function SenderProfile() {
 
   const [editType, setEditType] = useState(null); // "from" | "to" | "item"
   const [formData, setFormData] = useState({});
+  const activeSenderDocRef = useRef(null);
 
   /* ---------------- LOAD PHONE ---------------- */
   useEffect(() => {
@@ -42,32 +43,31 @@ export default function SenderProfile() {
     }
     const loadAll = async () => {
       try {
-        // ---- Sender ----
-        const senderRef = doc(db, "users", phoneNumber, "Sender", "details");
-        const senderSnap = await getDoc(senderRef);
-        if (!senderSnap.exists()) return;
-    
-        const senderData = senderSnap.data();
-        setSender(senderData);
-    
-        // ---- Traveler (SAME phone number) ----
-        const travelerRef = doc(
-          db,
-          "users",
-          senderData.phoneNumber,
-          "Traveler",
-          "details"
-        );
-    
-        const travelerSnap = await getDoc(travelerRef);
-    
-        if (travelerSnap.exists()) {
-          setTraveler({
-            phoneNumber: senderData.phoneNumber,
-            ...travelerSnap.data(),
-          });
+        let senderData = null;
+
+        // Try requests subcollection first (new structure)
+        const reqsSnap = await getDocs(collection(db, "users", phoneNumber, "SenderRequests"));
+        if (!reqsSnap.empty) {
+          const activeDoc = reqsSnap.docs.find((d) => d.data().LastMileStatus !== "Completed")
+            || reqsSnap.docs[reqsSnap.docs.length - 1];
+          activeSenderDocRef.current = doc(db, "users", phoneNumber, "SenderRequests", activeDoc.id);
+          senderData = activeDoc.data();
         } else {
-          console.warn("Traveler details not found");
+          // Fallback to old details doc
+          const senderRef = doc(db, "users", phoneNumber, "Sender", "details");
+          const senderSnap = await getDoc(senderRef);
+          if (!senderSnap.exists()) return;
+          activeSenderDocRef.current = senderRef;
+          senderData = senderSnap.data();
+        }
+
+        setSender(senderData);
+
+        // ---- Traveler (matched traveler via sender's phone) ----
+        const travelerRef = doc(db, "users", senderData.phoneNumber, "Traveler", "details");
+        const travelerSnap = await getDoc(travelerRef);
+        if (travelerSnap.exists()) {
+          setTraveler({ phoneNumber: senderData.phoneNumber, ...travelerSnap.data() });
         }
       } catch (e) {
         console.error("SenderProfile load error:", e);
@@ -97,7 +97,8 @@ export default function SenderProfile() {
   };
 
   const saveEdit = async () => {
-    const ref = doc(db, "users", phoneNumber, "Sender", "details");
+    const ref = activeSenderDocRef.current;
+    if (!ref) return;
 
     if (editType === "from") {
       await updateDoc(ref, { from: formData });

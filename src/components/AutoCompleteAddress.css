@@ -38,6 +38,88 @@
     margin-left: 6px;
   }
 
+  /* ====== Route Info ====== */
+  .route-info {
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .route-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #aaa;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .route-cities {
+    color: #555;
+    font-size: 13px;
+  }
+
+  .route-error {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #fff0f0;
+    border: 1px solid #ffcccc;
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #cc3300;
+    font-size: 13px;
+    margin-bottom: 14px;
+    text-align: left;
+  }
+
+  /* ====== Custom Autocomplete Dropdown ====== */
+  .autocomplete-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .autocomplete-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    z-index: 999;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  .autocomplete-dropdown li {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 14px;
+    cursor: pointer;
+    gap: 2px;
+    transition: background 0.15s;
+  }
+
+  .autocomplete-dropdown li:hover {
+    background: #fff5ee;
+  }
+
+  .suggestion-main {
+    font-size: 14px;
+    font-weight: 500;
+    color: #222;
+  }
+
+  .suggestion-secondary {
+    font-size: 12px;
+    color: #999;
+  }
+
   /* ====== Input Fields ====== */
   .auto-fields {
     display: flex;
@@ -46,7 +128,8 @@
     margin-bottom: 25px;
   }
 
-  .field-input {
+  .field-input,
+  .auto-input {
     width: 100%;
     padding: 12px 15px;
     font-size: 15px;
@@ -54,12 +137,20 @@
     border-radius: 12px;
     outline: none;
     transition: 0.3s ease;
-    text-align: center;
+    box-sizing: border-box;
+    background-color: #fff;
+    color: #333;
+    font-family: "Inter", sans-serif;
   }
 
-  .field-input:focus {
+  .field-input:focus,
+  .auto-input:focus {
     border-color: #ffae70;
     box-shadow: 0 0 6px rgba(255, 125, 0, 0.3);
+  }
+
+  .auto-input::placeholder {
+    color: #aaa;
   }
 
   /* ====== Distance Box ====== */

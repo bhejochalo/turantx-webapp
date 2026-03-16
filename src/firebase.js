@@ -18,6 +18,5 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 export const db = getFirestore(app);
 
 // Setup messaging safely (prevents crash on Safari)
-export const messaging = (await isSupported())
-  ? getMessaging(app)
-  : null;
+export const getMessagingInstance = () =>
+  isSupported().then((supported) => (supported ? getMessaging(app) : null));
