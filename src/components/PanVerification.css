@@ -2,17 +2,24 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #fff7f1, #fffaf7);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 40px;
+  padding: 32px 16px calc(88px + env(safe-area-inset-bottom, 0px));
   font-family: "Inter", sans-serif;
+}
+
+@media (min-width: 769px) {
+  .pan-container {
+    padding: 32px 16px 48px;
+  }
 }
 
 .pan-card {
   background: white;
   border-radius: 18px;
   padding: 36px;
-  width: 420px;
+  width: 100%;
+  max-width: 420px;
   text-align: center;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
   animation: fadeIn 0.4s ease-in-out;
@@ -79,12 +86,14 @@
   background: linear-gradient(180deg, #ffb78a, #ff914d);
   border: none;
   color: white;
-  padding: 12px 20px;
+  padding: 14px 20px;
   border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   width: 100%;
+  min-height: 48px;
+  font-size: 15px;
 }
 .scan-btn:hover,
 .next-btn:hover {
@@ -136,5 +145,20 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .pan-container {
+    padding: 16px 12px;
+  }
+
+  .pan-card {
+    padding: 24px 18px;
+    border-radius: 14px;
+  }
+
+  .pan-title {
+    font-size: 18px;
   }
 }

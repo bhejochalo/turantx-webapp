@@ -4,6 +4,7 @@ import { collectionGroup, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import Loader from "./Loader";
 import { useNavigate } from "react-router-dom";
+import { showToast } from "./Toast";
 
 
 // ✅ Haversine distance calculator (in km)
@@ -106,7 +107,7 @@ export default function TravelerList() {
   // ✅ 4️⃣ Razorpay booking integration
   const handleBook = async (traveler) => {
     if (!accepted) {
-      alert("⚠️ Please accept the booking terms before continuing.");
+      showToast("Please accept the booking terms before continuing.", "warning");
       return;
     }
 
@@ -121,7 +122,7 @@ export default function TravelerList() {
 
     const res = await loadRazorpay();
     if (!res) {
-      alert("Razorpay SDK failed to load. Please check your connection.");
+      showToast("Payment system failed to load. Please check your connection.", "error");
       return;
     }
 
@@ -149,7 +150,7 @@ export default function TravelerList() {
           })
         );
       
-        alert("✅ Payment Successful! Redirecting to Sender Profile…");
+        showToast("Payment Successful! Redirecting...", "success");
       
         // ✅ Redirect to Sender Profile
         navigate("/sender-profile", {

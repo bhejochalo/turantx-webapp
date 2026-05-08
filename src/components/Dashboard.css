@@ -1,240 +1,432 @@
+/* ============================================================
+   DASHBOARD — light, premium. Mirrors fd-* design system.
+   Reuses tokens + primitives (.fd-btn, .trust-strip, .summary-row)
+   from WaitlistShared.css.
+   ============================================================ */
+@import "./WaitlistShared.css";
+
+/* ============================================================
+   PAGE
+   ============================================================ */
 .dashboard-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #fff7f1 0%, #fffaf7 100%);
+  min-height: 100svh;
+  background:
+    radial-gradient(ellipse at 82% 0%,   rgba(255, 210, 80,  0.22) 0%, transparent 48%),
+    radial-gradient(ellipse at 8%  92%,  rgba(40,  145, 220, 0.16) 0%, transparent 44%),
+    linear-gradient(168deg, #EBF4FC 0%, #F2F8FC 38%, #F8FAFB 68%, #FAFBFC 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 40px 16px;
+  padding: 44px 16px calc(120px + env(safe-area-inset-bottom, 0px));
   font-family: "Inter", sans-serif;
+  color: var(--fd-text);
+  position: relative;
 }
 
+/* ============================================================
+   CARD
+   ============================================================ */
 .dashboard-card {
-  width: 100%;
-  max-width: 680px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  background: var(--fd-bg);
+  border: 1px solid var(--fd-border-soft);
   padding: 36px 40px;
+  border-radius: var(--fd-radius-xl);
+  width: 100%;
+  max-width: 760px;
+  box-shadow: var(--fd-shadow-lg);
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  animation: dashFadeIn 0.4s ease;
+  gap: var(--fd-space-4);
+  animation: dashEnter 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes dashEnter {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* HEADER */
+/* ============================================================
+   HEADER
+   ============================================================ */
 .dash-header {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+  padding-bottom: var(--fd-space-3);
+  border-bottom: 1px solid var(--fd-border-soft);
+}
+.dash-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(165deg, var(--fd-primary-light) 0%, var(--fd-primary) 100%);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(255, 98, 26, 0.28);
+  letter-spacing: -0.02em;
+}
+.dash-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.dash-greeting {
+  font-size: clamp(20px, 3vw, 24px);
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  background: linear-gradient(125deg, #071828 0%, #1A5FAA 55%, #C44000 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.dash-phone {
+  font-size: 13.5px;
+  color: var(--fd-text-muted);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
 }
 
-.dash-header img {
-  width: 72px;
-  height: auto;
+/* ============================================================
+   SECTION HEADER
+   ============================================================ */
+.dash-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-
-.dash-header h2 {
-  font-size: 22px;
+.dash-section-title {
+  font-size: 11.5px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--fd-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   margin: 0;
 }
 
-.dash-phone {
-  font-size: 14px;
-  color: #999;
-  margin: 4px 0 0;
-}
-
-/* ACTIVE BOOKING CARD */
+/* ============================================================
+   ACTIVE BOOKING CARD (featured)
+   ============================================================ */
 .dash-active-card {
-  background: #fff7f1;
-  border: 1.5px solid #ffddbc;
-  border-radius: 14px;
+  position: relative;
+  background: var(--fd-bg);
+  border: 1px solid var(--fd-primary-border);
+  border-radius: var(--fd-radius-lg);
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
+  box-shadow: var(--fd-shadow-md);
+  overflow: hidden;
 }
+.dash-active-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--fd-primary-soft) 0%, transparent 60%);
+  pointer-events: none;
+}
+.dash-active-card > * { position: relative; z-index: 1; }
 
-.dash-active-label {
+.dash-active-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.dash-active-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: #ff914d;
+  padding: 5px 10px 5px 8px;
+  border-radius: 999px;
+  background: var(--fd-primary-soft);
+  color: var(--fd-primary-dark);
+  border: 1px solid var(--fd-primary-border);
+  line-height: 1;
+}
+.dash-active-badge-icon {
+  width: 14px; height: 14px;
+  display: inline-flex;
+}
+.dash-active-badge-icon svg { width: 100%; height: 100%; }
+
+.dash-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--fd-bg-soft);
+  color: var(--fd-text-soft);
+  border: 1px solid var(--fd-border-soft);
+  line-height: 1;
+}
+.dash-status-pill.is-progress {
+  background: var(--fd-info-soft);
+  color: var(--fd-info);
+  border-color: rgba(26, 95, 170, 0.20);
+}
+.dash-status-pill.is-matched {
+  background: var(--fd-primary-soft);
+  color: var(--fd-primary-dark);
+  border-color: var(--fd-primary-border);
+}
+.dash-status-pill-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  animation: dashDotPulse 1.6s ease-in-out infinite;
+}
+@keyframes dashDotPulse {
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 1; }
 }
 
 .dash-route {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-.dash-status-badge {
-  display: inline-block;
-  background: #fff3e8;
-  color: #ff7a29;
-  border-radius: 20px;
-  padding: 4px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  width: fit-content;
-}
-
-.dash-view-btn {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1.5px solid #ff914d;
-  background: transparent;
-  color: #ff914d;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  font-family: "Inter", sans-serif;
-}
-
-.dash-view-btn:hover {
-  background: #fff3e8;
-}
-
-/* DIVIDER */
-.dash-divider {
-  border: none;
-  border-top: 1px solid #f1f1f1;
+  font-size: clamp(18px, 2.5vw, 22px);
+  font-weight: 800;
+  color: var(--fd-text);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
+.dash-route-arrow {
+  width: 20px; height: 20px;
+  color: var(--fd-primary);
+  flex-shrink: 0;
+}
+.dash-route-arrow svg { width: 100%; height: 100%; }
 
-/* NEW REQUEST */
+/* ============================================================
+   NEW REQUEST SECTION (when no active)
+   ============================================================ */
 .dash-new-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
   text-align: center;
+  padding: 24px 20px;
+  background: var(--fd-bg-soft);
+  border: 1px dashed var(--fd-border);
+  border-radius: var(--fd-radius-lg);
 }
-
-.dash-new-section p {
-  font-size: 15px;
-  color: #555;
+.dash-new-icon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: var(--fd-primary-soft);
+  color: var(--fd-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.dash-new-icon svg { width: 24px; height: 24px; }
+.dash-new-section h3 {
   margin: 0;
-}
-
-.dash-cta-btn {
-  width: 100%;
-  padding: 15px;
-  border-radius: 24px;
-  border: none;
-  background: linear-gradient(180deg, #ffb78a, #ff914d);
-  color: #fff;
   font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(255, 145, 77, 0.4);
-  transition: transform 0.15s, box-shadow 0.15s;
-  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  color: var(--fd-text);
+  letter-spacing: -0.01em;
+}
+.dash-new-section p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--fd-text-soft);
+  line-height: 1.55;
+  max-width: 420px;
 }
 
-.dash-cta-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(255, 145, 77, 0.5);
-}
-
-/* PAST BOOKINGS */
-.dash-past-section {
+/* ============================================================
+   PAST DELIVERIES LIST
+   ============================================================ */
+.dash-past-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
-
-.dash-section-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: #bbb;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin: 0 0 4px;
-}
-
 .dash-past-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
-  border-radius: 12px;
-  background: #fafafa;
-  border: 1px solid #f0f0f0;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--fd-radius-sm);
+  background: var(--fd-bg-soft);
+  border: 1px solid var(--fd-border-soft);
+  transition: background 0.18s, border-color 0.18s;
 }
-
+.dash-past-card:hover {
+  background: var(--fd-bg);
+  border-color: var(--fd-border);
+}
 .dash-past-role {
-  font-size: 13px;
-  color: #777;
-  min-width: 90px;
-}
-
-.dash-past-route {
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--fd-text-muted);
+  flex-shrink: 0;
+}
+.dash-past-role-icon {
+  width: 14px; height: 14px;
+  color: var(--fd-text-muted);
+  display: inline-flex;
+}
+.dash-past-role-icon svg { width: 100%; height: 100%; }
+.dash-past-route {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fd-text);
   flex: 1;
   text-align: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
 .dash-past-status {
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
   font-weight: 600;
-  color: #0f9d58;
-  background: #f0fff7;
-  border-radius: 20px;
-  padding: 3px 10px;
+  color: var(--fd-success-deep);
+  background: var(--fd-success-soft);
+  border-radius: 999px;
+  padding: 4px 10px;
+  border: 1px solid rgba(22, 163, 74, 0.22);
+  flex-shrink: 0;
 }
+.dash-past-status-icon {
+  width: 12px; height: 12px;
+  color: var(--fd-success);
+}
+.dash-past-status-icon svg { width: 100%; height: 100%; }
 
-/* FOOTER NOTE */
+/* ============================================================
+   FOOTER NOTE
+   ============================================================ */
 .dash-footer-note {
-  font-size: 12px;
-  color: #bbb;
+  font-size: 12.5px;
+  color: var(--fd-text-muted);
   text-align: center;
   margin: 0;
+  line-height: 1.5;
 }
-
-/* PAGE FOOTER */
 .dash-footer {
-  margin-top: 20px;
+  margin-top: var(--fd-space-3);
   font-size: 12px;
-  color: #ccc;
+  color: var(--fd-text-faded);
   font-family: "Inter", sans-serif;
 }
 
-/* RESPONSIVE */
-@media (max-width: 720px) {
-  .dashboard-card {
-    padding: 24px 20px;
-    gap: 18px;
-  }
-
-  .dash-header img {
-    width: 56px;
-  }
-
-  .dash-header h2 {
-    font-size: 18px;
-  }
-
-  .dash-route {
-    font-size: 15px;
-  }
+/* ============================================================
+   FOCUS-VISIBLE
+   ============================================================ */
+.dashboard-page button:focus-visible,
+.dashboard-page a:focus-visible {
+  outline: 3px solid var(--fd-focus-ring);
+  outline-offset: 2px;
 }
 
-@keyframes dashFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-card,
+  .dash-status-pill-dot { animation: none !important; }
+}
+
+/* ============================================================
+   RESPONSIVE — mobile multi-card stack
+   ============================================================ */
+@media (max-width: 700px) {
+  .dashboard-page {
+    padding: 20px 14px calc(100px + env(safe-area-inset-bottom, 0px));
+    align-items: stretch;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  /* Outer card dissolves */
+  .dashboard-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+    animation: none;
+    gap: 14px;
   }
+
+  /* Header becomes its own white card */
+  .dash-header {
+    background: var(--fd-bg);
+    border: 1px solid var(--fd-border-soft);
+    border-radius: var(--fd-radius-md);
+    padding: 14px 16px;
+    box-shadow: 0 1px 2px rgba(15, 40, 90, 0.04),
+                0 4px 16px rgba(15, 40, 90, 0.05);
+    border-bottom: 1px solid var(--fd-border-soft);
+  }
+
+  .dash-active-card,
+  .dash-new-section,
+  .dash-past-card {
+    box-shadow: 0 1px 2px rgba(15, 40, 90, 0.04),
+                0 4px 16px rgba(15, 40, 90, 0.05);
+  }
+
+  .dash-active-card { padding: 18px 16px; border-radius: var(--fd-radius-md); }
+  .dash-new-section { padding: 22px 18px; border-radius: var(--fd-radius-md); }
+
+  .dash-past-card {
+    background: var(--fd-bg);
+    border-radius: var(--fd-radius-md);
+    padding: 12px 14px;
+  }
+
+  .dash-greeting { font-size: 19px; }
+  .dash-phone { font-size: 13px; }
+  .dash-route { font-size: 17px; }
+}
+
+@media (max-width: 420px) {
+  .dash-past-card {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .dash-past-route {
+    flex: 1 0 100%;
+    text-align: left;
+    order: -1;
+    font-size: 14px;
+  }
+  .dash-active-head { gap: 8px; }
+  .dash-greeting { font-size: 18px; }
 }

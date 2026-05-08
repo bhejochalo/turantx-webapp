@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Address.css";
 import Loader from "./Loader";
+import StepIndicator from "./StepIndicator";
+import { showToast } from "./Toast";
 
 const indianStates = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
@@ -31,8 +33,8 @@ export default function ToAddress() {
     city: "",
     state: "",
     postalCode: "",
-    latitude: null,
-    longitude: null,
+    latitude: state?.toLatitude || null,
+    longitude: state?.toLongitude || null,
   });
 
   const [errors, setErrors] = useState({});
@@ -80,7 +82,14 @@ export default function ToAddress() {
       if (!to[key] && key !== "latitude" && key !== "longitude")
         newErrors[key] = "Required";
     });
+    if (to.postalCode && !/^\d{6}$/.test(to.postalCode)) {
+      newErrors.postalCode = "Must be 6 digits";
+    }
     setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const first = Object.values(newErrors)[0];
+      showToast(first === "Required" ? "Please fill all required fields" : first, "warning");
+    }
     return Object.keys(newErrors).length === 0;
   };
 
@@ -91,7 +100,7 @@ export default function ToAddress() {
       setLoading(false);
       if (userType === "TRAVELER") {
         navigate("/flight-details", { state: { phoneNumber, userType, from, to, distance } });
-      } else if(userType == "SENDER"){
+      } else if(userType === "SENDER"){
         navigate("/item-details", { state: { phoneNumber, userType, from, to, distance, panDetails: state?.panDetails } });
       }
       else{
@@ -108,6 +117,7 @@ export default function ToAddress() {
     <div className="addr-container">
       {loading && <Loader />}
       <div className="addr-card">
+        <StepIndicator current={4} total={5} label="Drop address" />
         <h3 className="addr-title">To Address</h3>
 
         <div className="addr-field">

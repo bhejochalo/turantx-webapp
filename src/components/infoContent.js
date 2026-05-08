@@ -61,7 +61,7 @@ If no suitable traveler is found, the request is cancelled at no cost.
       title: "Contact Us",
       body: `
   📧 Email: support@turantx.com
-  📞 Phone: +91 987654-5520
+  📞 Phone: +91 98765-45520
   📍 India
       `,
     },

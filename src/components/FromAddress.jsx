@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Address.css";
 import Loader from "./Loader";
+import StepIndicator from "./StepIndicator";
+import { showToast } from "./Toast";
 
 const indianStates = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
@@ -31,8 +33,8 @@ export default function FromAddress() {
     city: "",
     state: "",
     postalCode: "",
-    latitude: null,
-    longitude: null,
+    latitude: state?.from?.latitude || state?.fromCoords?.lat || null,
+    longitude: state?.from?.longitude || state?.fromCoords?.lng || null,
   });
 
   const [errors, setErrors] = useState({});
@@ -81,14 +83,21 @@ export default function FromAddress() {
       if (!from[key] && key !== "latitude" && key !== "longitude")
         newErrors[key] = "Required";
     });
+    if (from.postalCode && !/^\d{6}$/.test(from.postalCode)) {
+      newErrors.postalCode = "Must be 6 digits";
+    }
     setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const first = Object.values(newErrors)[0];
+      showToast(first === "Required" ? "Please fill all required fields" : first, "warning");
+    }
     return Object.keys(newErrors).length === 0;
   };
 
   const handleNext = () => {
     if (!validateFields()) return;
     navigate("/to-address", {
-      state: { phoneNumber, userType, from, distance, toAddress, toComponents: state?.toComponents || [] }
+      state: { phoneNumber, userType, from, distance, toAddress, toComponents: state?.toComponents || [], toLatitude: state?.to?.latitude || state?.toCoords?.lat || null, toLongitude: state?.to?.longitude || state?.toCoords?.lng || null }
     });
     
   };
@@ -97,6 +106,7 @@ export default function FromAddress() {
     <div className="addr-container">
       {loading && <Loader />}
       <div className="addr-card">
+        <StepIndicator current={3} total={5} label="Pickup address" />
         <h3 className="addr-title">From Address</h3>
 
         <div className="addr-field">
@@ -185,9 +195,10 @@ export default function FromAddress() {
           </div>
         )}
 
-        <button className="addr-next" onClick={handleNext}>
-          Next
-        </button>
+        <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+          <button className="addr-next" style={{ background: "#f2f2f2", color: "#555", flex: 1 }} onClick={() => navigate(-1)}>Back</button>
+          <button className="addr-next" style={{ flex: 2 }} onClick={handleNext}>Next</button>
+        </div>
       </div>
     </div>
   );

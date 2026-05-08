@@ -1,578 +1,425 @@
-import React, { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import "./FlightDetails.css";
 import "./ItemDetails.css";
 import Loader from "./Loader";
+import StepIndicator from "./StepIndicator";
+import { showToast } from "./Toast";
+import FormActionBar from "./FormActionBar";
+
+/* ── Inline SVG icon set ── */
+const Icon = {
+  doc: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="9" y1="13" x2="15" y2="13" />
+      <line x1="9" y1="17" x2="15" y2="17" />
+    </svg>
+  ),
+  car: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M5 17h14M3 17V11l2-6h14l2 6v6"/>
+      <circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+    </svg>
+  ),
+  shield: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><polyline points="9 12 11 14 15 10" />
+    </svg>
+  ),
+};
+
+/* ── helpers ── */
+const todayISO = () => new Date().toISOString().split("T")[0];
+const oneYearOutISO = () => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() + 1);
+  return d.toISOString().split("T")[0];
+};
+const tomorrowISO = () => {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split("T")[0];
+};
+const formatPrettyDate = (iso) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+};
+const formatPrettyTime = (hhmm) => {
+  if (!hhmm) return "";
+  const [h, m] = hhmm.split(":").map(Number);
+  const ampm = h < 12 ? "AM" : "PM";
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hour12}:${String(m).padStart(2, "0")} ${ampm}`;
+};
+
+/* ── per-field validators ── */
+const validators = {
+  senderName: (v) => (!v.trim() ? "Full name is required" : v.trim().length < 2 ? "Too short" : ""),
+  phone:      (v) => (!v ? "Mobile number is required" : !/^[6-9]\d{9}$/.test(v) ? "Enter a valid 10-digit mobile" : ""),
+  sendingDate:(v) => {
+    if (!v) return "Sending date is required";
+    if (v < todayISO()) return "Date cannot be in the past";
+    if (v > oneYearOutISO()) return "Date too far ahead";
+    return "";
+  },
+  lastDropTime: (v) => (!v ? "Pick a handover time" : ""),
+  itemName:     (v) => (!v.trim() ? "Document type is required" : ""),
+  weightGrams:  (v) => {
+    if (!v) return "Weight is required";
+    const n = Number(v);
+    if (isNaN(n) || n <= 0) return "Enter a valid weight";
+    if (n > 10000) return "Up to 10,000 g";
+    return "";
+  },
+  instructions: () => "",
+};
 
 export default function ItemDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  const phoneNumber = state?.phoneNumber || localStorage.getItem("PHONE_NUMBER") || "";
   const from = state?.from;
   const to = state?.to;
   const distance = state?.distance || "";
   const panDetails = state?.panDetails || {};
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [showTermsAlert, setShowTermsAlert] = useState(false);
-  const [showFieldAlert, setShowFieldAlert] = useState(false);
-  const [showTermsModal, setShowTermsModal] = useState(false);
 
-  const isValidWeight = (kg, gram) => {
-    const kgVal = parseInt(kg || "0", 10);
-    const gramVal = parseInt(gram || "0", 10);
-  
-    if (isNaN(kgVal) || isNaN(gramVal)) return false;
-    if (kgVal < 0 || gramVal < 0) return false;
-  
-    return kgVal > 0 || gramVal > 0;
-  };
-  
+  useEffect(() => {
+    const role = localStorage.getItem("USER_ROLE");
+    if (role !== "SENDER") navigate("/login", { replace: true });
+  }, [navigate]);
 
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
-  const [item, setItem] = useState({
-    senderName: "",
-    sendingDate: "",
-    lastDropTime: "",
-    lastPickupTime: "",
-    itemName: "",
-    weightKg: "",
-    weightGram: "",
-    deliveryOption: "",
-    instructions: "",
+  const [notesOpen, setNotesOpen] = useState(false);
+  const fieldRefs = useRef({});
+
+  const [item, setItem] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("itemDetailsForm");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {
+      senderName: "",
+      phone: localStorage.getItem("PHONE_NUMBER") || "",
+      sendingDate: tomorrowISO(),
+      lastDropTime: "",
+      itemName: "",
+      weightGrams: "",
+      instructions: "",
+    };
   });
-  // const openRazorpay = async () => {
-  //   const loadRazorpay = () =>
-  //     new Promise((resolve) => {
-  //       const script = document.createElement("script");
-  //       script.src = "https://checkout.razorpay.com/v1/checkout.js";
-  //       script.onload = () => resolve(true);
-  //       script.onerror = () => resolve(false);
-  //       document.body.appendChild(script);
-  //     });
 
-  //   const res = await loadRazorpay();
-  //   if (!res) {
-  //     alert("Razorpay SDK failed to load");
-  //     return;
-  //   }
+  /* Persist draft */
+  useEffect(() => {
+    sessionStorage.setItem("itemDetailsForm", JSON.stringify(item));
+  }, [item]);
 
-  //   const options = {
-  //     key: "rzp_test_4HNx49ek9VPhNQ",
-  //     amount: 200 * 100,
-  //     currency: "INR",
-  //     name: "TurantX",
-  //     description: "Urgent document delivery (Pilot)",
-  //     handler: function (response) {
-  //       console.log("✅ Payment Success", response);
+  /* ── change / blur handlers ── */
+  const handleChange = (e) => {
+    const { name } = e.target;
+    let value = e.target.value;
+    if (name === "phone") value = value.replace(/\D/g, "").slice(0, 10);
+    if (name === "weightGrams" && value !== "" && Number(value) < 0) return;
 
-  //       navigate("/sender-waitlist", {
-  //         state: {
-  //           paymentId: response.razorpay_payment_id,
-  //         },
-  //       });
-  //     },
-  //     theme: {
-  //       color: "#ff7b29",
-  //     },
-  //   };
+    setItem((prev) => ({ ...prev, [name]: value }));
 
-  //   const paymentObject = new window.Razorpay(options);
-  //   paymentObject.open();
-  // };
+    if (touched[name]) {
+      const fn = validators[name];
+      if (fn) setErrors((prev) => ({ ...prev, [name]: fn(value, { ...item, [name]: value }) }));
+    }
+  };
 
-  const handleChange = (e) =>
-    setItem({ ...item, [e.target.name]: e.target.value });
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const fn = validators[name];
+    if (fn) setErrors((prev) => ({ ...prev, [name]: fn(value, item) }));
+  };
+
+  const validateAll = useCallback(() => {
+    const next = {};
+    Object.keys(validators).forEach((key) => {
+      const err = validators[key](item[key] || "", item);
+      if (err) next[key] = err;
+    });
+    return next;
+  }, [item]);
+
+  const hasValue = (name) => {
+    const v = item[name];
+    if (typeof v === "string") return v.trim().length > 0;
+    return !!v;
+  };
+  const fieldError = (name) => {
+    if (!touched[name]) return null;
+    if (!errors[name]) return null;
+    if (!hasValue(name)) return null;
+    return errors[name];
+  };
+  const fieldClass = (name) => {
+    const err = fieldError(name);
+    const filled = hasValue(name);
+    return `fd-input${err ? " is-error" : ""}${filled && !err ? " is-filled" : ""}`;
+  };
+  const setRef = (name) => (el) => { fieldRefs.current[name] = el; };
 
   const handleSubmit = async () => {
-    if (!item.itemName || !item.deliveryOption) {
-      alert("⚠️ Please fill all required fields");
+    const errs = validateAll();
+    if (Object.keys(errs).length > 0) {
+      const order = ["senderName", "phone", "sendingDate", "lastDropTime", "itemName", "weightGrams"];
+      const first = order.find((k) => errs[k]);
+      if (first) {
+        const friendly = {
+          senderName:   "Please enter your full name",
+          phone:        errs.phone === "Mobile number is required" ? "Please enter your mobile number" : errs.phone,
+          sendingDate:  errs.sendingDate === "Sending date is required" ? "Please pick a sending date" : errs.sendingDate,
+          lastDropTime: "Please pick a handover time",
+          itemName:     "Please enter the document type",
+          weightGrams:  errs.weightGrams === "Weight is required" ? "Please enter weight (in grams)" : errs.weightGrams,
+        };
+        showToast(friendly[first] || errs[first], "warning");
+        const el = fieldRefs.current[first];
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => el.focus?.(), 350);
+        }
+      }
       return;
     }
 
-    setLoading(true);
+    localStorage.setItem("PHONE_NUMBER", item.phone);
+    await submitData(item.phone);
+  };
 
+  const submitData = async (phone) => {
+    const grams = parseInt(item.weightGrams || "0", 10);
+    setLoading(true);
     try {
       const payload = {
-        phoneNumber,
+        phoneNumber: phone,
         userType: "SENDER",
-        from,
-        to,
-        distance,
-        panDetails,
+        from, to, distance, panDetails,
         itemDetails: {
-          ...item,
-          totalWeight: `${item.weightKg || 0}kg ${item.weightGram || 0}g`,
+          senderName: item.senderName,
+          sendingDate: item.sendingDate,
+          lastDropTime: item.lastDropTime,
+          itemName: item.itemName,
+          weightGrams: item.weightGrams,
+          instructions: item.instructions,
+          deliveryOption: "SELF_DROP_PICK",
+          totalWeight: grams >= 1000 ? `${(grams / 1000).toFixed(1)}kg` : `${grams}g`,
+          weightKg: Math.floor(grams / 1000).toString(),
+          weightGram: (grams % 1000).toString(),
         },
       };
-
-      console.log("📦 Sending payload:", payload);
-
       const res = await fetch(
         "https://us-central1-bhejochalo-3d292.cloudfunctions.net/saveUserData",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
+        { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }
       );
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Server error");
-
-      // ✅ ONLY AFTER SUCCESS → open Razorpay
-      navigate("/sender-waitlist", {
-        state: {
-          phoneNumber,
-        },
-      });
-
+      sessionStorage.removeItem("itemDetailsForm");
+      navigate("/sender-waitlist", { state: { phoneNumber: phone } });
     } catch (err) {
-      console.error("❌ Error saving sender:", err);
-      alert("Something went wrong while saving details.");
+      console.error("Error saving sender:", err);
+      showToast("Something went wrong. Please try again.", "error");
     } finally {
       setLoading(false);
     }
   };
 
-
   return (
-    <div className="item-container page-transition">
+    <div className="fd-page">
       {loading && <Loader />}
-      {showTermsAlert && (
-        <div className="modal-overlay">
-          <div className="modal-card">
-            <h3>Please accept the Terms</h3>
 
-            <p>
-              To continue, please read and accept the terms and conditions related to
-              our pilot delivery service.
-            </p>
+      <div className="fd-card">
+        <StepIndicator current={3} total={3} label="Document details" />
+        <h2 className="fd-title">
+          <span className="fd-title-icon" aria-hidden>{Icon.doc}</span>
+          Tell us about your document
+        </h2>
+        <p className="fd-subtitle">Just a few quick details and you're all set.</p>
 
+        <form className="fd-form" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} noValidate>
+
+          {/* ── YOU ── */}
+          <div className="fd-section">
+            <div className="fd-field">
+              <label className="fd-label" htmlFor="senderName">Full name <span className="fd-req">*</span></label>
+              <input
+                id="senderName" name="senderName" type="text"
+                ref={setRef("senderName")}
+                value={item.senderName}
+                onChange={handleChange} onBlur={handleBlur}
+                placeholder="e.g. Rahul Sharma"
+                autoComplete="name"
+                autoCapitalize="words"
+                className={fieldClass("senderName")}
+              />
+              {fieldError("senderName") && <span className="fd-error">{fieldError("senderName")}</span>}
+            </div>
+
+            <div className="fd-field">
+              <label className="fd-label" htmlFor="phone">Mobile number <span className="fd-req">*</span></label>
+              <div className="fd-input-prefix">
+                <span className="fd-prefix" aria-hidden>+91</span>
+                <input
+                  id="phone" name="phone" type="tel"
+                  ref={setRef("phone")}
+                  value={item.phone}
+                  onChange={handleChange} onBlur={handleBlur}
+                  placeholder="10-digit mobile"
+                  autoComplete="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={10}
+                  className={`${fieldClass("phone")} fd-input--prefixed`}
+                />
+              </div>
+              {fieldError("phone")
+                ? <span className="fd-error">{fieldError("phone")}</span>
+                : <span className="fd-hint"><span className="fd-hint-icon" aria-hidden>{Icon.shield}</span>We'll WhatsApp your match here. Never shared.</span>}
+            </div>
+          </div>
+
+          {/* ── WHEN ── */}
+          <div className="fd-section">
+            <div className="fd-row fd-row-2">
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="sendingDate">Sending date <span className="fd-req">*</span></label>
+                <input
+                  id="sendingDate" type="date" name="sendingDate"
+                  ref={setRef("sendingDate")}
+                  min={todayISO()} max={oneYearOutISO()}
+                  value={item.sendingDate}
+                  onChange={handleChange} onBlur={handleBlur}
+                  className={fieldClass("sendingDate")}
+                />
+                {fieldError("sendingDate")
+                  ? <span className="fd-error">{fieldError("sendingDate")}</span>
+                  : item.sendingDate && <span className="fd-hint">{formatPrettyDate(item.sendingDate)}</span>}
+              </div>
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="lastDropTime">Latest handover <span className="fd-req">*</span></label>
+                <input
+                  id="lastDropTime" type="time" name="lastDropTime" step="900"
+                  ref={setRef("lastDropTime")}
+                  value={item.lastDropTime}
+                  onChange={handleChange} onBlur={handleBlur}
+                  className={fieldClass("lastDropTime")}
+                />
+                {fieldError("lastDropTime")
+                  ? <span className="fd-error">{fieldError("lastDropTime")}</span>
+                  : item.lastDropTime && <span className="fd-hint">{formatPrettyTime(item.lastDropTime)}</span>}
+              </div>
+            </div>
+          </div>
+
+          {/* ── DOCUMENT ── */}
+          <div className="fd-section">
+            <div className="fd-field">
+              <label className="fd-label" htmlFor="itemName">Document type <span className="fd-req">*</span></label>
+              <input
+                id="itemName" name="itemName" type="text"
+                ref={setRef("itemName")}
+                value={item.itemName}
+                onChange={handleChange} onBlur={handleBlur}
+                placeholder="e.g. Agreement, Application, Certificate"
+                autoCapitalize="words"
+                className={fieldClass("itemName")}
+              />
+              {fieldError("itemName") && <span className="fd-error">{fieldError("itemName")}</span>}
+            </div>
+
+            <div className="fd-field">
+              <label className="fd-label" htmlFor="weightGrams">Weight (grams) <span className="fd-req">*</span></label>
+              <input
+                id="weightGrams" type="number" name="weightGrams"
+                ref={setRef("weightGrams")}
+                min="1" max="10000" step="1"
+                inputMode="numeric" pattern="[0-9]*"
+                value={item.weightGrams}
+                onChange={handleChange} onBlur={handleBlur}
+                placeholder="e.g. 200"
+                className={fieldClass("weightGrams")}
+              />
+              {fieldError("weightGrams") && <span className="fd-error">{fieldError("weightGrams")}</span>}
+            </div>
+          </div>
+
+          {/* ── DELIVERY MODE INFO ── */}
+          <div className="it-info-strip">
+            <span className="it-info-icon" aria-hidden>{Icon.car}</span>
+            <span className="it-info-text">
+              <strong>Self drop &amp; pick</strong>
+              <span className="it-info-sub">You arrange drop-off to traveler · receiver picks up at destination.</span>
+            </span>
+          </div>
+
+          {/* ── NOTES (optional, collapsed by default) ── */}
+          <div className={`fd-section fd-section--collapsible${notesOpen ? " is-open" : ""}`}>
             <button
-              className="modal-btn"
-              onClick={() => setShowTermsAlert(false)}
+              type="button"
+              className="fd-collapse-toggle"
+              onClick={() => setNotesOpen((v) => !v)}
+              aria-expanded={notesOpen}
+              aria-controls="it-notes-fields"
             >
-              Got it
+              <span className="fd-collapse-label">
+                <span className="fd-collapse-plus" aria-hidden>{notesOpen ? "−" : "+"}</span>
+                {notesOpen ? "Special instructions" : "Add special instructions"}
+                <span className="fd-collapse-meta">optional</span>
+              </span>
+              <span className="fd-collapse-chevron" aria-hidden>▾</span>
+            </button>
+            <div id="it-notes-fields" className="fd-collapse-body">
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="instructions">Notes for the traveler</label>
+                <textarea
+                  id="instructions" name="instructions"
+                  value={item.instructions}
+                  onChange={handleChange}
+                  placeholder="Any special handling instructions…"
+                  rows={3}
+                  className={fieldClass("instructions")}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ── TRUST + WHAT NEXT ── */}
+          <div className="fd-trust-row">
+            <span className="fd-trust-icon" aria-hidden>{Icon.shield}</span>
+            <span>
+              <strong>Pilot offer:</strong> first 100 deliveries at no cost. We'll WhatsApp you the moment a match is found.
+            </span>
+          </div>
+
+          {/* Desktop inline actions — hidden on mobile (FormActionBar replaces) */}
+          <div className="fd-actions">
+            <button
+              type="button"
+              className="fd-btn fd-btn--ghost"
+              onClick={() => navigate("/login")}
+            >
+              ← Back
+            </button>
+            <button type="submit" className="fd-btn fd-btn--primary">
+              Continue →
             </button>
           </div>
-        </div>
-      )}
-
-      <div className="item-card">
-        <h3 className="item-title">📦 Tell us about your parcel</h3>
-        <p className="item-subtitle">Just a few quick details and you're all set</p>
-        {showFieldAlert && (
-          <div className="modal-overlay">
-            <div className="modal-card">
-              <h3>Missing Details</h3>
-
-              <p>
-                Please fill all the required item and delivery details to continue.
-              </p>
-
-              <button
-                className="modal-btn"
-                onClick={() => setShowFieldAlert(false)}
-              >
-                Okay
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div>
-          <div className="field-label">
-            Sender's Full Name *
-            <span className="help-icon" data-tip="Enter the full legal name of the person sending the parcel.">?</span>
-          </div>
-          <input
-            name="senderName"
-            value={item.senderName}
-            onChange={handleChange}
-            placeholder="e.g. Rahul Sharma"
-          />
-        </div>
-
-        <div>
-          <div className="field-label">
-            Date of Parcel Sending *
-            <span className="help-icon" data-tip="The date you plan to hand over the parcel to the traveller.">?</span>
-          </div>
-          <input
-            type="date"
-            name="sendingDate"
-            value={item.sendingDate}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="weight-group">
-          <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-            <div className="field-label">
-              Last time to drop parcel *
-              <span className="help-icon" data-tip={"The latest time by which you must hand the parcel to the traveller at the agreed meeting point."}>?</span>
-            </div>
-            <input
-              type="time"
-              name="lastDropTime"
-              value={item.lastDropTime}
-              onChange={handleChange}
-            />
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-            <div className="field-label">
-              Last time for pickup *
-              <span className="help-icon" data-tip={"The latest time by which the receiver must collect the parcel from the traveller at the destination."}>?</span>
-            </div>
-            <input
-              type="time"
-              name="lastPickupTime"
-              value={item.lastPickupTime}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-
-        <div>
-          <div className="field-label">
-            Document Type *
-            <span className="help-icon" data-tip="Describe what kind of document this is (e.g. Legal agreement, Application form, Certificate, Passport copy).">?</span>
-          </div>
-          <input
-            name="itemName"
-            value={item.itemName}
-            onChange={handleChange}
-            placeholder="e.g. Agreement, Application"
-          />
-        </div>
-
-        <div>
-          <div className="field-label">
-            Parcel Weight
-            <span className="help-icon" data-tip="Approximate weight of the parcel. Helps the traveller plan for baggage. At least one unit (kg or grams) is required.">?</span>
-          </div>
-          <div className="weight-group">
-            <input
-              name="weightKg"
-              value={item.weightKg}
-              onChange={handleChange}
-              placeholder="Weight (kg)"
-            />
-            <input
-              name="weightGram"
-              value={item.weightGram}
-              onChange={handleChange}
-              placeholder="Weight (grams)"
-            />
-          </div>
-        </div>
-
-        <div>
-          <div className="field-label">
-            Delivery Option *
-            <span className="help-icon" data-tip={"Self Drop & Pick: You book a parcel service (e.g. Dunzo, Rapido, Porter) to drop the parcel to the traveller. On the other end, the receiver also arranges their own pickup from the traveller."}>?</span>
-          </div>
-        <select
-          name="deliveryOption"
-          value={item.deliveryOption}
-          onChange={handleChange}
-        >
-          <option value="">Select Delivery Option</option>
-
-          {/* ✅ Enabled */}
-          <option value="SELF_DROP_PICK">
-            Self Drop & Pick
-          </option>
-
-          {/* 🚫 Disabled */}
-          <option value="AUTO_DROP_PICK" disabled>
-            Auto Drop & Pick (Coming Soon)
-          </option>
-        </select>
-        </div>
-
-        <textarea
-          name="instructions"
-          value={item.instructions}
-          onChange={handleChange}
-          placeholder="Any special instructions? (optional)"
-          rows={3}
-          style={{ resize: "none" }}
-        />
-        <div className="trust-box">
-
-          <h4>What happens next?</h4>
-          <ul>
-            <li>Your request is added to our sender waitlist</li>
-            <li>We check for matching flight travellers</li>
-            <li>If a match is found, we’ll contact you on WhatsApp</li>
-            <li>No obligation to proceed</li>
-          </ul>
-
-         {/* h4>Why is payment required?</h4>
-          <ul>
-            <li>Covers verification & coordination cost</li>
-            <li>Prevents spam and fake requests</li>
-            <li><strong>Refunded if no match is found</strong></li>
-          </ul> */}
-
-          <label className="terms-checkbox">
-            <input
-              type="checkbox"
-              checked={acceptedTerms}
-              onChange={() => {
-                if (!acceptedTerms) {
-                  setShowTermsModal(true);
-                } else {
-                  setAcceptedTerms(false);
-                }
-              }}
-            />
-            <span>I understand and agree to the terms and conditions</span>
-          </label>
-
-          <p className="secure-text">
-          Pilot offer: First 100 document deliveries at no cost.
-          </p>
-        </div>
-        <button
-  className="item-next"
-  onClick={() => {
-    if (
-      !item.senderName.trim() ||
-      !item.sendingDate ||
-      !item.lastDropTime ||
-      !item.lastPickupTime ||
-      !item.itemName.trim() ||
-      !item.deliveryOption ||
-      !isValidWeight(item.weightKg, item.weightGram)
-    ) {
-      setShowFieldAlert(true);
-      return;
-    }
-
-    if (!acceptedTerms) {
-      setShowTermsAlert(true);
-      return;
-    }
-
-    handleSubmit();
-  }}
->
-  Verify & Continue
-</button>
-
-{showTermsModal && (
-  <div className="modal-overlay">
-    <div
-      className="modal-card"
-      style={{
-        maxHeight: "80vh",
-        overflow: "hidden",
-        width: "90%",
-        maxWidth: "600px",
-      }}
-    >
-      <h3 style={{ marginBottom: "10px" }}>
-        Terms & Conditions
-      </h3>
-
-      {/* Scroll Area */}
-      <div
-  style={{
-    maxHeight: "55vh",
-    overflowY: "auto",
-    fontSize: "14px",
-    lineHeight: "1.6",
-    paddingRight: "6px",
-  }}
->
-  
-  <p><strong>Last updated:</strong> 24-Jan-2026</p>
-
-  <p>
-    Welcome to <strong>TurantX Solutions Pvt Ltd</strong> (“TurantX”, “we”, “our”, “us”).
-    By accessing or using the TurantX website, mobile application, or services,
-    you agree to be bound by these Terms & Conditions.
-    If you do not agree, please do not use our services.
-  </p>
-
-  <hr />
-
-  <h5>1. About TurantX</h5>
-  <p>
-    TurantX is a peer-to-peer logistics technology platform that connects senders
-    with verified flight travelers to facilitate urgent document delivery.
-  </p>
-  <p>
-    During the pilot phase, TurantX operates on a limited-feature basis and
-    currently supports document delivery only.
-  </p>
-
-  <h5>2. Pilot Phase Disclaimer</h5>
-  <p>
-    TurantX is currently operating in a pilot phase. Features, processes, pricing,
-    and availability may change without prior notice.
-  </p>
-  <p>
-    Certain services such as doorstep pickup or doorstep delivery are not available
-    during the pilot phase.
-  </p>
-
-  <h5>3. Eligibility</h5>
-  <p>To use TurantX:</p>
-  <ul>
-    <li>You must be at least 18 years old.</li>
-    <li>You must provide accurate and complete information.</li>
-    <li>Travelers must complete identity verification as required by TurantX.</li>
-  </ul>
-
-  <h5>4. Nature of Items Allowed</h5>
-  <p>
-    Only documents are permitted during the pilot phase.
-  </p>
-  <p>
-    Prohibited items include (but are not limited to): cash, illegal substances,
-    electronics, valuables, perishables, hazardous materials, or any item
-    restricted by law or airline regulations.
-  </p>
-  <p>
-    TurantX reserves the right to cancel requests involving prohibited items.
-  </p>
-
-  <h5>5. Role of TurantX</h5>
-  <p>
-    TurantX acts as a technology platform only. We do not physically transport,
-    handle, store, or inspect documents.
-  </p>
-  <p>
-    TurantX does not guarantee delivery timelines and is not a courier or cargo company.
-  </p>
-
-  <h5>6. Sender Responsibilities</h5>
-  <ul>
-    <li>Provide accurate pickup and destination details.</li>
-    <li>Ensure documents are legal, non-restricted, and properly packaged.</li>
-    <li>Hand over documents directly to the matched traveler.</li>
-    <li>Coordinate pickup and delivery using shared contact details (e.g. WhatsApp).</li>
-  </ul>
-
-  <h5>7. Traveler Responsibilities</h5>
-  <ul>
-    <li>Carry only documents approved through the TurantX platform.</li>
-    <li>Handle documents responsibly and deliver them as agreed.</li>
-    <li>Comply with airline rules, airport security regulations, and applicable laws.</li>
-    <li>Reject any package that appears suspicious or unsafe.</li>
-  </ul>
-
-  <h5>8. Payments & Charges</h5>
-  <p>
-    During the pilot phase, no payment is required from senders.
-    Future pricing, fees, or rewards may be introduced with prior notice.
-  </p>
-  <p>
-    Travelers may receive rewards or earnings as communicated separately.
-  </p>
-
-  <h5>9. No Match Policy</h5>
-  <p>
-    If no suitable traveler is found within 24 hours, the request will be cancelled.
-    As no payment is collected during the pilot, no refund applies.
-  </p>
-
-  <h5>10. Liability Limitation</h5>
-  <p>
-    TurantX is not responsible for loss, delay, damage, or misuse of documents.
-    Users acknowledge that delivery is facilitated through independent travelers.
-  </p>
-  <p>
-    To the maximum extent permitted by law, TurantX’s liability is limited to the
-    extent of fees paid (if any).
-  </p>
-
-  <h5>11. Safety & Verification</h5>
-  <p>
-    Travelers undergo PAN and ID verification. Flights and routes may be manually reviewed.
-  </p>
-  <p>
-    Despite these checks, users acknowledge that peer-to-peer delivery carries inherent risks.
-  </p>
-
-  <h5>12. Account Suspension</h5>
-  <p>TurantX reserves the right to suspend or terminate accounts if:</p>
-  <ul>
-    <li>False information is provided</li>
-    <li>Terms are violated</li>
-    <li>Suspicious or unsafe activity is detected</li>
-  </ul>
-
-  <h5>13. Privacy</h5>
-  <p>
-    Use of TurantX is also governed by our Privacy Policy.
-    By using the platform, you consent to the collection and use of information
-    as described therein.
-  </p>
-
-  <h5>14. Changes to Terms</h5>
-  <p>
-    TurantX may update these Terms & Conditions from time to time.
-    Continued use of the platform constitutes acceptance of the updated terms.
-  </p>
-
-  <h5>15. Governing Law</h5>
-  <p>
-    These Terms shall be governed by and interpreted in accordance with the laws of India.
-    Any disputes shall be subject to the jurisdiction of the courts of India.
-  </p>
-
-  <h5>16. Contact Us</h5>
-  <p>
-    For any questions regarding these Terms, please contact:
-    <br />
-    📧 <strong>support@turantx.com</strong>
-  </p>
-</div>
-
-
-      {/* Buttons */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginTop: "15px",
-        }}
-      >
-        <button
-          className="modal-btn"
-          style={{ background: "#eee", color: "#333" }}
-          onClick={() => {
-            setShowTermsModal(false);
-            setAcceptedTerms(false);
-          }}
-        >
-          Reject
-        </button>
-
-        <button
-          className="modal-btn"
-          onClick={() => {
-            setAcceptedTerms(true);
-            setShowTermsModal(false);
-          }}
-        >
-          Accept
-        </button>
+        </form>
       </div>
-    </div>
-  </div>
-)}
 
-
-
-
-
-      </div>
+      <FormActionBar
+        onBack={() => navigate("/login")}
+        onContinue={handleSubmit}
+        continueLabel="Continue"
+      />
     </div>
   );
-  
 }

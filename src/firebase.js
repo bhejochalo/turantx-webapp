@@ -1,6 +1,7 @@
 // src/firebase.js
 import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 import { getMessaging, isSupported } from "firebase/messaging";
 
 
@@ -8,7 +9,7 @@ const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "bhejochalo-3d292.firebaseapp.com",
   projectId: "bhejochalo-3d292",
-  storageBucket: "bhejochalo-3d292.appspot.com",
+  storageBucket: "bhejochalo-3d292.firebasestorage.app",
   messagingSenderId: "528917615335",
   appId: "1:528917615335:web:d4e91a3b6f9f2337e5d5b3",
 };
@@ -16,6 +17,7 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 // Setup messaging safely (prevents crash on Safari)
 export const getMessagingInstance = () =>

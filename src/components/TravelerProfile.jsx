@@ -79,7 +79,7 @@ export default function TravelerProfile({ location }) {
       let activeRef = null;
 
       if (!reqsSnap.empty) {
-        const activeDoc = reqsSnap.docs.find((d) => d.data().LastMileStatus !== "Completed")
+        const activeDoc = reqsSnap.docs.find((d) => d.data().status !== "COMPLETED" && d.data().LastMileStatus !== "Completed")
           || reqsSnap.docs[reqsSnap.docs.length - 1];
         activeRef = doc(db, "users", phoneNumber, "TravelerRequests", activeDoc.id);
       } else {
@@ -254,6 +254,7 @@ export default function TravelerProfile({ location }) {
       await updateDoc(travelerDocRef.current, {
         SecondMileStatus: "Completed",
         LastMileStatus: "In Progress",
+        status: "IN_PROGRESS",
       });
       // refresh
       await fetchTraveler();
@@ -276,7 +277,7 @@ export default function TravelerProfile({ location }) {
         if (!travelerDocRef.current) throw new Error("No traveler doc");
         await updateDoc(travelerDocRef.current, {
           LastMileStatus: "Completed",
-          status: "Completed",
+          status: "COMPLETED",
         });
         await fetchTraveler();
         alert("OTP verified. Order completed!");
@@ -318,10 +319,8 @@ export default function TravelerProfile({ location }) {
 
         <div className="tp-address-text">{full}</div>
 
-        {(addr.latitude || addr.longitude) && (
-          <div className="tp-coords">
-            Lat: {addr.latitude ?? "-"}, Lng: {addr.longitude ?? "-"}
-          </div>
+        {addr.latitude && addr.longitude && (
+          <a href={`https://maps.google.com/?q=${addr.latitude},${addr.longitude}`} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "#1a73e8", display: "inline-block", marginTop: 4 }}>📍 Open in Maps</a>
         )}
       </div>
     );

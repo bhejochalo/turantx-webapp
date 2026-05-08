@@ -1,0 +1,280 @@
+.cp-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff7f1 0%, #fffaf7 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 16px calc(88px + env(safe-area-inset-bottom, 0px));
+  font-family: "Inter", sans-serif;
+}
+
+@media (min-width: 769px) {
+  .cp-page {
+    align-items: center;
+    padding: 24px 16px;
+  }
+}
+
+.cp-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px 24px 36px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cp-logo {
+  width: 100px;
+  margin: 0 auto 4px;
+  display: block;
+}
+
+/* ── Titles ── */
+.cp-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ff7b29;
+  text-align: center;
+  margin: 0;
+}
+
+.cp-subtitle {
+  font-size: 13.5px;
+  color: #777;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Fields ── */
+.cp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cp-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaa;
+  letter-spacing: 0;
+}
+
+.cp-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #e9e9ec;
+  background: #f7f7f9;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+  font-family: "Inter", sans-serif;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.cp-input:focus {
+  border-color: #ffae70;
+  background: #fff;
+}
+
+.cp-input-error {
+  border-color: #ff4d4d !important;
+}
+
+.cp-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.cp-err {
+  font-size: 11.5px;
+  color: #e53935;
+  margin-top: 2px;
+}
+
+/* ── Checkbox ── */
+.cp-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #444;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.cp-checkbox input[type="checkbox"] {
+  margin-top: 2px;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  accent-color: #ff914d;
+  cursor: pointer;
+}
+
+.cp-checkbox-error {
+  color: #e53935;
+}
+
+/* ── Info box ── */
+.cp-info-box {
+  background: #fff7f1;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #555;
+}
+
+.cp-info-box h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ff7b29;
+  margin: 0 0 8px;
+}
+
+.cp-info-box ul {
+  padding-left: 18px;
+  margin: 0;
+}
+
+.cp-info-box li {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+/* ── Submit button ── */
+.cp-submit-btn {
+  margin-top: 6px;
+  padding: 14px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ffb78a, #ff914d);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 8px 20px rgba(255, 145, 77, 0.2);
+  transition: all 0.25s ease;
+}
+
+.cp-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(255, 145, 77, 0.28);
+}
+
+.cp-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── Secure text ── */
+.cp-secure {
+  font-size: 11.5px;
+  color: #bbb;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── Status screens ── */
+.cp-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  font-size: 28px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px auto 4px;
+}
+
+.cp-icon-done {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.cp-icon-error {
+  background: #fdecea;
+  color: #c62828;
+}
+
+.cp-error-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin: 0;
+}
+
+.cp-error-text {
+  font-size: 13.5px;
+  color: #777;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cp-success-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2e7d32;
+  text-align: center;
+  margin: 0;
+}
+
+.cp-success-text {
+  font-size: 13.5px;
+  color: #444;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cp-success-sub {
+  font-size: 12.5px;
+  color: #999;
+  text-align: center;
+  margin: 0;
+}
+
+.cp-support-btn {
+  display: block;
+  margin: 4px auto 0;
+  padding: 12px 24px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ffb78a, #ff914d);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  text-align: center;
+  width: fit-content;
+}
+
+/* ── Loading spinner ── */
+.cp-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #f0e8e0;
+  border-top-color: #ff914d;
+  border-radius: 50%;
+  animation: cpSpin 0.75s linear infinite;
+  margin: 12px auto 0;
+}
+
+@keyframes cpSpin {
+  to { transform: rotate(360deg); }
+}
+
+.cp-loading-text {
+  font-size: 13px;
+  color: #aaa;
+  text-align: center;
+  margin: 4px 0 0;
+}

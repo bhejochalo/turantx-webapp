@@ -1,21 +1,35 @@
 .addr-container {
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     background: linear-gradient(135deg, #fff7f1 0%, #fffaf7 100%);
-    padding: 40px;
+    padding: 24px 16px calc(88px + env(safe-area-inset-bottom, 0px));
   }
-  
+
+  @media (min-width: 769px) {
+    .addr-container {
+      align-items: center;
+      padding: 40px;
+    }
+  }
+
   .addr-card {
-    width: 680px;
+    width: 100%;
+    max-width: 680px;
     background: #fff;
     border-radius: 16px;
-    padding: 36px;
+    padding: 28px 20px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+
+  @media (min-width: 769px) {
+    .addr-card {
+      padding: 36px;
+    }
   }
   
   .addr-title {
@@ -32,20 +46,31 @@
     border: 1px solid #e9e9ec;
     background: #f7f7f9;
     outline: none;
-    font-size: 14px;
+    font-size: 16px;
     margin: 6px 0;
   }
   
   .addr-next {
     margin-top: 14px;
-    padding: 14px;
+    padding: 15px;
     border-radius: 24px;
     background: linear-gradient(180deg, #ffb78a, #ff914d);
     color: white;
     border: none;
     cursor: pointer;
     font-weight: 600;
+    font-size: 15px;
     box-shadow: 0 12px 30px rgba(255, 145, 77, 0.18);
+    min-height: 52px;
+    width: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .addr-next:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 36px rgba(255, 145, 77, 0.25);
+  }
+  .addr-next:active {
+    transform: translateY(0);
   }
   
   .distance-bubble {
@@ -102,7 +127,7 @@ select.addr-input {
   margin-bottom: 10px;
   border: 1.5px solid #ddd;
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 16px;
   font-family: "Inter", sans-serif;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
   background-color: #fff;

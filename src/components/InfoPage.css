@@ -1,28 +1,352 @@
-.info-page {
-    flex: 1;
-    padding: 60px 20px;
-    background: #fafafa;
-    display: flex;
-    justify-content: center;
+/* ================================================================
+   INFO PAGES — shared base
+   ================================================================ */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+/* ================================================================
+   ABOUT PAGE
+   ================================================================ */
+.info-about {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 64px 24px 100px;
+  font-family: "Inter", sans-serif;
+}
+
+/* ── Hero ── */
+.about-hero {
+  text-align: center;
+  padding-bottom: 72px;
+  border-bottom: 1px solid #F0EAE2;
+}
+
+.about-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #EA580C;
+  margin: 0 0 20px;
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  padding: 5px 14px;
+  border-radius: 20px;
+}
+
+.about-heading {
+  font-size: clamp(34px, 5vw, 52px);
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.10;
+  letter-spacing: -0.03em;
+  margin: 0 0 20px;
+}
+
+.about-heading span {
+  background: linear-gradient(110deg, #89D4F5 0%, #FFD188 32%, #FF8B6B 62%, #FF621A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.about-lead {
+  font-size: 17px;
+  color: #475569;
+  line-height: 1.7;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+/* ── Values ── */
+.about-values {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 64px 0 0;
+}
+
+.about-value-card {
+  padding: 28px 24px;
+  background: #ffffff;
+  border: 1.5px solid #F0EAE2;
+  border-radius: 20px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 4px 16px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-value-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #F97316, #FB923C);
+  opacity: 0;
+  border-radius: 20px 20px 0 0;
+  transition: opacity 0.25s;
+}
+
+.about-value-card:hover {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 12px 32px rgba(249, 115, 22, 0.10);
+  border-color: #FED7AA;
+  transform: translateY(-3px);
+}
+.about-value-card:hover::before { opacity: 1; }
+
+.value-icon {
+  font-size: 26px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.about-value-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.about-value-card p {
+  font-size: 13.5px;
+  color: #64748B;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── Story ── */
+.about-story {
+  padding: 72px 0 0;
+  max-width: 640px;
+}
+
+.about-story-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #F97316;
+  margin: 0 0 14px;
+}
+
+.about-story h2 {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.025em;
+  margin: 0 0 28px;
+  line-height: 1.2;
+}
+
+.about-story p {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.80;
+  margin: 0 0 20px;
+}
+
+.about-story p:last-child { margin-bottom: 0; }
+
+/* ── Mission strip ── */
+.about-mission {
+  margin-top: 64px;
+  padding: 32px 36px;
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFF4E6 100%);
+  border: 1.5px solid #FED7AA;
+  border-radius: 20px;
+  border-left: 4px solid #F97316;
+}
+
+.about-mission-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #F97316;
+  margin: 0 0 10px;
+}
+
+.about-mission-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1A1A1A;
+  line-height: 1.55;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .info-about,
+  .info-prose-page {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
   }
-  
-  .info-card {
-    max-width: 820px;
-    background: white;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+@media (max-width: 680px) {
+  .info-about { padding: 32px 18px calc(88px + env(safe-area-inset-bottom, 0px)); }
+  .about-values { grid-template-columns: 1fr; gap: 12px; }
+  .about-hero { padding-bottom: 40px; }
+  .about-story { padding-top: 40px; }
+  .about-mission { padding: 20px 18px; margin-top: 40px; }
+  .about-value-card { padding: 22px 18px; }
+}
+
+/* ================================================================
+   PROSE PAGES (help, terms, privacy, how-it-works etc.)
+   Editorial layout — matches About page design language
+   ================================================================ */
+.info-prose-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 64px 24px 100px;
+  font-family: "Inter", sans-serif;
+  background: #ffffff;
+}
+
+/* ── Hero ── */
+.prose-hero {
+  text-align: center;
+  padding-bottom: 64px;
+  border-bottom: 1px solid #F0EAE2;
+  margin-bottom: 56px;
+}
+
+.prose-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #EA580C;
+  margin: 0 0 20px;
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  padding: 5px 14px;
+  border-radius: 20px;
+}
+
+.prose-heading {
+  font-size: clamp(30px, 4.5vw, 48px);
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.10;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+/* ── Body ── */
+.prose-body {
+  max-width: 640px;
+}
+
+.prose-updated {
+  font-size: 12px;
+  color: #94A3B8;
+  font-weight: 500;
+  margin: 0 0 36px;
+  letter-spacing: 0.02em;
+}
+
+.prose-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+  margin: 36px 0 12px;
+  padding-top: 28px;
+  border-top: 1px solid #F0EAE2;
+}
+.prose-section-title:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.prose-para {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.80;
+  margin: 0 0 14px;
+}
+.prose-para:last-child { margin-bottom: 0; }
+
+.prose-check {
+  font-size: 15px;
+  color: #334155;
+  line-height: 1.7;
+  margin: 0 0 10px;
+  font-weight: 500;
+  padding-left: 2px;
+}
+
+.prose-contact-line {
+  font-size: 15px;
+  color: #334155;
+  line-height: 1.8;
+  margin: 0 0 10px;
+  font-weight: 500;
+}
+
+/* ── Responsive prose ── */
+@media (max-width: 680px) {
+  .info-prose-page {
+    padding: 32px 18px calc(88px + env(safe-area-inset-bottom, 0px));
   }
-  
-  .info-card h1 {
-    font-size: 28px;
-    margin-bottom: 20px;
+  .prose-hero {
+    padding-bottom: 40px;
+    margin-bottom: 36px;
   }
-  
-  .info-card pre {
-    white-space: pre-wrap;
-    line-height: 1.7;
-    font-family: inherit;
-    color: #555;
+  .prose-section-title {
+    font-size: 15px;
+    margin-top: 28px;
+    padding-top: 22px;
   }
-  
+  .prose-heading {
+    font-size: clamp(26px, 7vw, 36px);
+  }
+}
+
+/* ── WhatsApp CTA on Help/Support page ── */
+.help-whatsapp-cta {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  font-family: "Inter", sans-serif;
+}
+
+.help-whatsapp-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 22px;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 16px;
+  text-decoration: none;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.help-whatsapp-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.18);
+  border-color: rgba(37, 211, 102, 0.40);
+}
+
+.help-wa-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}

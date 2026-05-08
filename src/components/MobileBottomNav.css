@@ -1,0 +1,497 @@
+.mobile-bottom-nav { display: none; }
+.mbn-sheet, .mbn-sheet-backdrop { display: none; }
+
+@media (max-width: 900px) {
+  /* ═════════════════════════════════════════════════════════════
+     BOTTOM NAV — premium glass bar, native iOS/Android feel
+     ═════════════════════════════════════════════════════════════ */
+  .mobile-bottom-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr 88px 1fr 1fr;
+    align-items: end;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(68px + env(safe-area-inset-bottom, 0px));
+    padding: 0 6px env(safe-area-inset-bottom, 0px);
+    background:
+      linear-gradient(180deg, rgba(13, 22, 40, 0.78) 0%, rgba(8, 14, 28, 0.96) 100%);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 -1px 0 rgba(255, 255, 255, 0.05) inset,
+      0 -10px 36px rgba(0, 0, 0, 0.55);
+    z-index: 500;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    transition:
+      transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.22s ease-out;
+    will-change: transform, opacity;
+  }
+
+  /* ── Scroll-hide: full clear (nav + protruding center FAB) ── */
+  body.tx-nav-hidden .mobile-bottom-nav {
+    /* 100% of nav height + 50px to fully clear the floating Send circle */
+    transform: translateY(calc(100% + 50px)) scale(0.97);
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* Center circle de-emphasises as nav hides — premium synchronised motion */
+  body.tx-nav-hidden .mbn-center-halo,
+  body.tx-nav-hidden .mbn-center-circle {
+    transform: scale(0.88);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Sync: landing FAB drops down when nav hides */
+  body.tx-nav-hidden .mobile-sticky-cta {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+    transition: bottom 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Subtle top hairline highlight (premium glass top edge) */
+  .mobile-bottom-nav::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 16px; right: 16px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+    pointer-events: none;
+  }
+
+  /* ── Standard tab item ── */
+  .mbn-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 68px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.42);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .mbn-item:active { transform: scale(0.92); }
+
+  .mbn-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter 200ms ease;
+  }
+  .mbn-icon svg { width: 24px; height: 24px; display: block; }
+
+  .mbn-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    transition: color 200ms ease;
+  }
+
+  /* iOS-style active dot above icon */
+  .mbn-dot {
+    position: absolute;
+    top: 6px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #FF7A30;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity 220ms ease, transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 8px rgba(255, 122, 48, 0.65);
+  }
+
+  .mbn-item.active {
+    color: #FF8A45;
+  }
+  .mbn-item.active .mbn-dot {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .mbn-item.active .mbn-icon {
+    filter: drop-shadow(0 0 6px rgba(255, 122, 48, 0.4));
+    transform: translateY(-1px);
+  }
+
+  /* ── Center "Send" button — primary CTA ── */
+  .mbn-center {
+    position: relative;
+    height: 68px;
+    color: #fff;
+    overflow: visible;
+  }
+
+  .mbn-center-halo {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 122, 48, 0.45) 0%, rgba(255, 122, 48, 0) 70%);
+    pointer-events: none;
+    opacity: 0.9;
+  }
+
+  .mbn-center-circle {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 45%),
+      linear-gradient(135deg, #FFA15A 0%, #FF6A1F 55%, #E8541A 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 10px 28px rgba(255, 98, 26, 0.55),
+      0 4px 10px rgba(255, 98, 26, 0.35),
+      0 0 0 4px rgba(8, 14, 28, 0.92),
+      inset 0 1px 0 rgba(255, 255, 255, 0.40),
+      inset 0 -2px 6px rgba(140, 50, 0, 0.30);
+    transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 200ms ease;
+  }
+
+  .mbn-center-icon {
+    width: 26px;
+    height: 26px;
+    color: #fff;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mbn-center-icon svg { width: 26px; height: 26px; display: block; }
+
+  /* ── Static plus icon ── */
+  .mbn-plus-static {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.18));
+  }
+
+  /* ── A) Diagonal sheen sweep + B) heartbeat scale ──
+     Two slow, non-overlapping idle gestures.
+     - Sheen: thin white gleam diagonally across circle every 5.5s
+     - Heartbeat: circle scales 1 ↔ 0.985 every 3.5s */
+  .mbn-center-circle {
+    overflow: hidden;
+    animation: mbnHeartbeat 3.6s ease-in-out infinite;
+    will-change: transform;
+  }
+  .mbn-center-sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 35%,
+      rgba(255, 255, 255, 0.0) 42%,
+      rgba(255, 255, 255, 0.55) 50%,
+      rgba(255, 255, 255, 0.0) 58%,
+      transparent 65%
+    );
+    transform: translateX(-110%);
+    will-change: transform;
+    animation: mbnSheen 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    z-index: 1;
+    mix-blend-mode: overlay;
+  }
+
+  @keyframes mbnHeartbeat {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50%       { transform: translateX(-50%) scale(0.985); }
+  }
+  @keyframes mbnSheen {
+    /* Sweep occupies ~30% of the cycle, then long pause */
+    0%   { transform: translateX(-110%); }
+    30%  { transform: translateX(110%); }
+    100% { transform: translateX(110%); }
+  }
+
+  /* Active tap: tiny scale-down only — no gimmicks */
+  .mbn-center:active .mbn-center-circle {
+    animation: none;
+    transform: translateX(-50%) scale(0.94);
+    transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mbn-center-circle { animation: none; }
+    .mbn-center-sheen { animation: none; opacity: 0; }
+  }
+
+  .mbn-center:active .mbn-center-circle {
+    transform: translateX(-50%) scale(0.92);
+    box-shadow:
+      0 4px 14px rgba(255, 98, 26, 0.45),
+      0 0 0 4px rgba(8, 14, 28, 0.92),
+      inset 0 1px 0 rgba(255, 255, 255, 0.40);
+  }
+  .mbn-center:active .mbn-center-halo { opacity: 0.5; }
+
+  .mbn-center-label {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* Center button has no dot indicator (it's always primary) */
+  .mbn-center .mbn-dot { display: none; }
+
+  /* ── Earn tab — small ₹ chip on the icon to signal monetization ── */
+  .mbn-earn { position: relative; }
+  .mbn-earn-badge {
+    position: absolute;
+    top: 8px;
+    left: calc(50% + 6px);
+    min-width: 14px;
+    height: 14px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+    color: #03130C;
+    font-size: 9.5px;
+    font-weight: 800;
+    line-height: 14px;
+    text-align: center;
+    letter-spacing: 0;
+    box-shadow:
+      0 0 0 2px rgba(8, 14, 28, 0.92),
+      0 2px 6px rgba(16, 185, 129, 0.45);
+    pointer-events: none;
+  }
+
+  /* ═════════════════════════════════════════════════════════════
+     TRACK BOTTOM SHEET
+     ═════════════════════════════════════════════════════════════ */
+  .mbn-sheet-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 10, 22, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 599;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .mbn-sheet-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mbn-sheet {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 600;
+    background: #ffffff;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+    padding: 10px 22px calc(env(safe-area-inset-bottom, 0px) + 22px);
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.14);
+    transform: translateY(100%);
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  .mbn-sheet.open { transform: translateY(0); }
+
+  .mbn-sheet-grab {
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(0, 0, 0, 0.10);
+    margin: 0 auto 16px;
+  }
+
+  .mbn-sheet-head { margin-bottom: 18px; }
+  .mbn-sheet-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .mbn-sheet-sub {
+    font-size: 13.5px;
+    color: #6b7280;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .mbn-sheet-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mbn-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 0 16px;
+    height: 56px;
+    transition: border-color 180ms ease, background 180ms ease;
+  }
+  .mbn-input-wrap:focus-within {
+    border-color: rgba(255, 98, 26, 0.60);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 98, 26, 0.10);
+  }
+  .mbn-input-wrap.error {
+    border-color: rgba(244, 63, 94, 0.65);
+    background: rgba(244, 63, 94, 0.04);
+  }
+
+  .mbn-input-prefix {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    padding-right: 10px;
+    border-right: 1px solid #e5e7eb;
+  }
+
+  .mbn-input-wrap input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: #111827;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    font-family: inherit;
+    padding: 0;
+    height: 100%;
+  }
+  .mbn-input-wrap input::placeholder { color: #9ca3af; }
+
+  .mbn-input-error {
+    font-size: 12.5px;
+    color: #FB7185;
+    margin: -4px 2px 0;
+    font-weight: 500;
+  }
+
+  .mbn-track-btn {
+    margin-top: 6px;
+    height: 56px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(255, 161, 90, 0.55) 0%, rgba(255, 106, 31, 0.55) 100%);
+    box-shadow: 0 6px 18px rgba(255, 98, 26, 0.18);
+    opacity: 0.65;
+    transition: opacity 220ms ease, transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 220ms ease, background 220ms ease;
+  }
+  .mbn-track-btn svg { width: 18px; height: 18px; }
+  .mbn-track-btn.ready {
+    opacity: 1;
+    background: linear-gradient(135deg, #FFA15A 0%, #FF6A1F 55%, #E8541A 100%);
+    box-shadow: 0 10px 26px rgba(255, 98, 26, 0.45);
+  }
+  .mbn-track-btn.ready:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 12px rgba(255, 98, 26, 0.35);
+  }
+  .mbn-track-btn:disabled { cursor: not-allowed; }
+  .mbn-track-btn.loading { opacity: 1; }
+
+  .mbn-spin {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    animation: mbnSpin 700ms linear infinite;
+  }
+  @keyframes mbnSpin { to { transform: rotate(360deg); } }
+
+  .mbn-sheet-cancel {
+    margin-top: 4px;
+    height: 44px;
+    border-radius: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: #9ca3af;
+    transition: color 180ms ease;
+  }
+  .mbn-sheet-cancel:active { color: #374151; }
+  .mbn-sheet-cancel:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Hero form pulse — fired by Send / Earn taps to confirm action visually */
+  .hero-form-pulse {
+    animation: heroFormPulse 800ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes heroFormPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 122, 48, 0.0), 0 0 0 0 rgba(255, 122, 48, 0.0); }
+    20%  { box-shadow: 0 0 0 6px rgba(255, 122, 48, 0.30), 0 12px 36px rgba(255, 122, 48, 0.35); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 122, 48, 0.0), 0 0 0 0 rgba(255, 122, 48, 0.0); }
+  }
+}
+
+@media (max-width: 380px) {
+  .mobile-bottom-nav {
+    grid-template-columns: 1fr 1fr 80px 1fr 1fr;
+  }
+  .mbn-label { font-size: 9.5px; }
+  .mbn-icon, .mbn-icon svg { width: 22px; height: 22px; }
+  .mbn-center-circle { width: 56px; height: 56px; top: -14px; }
+  .mbn-center-halo { width: 70px; height: 70px; }
+}

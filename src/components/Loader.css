@@ -1,110 +1,295 @@
-/* Full screen background */
-.loader-container {
+/* ============================================================
+   TURANTX LOADER — "Verified Live Routing"
+   Cinematic, premium, intelligent. Layered route visualization
+   with verified handoff metaphor. Single signature animation.
+   ============================================================ */
+
+.tx-loader {
   position: fixed;
   inset: 0;
-
-  background: linear-gradient(135deg, #fff5ef, #fff9f5);
-
+  z-index: 9999;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-
-  z-index: 9999;
-}
-
-/* Logo wrapper */
-.loader-logo {
-  position: relative;
-
-  width: 120px;
-  height: 120px;
-
-  display: flex;
   justify-content: center;
-  align-items: center;
+  gap: 36px;
+  font-family: "Inter", sans-serif;
+  background:
+    radial-gradient(ellipse at 18% 12%, rgba(255, 180, 110, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 86% 92%, rgba(110, 160, 220, 0.18) 0%, transparent 55%),
+    linear-gradient(160deg, #FFFCF8 0%, #FFF6EE 38%, #F4F8FD 100%);
+  overflow: hidden;
+  animation: txLoaderIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-font-smoothing: antialiased;
+}
+@keyframes txLoaderIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-/* Logo image */
-.loader-img {
-  width: 95px;
-  height: 95px;
-
-  object-fit: cover;
-
-  /* ✅ Make it round */
-  border-radius: 60%;
-
-  background: white; /* optional: clean edge */
-
-  animation: pulse 1.6s ease-in-out infinite;
-
-  filter: drop-shadow(0 6px 18px rgba(255, 145, 77, 0.35));
-
-  z-index: 2;
-}
-
-/* Circular ring */
-.plane-path {
+/* ============================================================
+   ATMOSPHERIC BACKDROP
+   ============================================================ */
+.tx-loader-bg {
   position: absolute;
-
-  width: 115px;
-  height: 115px;
-
-  border: 2px solid rgba(255, 145, 77, 0.25);
-  border-top-color: #ff914d;
-
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.tx-loader-orb {
+  position: absolute;
   border-radius: 50%;
-
-  animation: rotate 1.5s linear infinite;
-
-  z-index: 1;
+  filter: blur(90px);
+  will-change: transform;
+}
+.tx-loader-orb--warm {
+  width: 460px;
+  height: 460px;
+  top: -14%;
+  right: -10%;
+  background: radial-gradient(circle, rgba(255, 145, 60, 0.28) 0%, transparent 70%);
+  animation: txOrbWarm 16s ease-in-out infinite;
+}
+.tx-loader-orb--cool {
+  width: 380px;
+  height: 380px;
+  bottom: -16%;
+  left: -10%;
+  background: radial-gradient(circle, rgba(80, 140, 220, 0.20) 0%, transparent 70%);
+  animation: txOrbCool 22s ease-in-out infinite;
+}
+@keyframes txOrbWarm {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-36px, 44px) scale(1.06); }
+}
+@keyframes txOrbCool {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(44px, -32px) scale(1.05); }
 }
 
-/* Text */
-.loader-text {
-  margin-top: 22px;
+/* Subtle film grain — adds optical texture, prevents banding */
+.tx-loader-grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  opacity: 0.040;
+  mix-blend-mode: multiply;
+}
 
-  font-size: 16px;
+/* Soft inner vignette — keeps focus on the stage */
+.tx-loader-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(15, 23, 42, 0.045) 100%);
+  pointer-events: none;
+}
+
+/* ============================================================
+   STAGE
+   ============================================================ */
+.tx-loader-stage {
+  position: relative;
+  width: min(520px, 86vw);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tx-loader-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 36px rgba(255, 98, 26, 0.18));
+}
+
+/* ── Flowing dashed arc ── */
+.tx-arc-dash {
+  animation: txDashFlow 1.6s linear infinite;
+}
+@keyframes txDashFlow {
+  to { stroke-dashoffset: -30; }
+}
+
+/* ── Companion ghost arc — counter-flowing for depth ── */
+.tx-arc-ghost {
+  animation: txDashFlowReverse 3.2s linear infinite;
+  opacity: 0.7;
+}
+@keyframes txDashFlowReverse {
+  to { stroke-dashoffset: 24; }
+}
+
+/* ── Endpoint pulse rings ── */
+.tx-pulse {
+  fill: none;
+  stroke: #FF621A;
+  stroke-width: 1.5;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: txPulseRing 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  opacity: 0;
+}
+.tx-pulse--late { animation-delay: 1.4s; }
+.tx-pulse--dest { animation-delay: 0.45s; }
+.tx-pulse--dest.tx-pulse--late { animation-delay: 1.85s; }
+@keyframes txPulseRing {
+  0%   { transform: scale(0.45); opacity: 0.85; stroke-width: 1.8; }
+  70%  { transform: scale(1.35); opacity: 0;    stroke-width: 0.6; }
+  100% { transform: scale(1.35); opacity: 0;    stroke-width: 0.6; }
+}
+
+/* ── Verification badge (destination) ── */
+.tx-verify {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: txVerify 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  opacity: 0;
+}
+@keyframes txVerify {
+  0%, 70% { opacity: 0; transform: scale(0.7); }
+  78%      { opacity: 1; transform: scale(1.10); }
+  86%      { opacity: 1; transform: scale(1.00); }
+  100%     { opacity: 0; transform: scale(1.00); }
+}
+
+/* ── Plane subtle hover/scale on the arc journey ── */
+.tx-plane {
+  animation: txPlaneBreathe 2.8s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@keyframes txPlaneBreathe {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(255, 98, 26, 0)); }
+  50%      { filter: drop-shadow(0 0 6px rgba(255, 138, 60, 0.55)); }
+}
+
+/* ============================================================
+   META BLOCK — eyebrow / wordmark / status
+   ============================================================ */
+.tx-loader-meta {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.tx-loader-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: rgba(15, 23, 42, 0.42);
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.tx-loader-eyebrow::before,
+.tx-loader-eyebrow::after {
+  content: "";
+  width: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 98, 26, 0.5), transparent);
+}
+
+.tx-loader-brand {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #0F172A;
+  line-height: 1.1;
+}
+.tx-loader-brand-x {
+  background: linear-gradient(95deg, #FF8B3E 0%, #FF621A 50%, #C44000 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: txBrandShimmer 3.2s linear infinite;
+  display: inline-block;
+}
+@keyframes txBrandShimmer {
+  0%   { background-position: 0% center; }
+  100% { background-position: -200% center; }
+}
+
+.tx-loader-status {
+  margin: 2px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
   font-weight: 500;
-
-  color: #ff914d;
-
-  letter-spacing: 0.4px;
-
-  opacity: 0.9;
-
-  animation: fadeText 1.4s ease-in-out infinite alternate;
+  color: rgba(15, 23, 42, 0.62);
+  letter-spacing: 0.005em;
+  line-height: 1.3;
+  animation: txStatusFade 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes txStatusFade {
+  from { opacity: 0; transform: translateY(6px); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
 
-/* Animations */
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Premium thinking-dots — staggered, subtle */
+.tx-loader-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 4px;
+}
+.tx-loader-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #FF621A;
+  opacity: 0.3;
+  animation: txDot 1.4s ease-in-out infinite;
+}
+.tx-loader-dots span:nth-child(2) { animation-delay: 0.18s; }
+.tx-loader-dots span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes txDot {
+  0%, 80%, 100% { opacity: 0.30; transform: translateY(0)    scale(1);   }
+  40%            { opacity: 1.00; transform: translateY(-2px) scale(1.2); }
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .tx-loader,
+  .tx-loader-orb,
+  .tx-arc-dash,
+  .tx-arc-ghost,
+  .tx-pulse,
+  .tx-verify,
+  .tx-plane,
+  .tx-loader-brand-x,
+  .tx-loader-dots span,
+  .tx-loader-status {
+    animation: none !important;
   }
-
-  50% {
-    transform: scale(1.08);
-  }
+  .tx-plane animateMotion { display: none; }
+  .tx-verify { opacity: 1; }
 }
 
-@keyframes fadeText {
-  from {
-    opacity: 0.5;
-  }
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  .tx-loader { gap: 28px; padding: 0 16px; }
+  .tx-loader-stage { width: min(360px, 88vw); }
+  .tx-loader-eyebrow { font-size: 9.5px; letter-spacing: 0.24em; }
+  .tx-loader-eyebrow::before,
+  .tx-loader-eyebrow::after { width: 14px; }
+  .tx-loader-brand { font-size: 22px; }
+  .tx-loader-status { font-size: 13px; }
+}
 
-  to {
-    opacity: 1;
-  }
+@media (max-width: 360px) {
+  .tx-loader-stage { width: 92vw; }
+  .tx-loader-brand { font-size: 20px; }
 }

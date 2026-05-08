@@ -1,134 +1,244 @@
-import React, { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import "./FlightDetails.css";
 import Loader from "./Loader";
 import { useNavigate, useLocation } from "react-router-dom";
+import StepIndicator from "./StepIndicator";
+import { showToast } from "./Toast";
+import FormActionBar from "./FormActionBar";
+
+/* ── Inline SVG icon set (replaces all emoji) ── */
+const Icon = {
+  plane: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-2-5.5-.5L10 5 1.8 6.2c-.8.2-1.3.8-1.1 1.7l2.7 4.5c.3.5 1 .6 1.5.2L7.5 10l3.5 8.5c.2.5.8.8 1.3.6l4.5-2c.7-.2.8-.9 1-1.9z"/>
+    </svg>
+  ),
+  user: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+    </svg>
+  ),
+  bag: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/>
+      <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+    </svg>
+  ),
+  notes: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+      <line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/>
+    </svg>
+  ),
+  info: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+    </svg>
+  ),
+  shield: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+    </svg>
+  ),
+  phone: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+    </svg>
+  ),
+  arrow: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+    </svg>
+  ),
+  back: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+    </svg>
+  ),
+  close: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  ),
+};
+
+const AIRLINES = [
+  "IndiGo", "Air India", "Air India Express", "Akasa Air", "SpiceJet",
+  "AIX Connect (AirAsia India)", "Star Air", "Flybig", "TruJet", "Others",
+];
+const SPACE_TYPES = ["All Bags", "Cabin Bag", "Luggage Bag", "Personal Bag"];
+
+/* ── helpers ── */
+const todayISO = () => new Date().toISOString().split("T")[0];
+const oneYearOutISO = () => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() + 1);
+  return d.toISOString().split("T")[0];
+};
+const tomorrowISO = () => {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split("T")[0];
+};
+const formatPrettyDate = (iso) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+};
+const formatPrettyTime = (hhmm) => {
+  if (!hhmm) return "";
+  const [h, m] = hhmm.split(":").map(Number);
+  const ampm = h < 12 ? "AM" : "PM";
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hour12}:${String(m).padStart(2, "0")} ${ampm}`;
+};
+
+/* ── per-field validators ── */
+const validators = {
+  firstName: (v) => (!v.trim() ? "First name is required" : v.trim().length < 2 ? "Too short" : ""),
+  lastName:  (v) => (!v.trim() ? "Last name is required"  : v.trim().length < 2 ? "Too short" : ""),
+  phone:     (v) => (!v ? "Mobile number is required" : !/^[6-9]\d{9}$/.test(v) ? "Enter a valid 10-digit mobile" : ""),
+  travelDate:(v) => {
+    if (!v) return "Travel date is required";
+    if (v < todayISO()) return "Date cannot be in the past";
+    if (v > oneYearOutISO()) return "Date too far ahead";
+    return "";
+  },
+  airline:       (v) => (!v ? "Please select an airline" : ""),
+  customAirline: (v, form) => (form.airline === "Others" && !v.trim() ? "Enter airline name" : ""),
+  pnr:           (v) => (v && !/^[A-Z0-9]{6}$/i.test(v) ? "PNR must be 6 alphanumeric characters" : ""),
+  departureTime: () => "",
+  baggageSpace:  (v) => (v && Number(v) < 0 ? "Cannot be negative" : v && Number(v) > 30 ? "Up to 30 kg" : ""),
+};
 
 export default function FlightDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  const phoneNumber = state?.phoneNumber || localStorage.getItem("PHONE_NUMBER") || "";
   const from = state?.from;
   const to = state?.to;
   const distance = state?.distance || "";
-  const [showTerms, setShowTerms] = useState(false);
-  const [showTermsModal, setShowTermsModal] = useState(false);
 
+  useEffect(() => {
+    const role = localStorage.getItem("USER_ROLE");
+    if (role !== "TRAVELER") navigate("/login", { replace: true });
+  }, [navigate]);
 
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showDepartureHelp, setShowDepartureHelp] = useState(false);
+  const [capacityOpen, setCapacityOpen] = useState(false);
 
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    airline: "",
-    customAirline: "", // ✅ for Others
-    travelDate: "",
-    departureTime: "",
-    baggageSpace: "",
-    spaceAvailableWhen: "",
-    carryType: "",
-    remarks: "",
-    checkParcel: false,
-    agreeTerms: false,
-    pnr: "",    
+  const fieldRefs = useRef({});
+
+  const [form, setForm] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("flightDetailsForm");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {
+      firstName: "",
+      lastName: "",
+      phone: localStorage.getItem("PHONE_NUMBER") || "",
+      airline: "",
+      customAirline: "",
+      travelDate: tomorrowISO(),
+      departureTime: "",
+      baggageSpace: "",
+      spaceAvailableWhen: "",
+      remarks: "",
+      checkParcel: false,
+      pnr: "",
+    };
   });
 
-  // ✅ Airlines + Others
-  const airlines = [
-    "Air India",
-    "Air India Express",
-    "IndiGo",
-    "SpiceJet",
-    "Vistara",
-    "AirAsia India",
-    "Akasa Air",
-    "Others",
-  ];
+  /* ── persist draft ── */
+  useEffect(() => {
+    sessionStorage.setItem("flightDetailsForm", JSON.stringify(form));
+  }, [form]);
 
-  const carryOptions = [
-    { label: "Documents", enabled: true },
-    { label: "Laptop", enabled: false },
-    { label: "Medicines", enabled: false },
-    { label: "Electronics", enabled: false },
-    { label: "Clothes", enabled: false },
-    { label: "Books", enabled: false },
-    { label: "Gifts", enabled: false },
-  ];
-
-  // ✅ Bag naming fixed
-  const spaceAvail = [
-    "All Bags",
-    "Cabin Bag",
-    "Luggage Bag",
-    "Personal Bag"
-  ];
-
-  // ✅ Handle change (block negative kg)
+  /* ── change handler ── */
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, type, checked } = e.target;
+    let value = e.target.value;
+    if (name === "phone") value = value.replace(/\D/g, "").slice(0, 10);
+    if (name === "pnr")   value = value.toUpperCase().slice(0, 6);
+    if (name === "baggageSpace" && value !== "" && Number(value) < 0) return;
 
-    if (name === "baggageSpace" && value < 0) return;
+    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
 
-    if (name === "pnr") {
-      setForm({
-        ...form,
-        pnr: value.toUpperCase(),
-      });
-      return;
+    // re-validate field if it was previously touched (live error clearing)
+    if (touched[name]) {
+      const fn = validators[name];
+      if (fn) {
+        const updatedForm = { ...form, [name]: type === "checkbox" ? checked : value };
+        setErrors((prev) => ({ ...prev, [name]: fn(value, updatedForm) }));
+      }
     }
-
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value,
-    });
   };
 
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const fn = validators[name];
+    if (fn) setErrors((prev) => ({ ...prev, [name]: fn(value, form) }));
+  };
+
+  const validateAll = useCallback(() => {
+    const next = {};
+    Object.keys(validators).forEach((key) => {
+      const err = validators[key](form[key] || "", form);
+      if (err) next[key] = err;
+    });
+    return next;
+  }, [form]);
+
   const handleSubmit = async () => {
-    // ✅ Validation (Others included)
-    if (
-      !form.firstName ||
-      !form.lastName ||
-      !form.airline ||
-      (form.airline === "Others" && !form.customAirline)
-    ) {
-      alert("⚠️ Please fill all mandatory fields");
+    const errs = validateAll();
+
+    if (Object.keys(errs).length > 0) {
+      // Toast-driven UX: scroll + focus the first invalid field, show a friendly toast.
+      // No inline errors painted on submit — keeps the form clean.
+      const order = ["firstName", "lastName", "phone", "travelDate", "departureTime", "airline", "customAirline", "pnr", "baggageSpace"];
+      const first = order.find((k) => errs[k]);
+      if (first) {
+        const friendly = {
+          firstName:     "Please enter your first name",
+          lastName:      "Please enter your last name",
+          phone:         errs.phone === "Mobile number is required" ? "Please enter your mobile number" : errs.phone,
+          travelDate:    errs.travelDate === "Travel date is required" ? "Please pick your travel date" : errs.travelDate,
+          departureTime: "Please pick a departure time",
+          airline:       "Please select your airline",
+          customAirline: errs.customAirline,
+          pnr:           errs.pnr,
+          baggageSpace:  errs.baggageSpace,
+        };
+        showToast(friendly[first] || errs[first], "warning");
+        const el = fieldRefs.current[first];
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(() => el.focus?.(), 350);
+        }
+      }
       return;
     }
 
-    if (!form.pnr) {
-      alert("⚠️ Please enter PNR number");
-      return;
-    }
-    
-    if (!form.agreeTerms) {
-      alert("⚠️ Please agree to Terms and Conditions");
-      return;
-    }
+    localStorage.setItem("PHONE_NUMBER", form.phone);
+    await submitData(form.phone);
+  };
 
+  const submitData = async (phone) => {
+    setLoading(true);
     const payload = {
-      phoneNumber,
+      phoneNumber: phone,
       userType: "TRAVELER",
-      from,
-      to,
-      distance,
+      from, to, distance,
       flightDetails: {
         ...form,
-
-        // ✅ Real airline name
-        airline:
-          form.airline === "Others"
-            ? form.customAirline
-            : form.airline,
+        airline: form.airline === "Others" ? form.customAirline : form.airline,
       },
     };
-
-    setLoading(true);
-
-    console.log("[FlightDetails] phoneNumber from state:", state?.phoneNumber);
-    console.log("[FlightDetails] phoneNumber from localStorage:", localStorage.getItem("PHONE_NUMBER"));
-    console.log("[FlightDetails] phoneNumber being sent:", phoneNumber);
-    console.log("[FlightDetails] full payload:", JSON.stringify(payload));
-
     try {
       const res = await fetch(
         "https://us-central1-bhejochalo-3d292.cloudfunctions.net/saveUserData",
@@ -138,444 +248,327 @@ export default function FlightDetails() {
           body: JSON.stringify(payload),
         }
       );
-
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.error || "Server error");
-
-      alert("✅ Traveler details saved successfully!");
-
-      navigate("/traveler-waitlist", { state: { phoneNumber } });
+      showToast("Traveler details saved successfully!", "success");
+      sessionStorage.removeItem("flightDetailsForm");
+      navigate("/traveler-waitlist", { state: { phoneNumber: phone } });
     } catch (err) {
-      console.error("❌ Error saving traveler:", err);
-
-      alert("Something went wrong while saving traveler details.");
+      console.error("Error saving traveler:", err);
+      showToast("Something went wrong. Please try again.", "error");
     } finally {
       setLoading(false);
     }
   };
 
+  const setRef = (name) => (el) => { fieldRefs.current[name] = el; };
+
+  /* Inline errors are suppressed for empty fields — "required" is handled
+     via toast on submit. Inline errors only surface when the user has
+     typed/selected something invalid (e.g. wrong PNR format). */
+  const hasValue = (name) => {
+    const v = form[name];
+    if (typeof v === "string") return v.trim().length > 0;
+    return !!v;
+  };
+  const fieldError = (name) => {
+    if (!touched[name]) return null;
+    if (!errors[name]) return null;
+    if (!hasValue(name)) return null;        // empty → no inline error
+    return errors[name];
+  };
+  const fieldClass = (name) => {
+    const err = fieldError(name);
+    const filled = hasValue(name);
+    return `fd-input${err ? " is-error" : ""}${filled && !err ? " is-filled" : ""}`;
+  };
+
   return (
-    <div className="flight-page">
+    <div className="fd-page">
       {loading && <Loader />}
 
-      <div className="flight-card">
-        <h2 className="flight-title">
-          Tell Us About Your Flight ✈️
+      <div className="fd-card">
+        <StepIndicator current={3} total={3} label="Flight details" />
+        <h2 className="fd-title">
+          <span className="fd-title-icon" aria-hidden>{Icon.plane}</span>
+          Tell us about your flight
         </h2>
+        <p className="fd-subtitle">Takes about 60 seconds. We'll match you with a sender on your route.</p>
 
-        <div className="flight-form">
-          {/* Name */}
-          <input
-            name="firstName"
-            placeholder="First Name"
-            value={form.firstName}
-            onChange={handleChange}
-          />
+        <form className="fd-form" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} noValidate>
 
-          <input
-            name="lastName"
-            placeholder="Last Name"
-            value={form.lastName}
-            onChange={handleChange}
-          />
+          {/* ───── YOU ───── */}
+          <div className="fd-section">
+            <div className="fd-row fd-row-2">
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="firstName">First name <span className="fd-req">*</span></label>
+                <input
+                  id="firstName" name="firstName" type="text"
+                  ref={setRef("firstName")}
+                  value={form.firstName}
+                  onChange={handleChange} onBlur={handleBlur}
+                  placeholder="e.g. Rahul"
+                  autoComplete="given-name"
+                  autoCapitalize="words"
+                  className={fieldClass("firstName")}
+                  aria-invalid={!!fieldError("firstName")}
+                  aria-describedby="err-firstName"
+                />
+                {fieldError("firstName") && <span id="err-firstName" className="fd-error">{fieldError("firstName")}</span>}
+              </div>
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="lastName">Last name <span className="fd-req">*</span></label>
+                <input
+                  id="lastName" name="lastName" type="text"
+                  ref={setRef("lastName")}
+                  value={form.lastName}
+                  onChange={handleChange} onBlur={handleBlur}
+                  placeholder="e.g. Sharma"
+                  autoComplete="family-name"
+                  autoCapitalize="words"
+                  className={fieldClass("lastName")}
+                  aria-invalid={!!fieldError("lastName")}
+                  aria-describedby="err-lastName"
+                />
+                {fieldError("lastName") && <span id="err-lastName" className="fd-error">{fieldError("lastName")}</span>}
+              </div>
+            </div>
 
-          {/* Airline */}
-          <select
-            name="airline"
-            value={form.airline}
-            onChange={handleChange}
-          >
-            <option value="">Select Airline</option>
-
-            {airlines.map((a) => (
-              <option key={a}>{a}</option>
-            ))}
-          </select>
-
-          <input
-  name="pnr"
-  placeholder="Enter PNR Number"
-  value={form.pnr}
-  onChange={handleChange}
-/>
-
-          {/* Others input */}
-          {form.airline === "Others" && (
-            <input
-              name="customAirline"
-              placeholder="Enter Airline Name"
-              value={form.customAirline}
-              onChange={handleChange}
-            />
-          )}
-
-          {/* Date */}
-          <label className="label">
-            Select date you'll leave home
-          </label>
-
-          <input
-            type="date"
-            name="travelDate"
-            value={form.travelDate}
-            onChange={handleChange}
-          />
-
-          {/* Time */}
-          <label className="label">
-            Select time you'll leave home for the airport
-          </label>
-
-          <input
-            type="time"
-            name="departureTime"
-            value={form.departureTime}
-            onChange={handleChange}
-          />
-
-          {/* Baggage */}
-          <input
-            type="number"
-            name="baggageSpace"
-            min="0"
-            placeholder="Free Space in Baggage (kg)"
-            value={form.baggageSpace}
-            onChange={handleChange}
-          />
-
-          {/* Where space */}
-          <select
-            name="spaceAvailableWhen"
-            value={form.spaceAvailableWhen}
-            onChange={handleChange}
-            disabled={
-              !form.baggageSpace ||
-              form.baggageSpace == 0
-            }
-          >
-            <option value="">
-              Where Space is Available?
-            </option>
-
-            {spaceAvail.map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
-
-          {/* Carry type */}
-          <select
-            name="carryType"
-            value={form.carryType}
-            onChange={handleChange}
-          >
-            <option value="">
-              What Can You Carry?
-            </option>
-
-            {carryOptions.map((c) => (
-              <option
-                key={c.label}
-                value={c.label}
-                disabled={!c.enabled}
-                style={
-                  !c.enabled ? { color: "#aaa" } : {}
-                }
-              >
-                {c.label}
-              </option>
-            ))}
-          </select>
-
-          {/* Remarks */}
-          <textarea
-            name="remarks"
-            placeholder="Eg: Please place the documents in a polythene cover for safety. (Add any other instructions here)"
-            value={form.remarks}
-            onChange={handleChange}
-          />
-
-          {/* Checkbox */}
-          <label>
-            <input
-              type="checkbox"
-              name="checkParcel"
-              checked={form.checkParcel}
-              onChange={handleChange}
-            />
-            {" "}I want to check parcel before carrying
-          </label>
-
-          <label>
-          <input
-  type="checkbox"
-  name="agreeTerms"
-  checked={form.agreeTerms}
-  onChange={() => {
-    if (!form.agreeTerms) {
-      setShowTermsModal(true);
-    } else {
-      setForm({ ...form, agreeTerms: false });
-    }
-  }}
-/>
-
-            {" "}I agree to Terms & Conditions
-          </label>
-
-          <button
-            className="verify-btn"
-            onClick={handleSubmit}
-          >
-            Verify & Continue
-          </button>
-        </div>
-      </div>
-
-      {/* Terms Modal */}
-      {showTerms && (
-        <div className="terms-overlay">
-          <div className="terms-modal">
-            <h3>Terms & Conditions</h3>
-
-            <p>
-              By continuing, you agree that:
-              <br />• You are responsible for items you carry
-              <br />• You will not carry illegal items
-              <br />• TurantX is only a facilitator
-              <br />• Final responsibility is yours
-            </p>
-
-            <div className="terms-actions">
-              <button
-                onClick={() => setShowTerms(false)}
-                className="cancel-btn"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={() => {
-                  setForm({
-                    ...form,
-                    agreeTerms: true,
-                  });
-
-                  setShowTerms(false);
-                }}
-                className="accept-btn"
-              >
-                Accept
-              </button>
-              
+            <div className="fd-field">
+              <label className="fd-label" htmlFor="phone">Mobile number <span className="fd-req">*</span></label>
+              <div className="fd-input-prefix">
+                <span className="fd-prefix" aria-hidden>+91</span>
+                <input
+                  id="phone" name="phone" type="tel"
+                  ref={setRef("phone")}
+                  value={form.phone}
+                  onChange={handleChange} onBlur={handleBlur}
+                  placeholder="10-digit mobile"
+                  autoComplete="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={10}
+                  className={`${fieldClass("phone")} fd-input--prefixed`}
+                  aria-invalid={!!fieldError("phone")}
+                  aria-describedby="err-phone"
+                />
+              </div>
+              {fieldError("phone")
+                ? <span id="err-phone" className="fd-error">{fieldError("phone")}</span>
+                : <span className="fd-hint"><span className="fd-hint-icon" aria-hidden>{Icon.shield}</span>We'll WhatsApp your match here. Never shared.</span>}
             </div>
           </div>
-        </div>
-      )}
-{showTermsModal && (
-  <div className="modal-overlay">
-    <div
-      className="modal-card"
-      style={{
-        maxHeight: "80vh",
-        overflow: "hidden",
-        width: "90%",
-        maxWidth: "600px",
-      }}
-    >
-      <h3 style={{ marginBottom: "10px" }}>
-        Terms & Conditions
-      </h3>
 
-      {/* Scroll Area */}
-      <div
-  style={{
-    maxHeight: "55vh",
-    overflowY: "auto",
-    fontSize: "14px",
-    lineHeight: "1.6",
-    paddingRight: "6px",
-  }}
->
-  
-  <p><strong>Last updated:</strong> 24-Jan-2026</p>
+          {/* ───── FLIGHT ───── */}
+          <div className="fd-section">
+            <div className="fd-row fd-row-2">
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="travelDate">Travel date <span className="fd-req">*</span></label>
+                <input
+                  id="travelDate" type="date" name="travelDate"
+                  ref={setRef("travelDate")}
+                  min={todayISO()} max={oneYearOutISO()}
+                  value={form.travelDate}
+                  onChange={handleChange} onBlur={handleBlur}
+                  className={fieldClass("travelDate")}
+                  aria-invalid={!!fieldError("travelDate")}
+                  aria-describedby="err-travelDate"
+                />
+                {fieldError("travelDate")
+                  ? <span id="err-travelDate" className="fd-error">{fieldError("travelDate")}</span>
+                  : form.travelDate && <span className="fd-hint">{formatPrettyDate(form.travelDate)}</span>}
+              </div>
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="departureTime">
+                  Leaving home by
+                  <button type="button" className="fd-info-btn" aria-label="What does this mean?"
+                    onClick={() => setShowDepartureHelp((v) => !v)}>
+                    <span className="fd-info-icon">{Icon.info}</span>
+                  </button>
+                </label>
+                <input
+                  id="departureTime" type="time" name="departureTime" step="900"
+                  ref={setRef("departureTime")}
+                  value={form.departureTime}
+                  onChange={handleChange} onBlur={handleBlur}
+                  className={fieldClass("departureTime")}
+                />
+                {showDepartureHelp && (
+                  <span className="fd-hint fd-hint--help">
+                    What time will you leave home? We'll ensure the parcel reaches you before this.
+                  </span>
+                )}
+                {!showDepartureHelp && form.departureTime && (
+                  <span className="fd-hint">{formatPrettyTime(form.departureTime)}</span>
+                )}
+              </div>
+            </div>
 
-  <p>
-    Welcome to <strong>TurantX Solutions Pvt Ltd</strong> (“TurantX”, “we”, “our”, “us”).
-    By accessing or using the TurantX website, mobile application, or services,
-    you agree to be bound by these Terms & Conditions.
-    If you do not agree, please do not use our services.
-  </p>
+            <div className="fd-row fd-row-2">
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="airline">Airline <span className="fd-req">*</span></label>
+                <select
+                  id="airline" name="airline"
+                  ref={setRef("airline")}
+                  value={form.airline}
+                  onChange={handleChange} onBlur={handleBlur}
+                  className={fieldClass("airline")}
+                  aria-invalid={!!fieldError("airline")}
+                  aria-describedby="err-airline"
+                >
+                  <option value="">Select airline</option>
+                  {AIRLINES.map((a) => <option key={a} value={a}>{a}</option>)}
+                </select>
+                {fieldError("airline") && <span id="err-airline" className="fd-error">{fieldError("airline")}</span>}
+              </div>
 
-  <hr />
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="pnr">
+                  PNR <span className="fd-optional">optional</span>
+                </label>
+                <input
+                  id="pnr" name="pnr" type="text"
+                  ref={setRef("pnr")}
+                  value={form.pnr}
+                  onChange={handleChange} onBlur={handleBlur}
+                  placeholder="e.g. ABC123"
+                  autoCapitalize="characters"
+                  autoComplete="off"
+                  spellCheck={false}
+                  maxLength={6}
+                  className={fieldClass("pnr")}
+                  aria-invalid={!!fieldError("pnr")}
+                  aria-describedby="err-pnr"
+                />
+                {fieldError("pnr")
+                  ? <span id="err-pnr" className="fd-error">{fieldError("pnr")}</span>
+                  : <span className="fd-hint">Speeds up verification. 6 letters/digits.</span>}
+              </div>
+            </div>
 
-  <h5>1. About TurantX</h5>
-  <p>
-    TurantX is a peer-to-peer logistics technology platform that connects senders
-    with verified flight travelers to facilitate urgent document delivery.
-  </p>
-  <p>
-    During the pilot phase, TurantX operates on a limited-feature basis and
-    currently supports document delivery only.
-  </p>
+            {form.airline === "Others" && (
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="customAirline">Airline name <span className="fd-req">*</span></label>
+                <input
+                  id="customAirline" name="customAirline" type="text"
+                  ref={setRef("customAirline")}
+                  value={form.customAirline}
+                  onChange={handleChange} onBlur={handleBlur}
+                  placeholder="Enter airline name"
+                  className={fieldClass("customAirline")}
+                  aria-invalid={!!fieldError("customAirline")}
+                />
+                {fieldError("customAirline") && <span className="fd-error">{fieldError("customAirline")}</span>}
+              </div>
+            )}
+          </div>
 
-  <h5>2. Pilot Phase Disclaimer</h5>
-  <p>
-    TurantX is currently operating in a pilot phase. Features, processes, pricing,
-    and availability may change without prior notice.
-  </p>
-  <p>
-    Certain services such as doorstep pickup or doorstep delivery are not available
-    during the pilot phase.
-  </p>
+          {/* ───── CAPACITY (optional, collapsed by default on mobile) ───── */}
+          <div className={`fd-section fd-section--collapsible${capacityOpen ? " is-open" : ""}`}>
+            <button
+              type="button"
+              className="fd-collapse-toggle"
+              onClick={() => setCapacityOpen((v) => !v)}
+              aria-expanded={capacityOpen}
+              aria-controls="fd-capacity-fields"
+            >
+              <span className="fd-collapse-label">
+                <span className="fd-collapse-plus" aria-hidden>{capacityOpen ? "−" : "+"}</span>
+                {capacityOpen ? "Capacity details" : "Add baggage capacity"}
+                <span className="fd-collapse-meta">optional</span>
+              </span>
+              <span className="fd-collapse-chevron" aria-hidden>▾</span>
+            </button>
 
-  <h5>3. Eligibility</h5>
-  <p>To use TurantX:</p>
-  <ul>
-    <li>You must be at least 18 years old.</li>
-    <li>You must provide accurate and complete information.</li>
-    <li>Travelers must complete identity verification as required by TurantX.</li>
-  </ul>
+            <div id="fd-capacity-fields" className="fd-collapse-body">
+            <div className="fd-row fd-row-2">
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="baggageSpace">Available space (kg)</label>
+                <input
+                  id="baggageSpace" type="number" name="baggageSpace"
+                  ref={setRef("baggageSpace")}
+                  min="0" max="30" step="0.5"
+                  inputMode="decimal" pattern="[0-9]*"
+                  value={form.baggageSpace}
+                  onChange={handleChange} onBlur={handleBlur}
+                  placeholder="e.g. 5"
+                  className={fieldClass("baggageSpace")}
+                />
+                {fieldError("baggageSpace") && <span className="fd-error">{fieldError("baggageSpace")}</span>}
+              </div>
+              <div className="fd-field">
+                <label className="fd-label" htmlFor="spaceAvailableWhen">Bag type</label>
+                <select
+                  id="spaceAvailableWhen" name="spaceAvailableWhen"
+                  value={form.spaceAvailableWhen}
+                  onChange={handleChange}
+                  disabled={!form.baggageSpace || Number(form.baggageSpace) === 0}
+                  className={fieldClass("spaceAvailableWhen")}
+                >
+                  <option value="">Select bag type</option>
+                  {SPACE_TYPES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+            </div>
+          </div>
 
-  <h5>4. Nature of Items Allowed</h5>
-  <p>
-    Only documents are permitted during the pilot phase.
-  </p>
-  <p>
-    Prohibited items include (but are not limited to): cash, illegal substances,
-    electronics, valuables, perishables, hazardous materials, or any item
-    restricted by law or airline regulations.
-  </p>
-  <p>
-    TurantX reserves the right to cancel requests involving prohibited items.
-  </p>
+          {/* ───── NOTES + AGREEMENTS ───── */}
+          <div className="fd-section">
+            <div className="fd-field">
+              <label className="fd-label" htmlFor="remarks">
+                Remarks <span className="fd-optional">optional</span>
+              </label>
+              <textarea
+                id="remarks" name="remarks"
+                value={form.remarks}
+                onChange={handleChange}
+                placeholder="Any special instructions for the sender…"
+                rows={3}
+                className={fieldClass("remarks")}
+              />
+            </div>
 
-  <h5>5. Role of TurantX</h5>
-  <p>
-    TurantX acts as a technology platform only. We do not physically transport,
-    handle, store, or inspect documents.
-  </p>
-  <p>
-    TurantX does not guarantee delivery timelines and is not a courier or cargo company.
-  </p>
+            <label className="fd-checkbox-card">
+              <input
+                type="checkbox" name="checkParcel"
+                checked={form.checkParcel}
+                onChange={handleChange}
+                className="fd-checkbox"
+              />
+              <span className="fd-checkbox-label">I want to check the parcel before carrying</span>
+            </label>
+          </div>
 
-  <h5>6. Sender Responsibilities</h5>
-  <ul>
-    <li>Provide accurate pickup and destination details.</li>
-    <li>Ensure documents are legal, non-restricted, and properly packaged.</li>
-    <li>Hand over documents directly to the matched traveler.</li>
-    <li>Coordinate pickup and delivery using shared contact details (e.g. WhatsApp).</li>
-  </ul>
+          {/* ───── TRUST + ACTIONS ───── */}
+          <div className="fd-trust-row">
+            <span className="fd-trust-icon" aria-hidden>{Icon.shield}</span>
+            <span>Your data is secure. PNR is used only for flight verification — never shared.</span>
+          </div>
 
-  <h5>7. Traveler Responsibilities</h5>
-  <ul>
-    <li>Carry only documents approved through the TurantX platform.</li>
-    <li>Handle documents responsibly and deliver them as agreed.</li>
-    <li>Comply with airline rules, airport security regulations, and applicable laws.</li>
-    <li>Reject any package that appears suspicious or unsafe.</li>
-  </ul>
-
-  <h5>8. Payments & Charges</h5>
-  <p>
-    During the pilot phase, no payment is required from senders.
-    Future pricing, fees, or rewards may be introduced with prior notice.
-  </p>
-  <p>
-    Travelers may receive rewards or earnings as communicated separately.
-  </p>
-
-  <h5>9. No Match Policy</h5>
-  <p>
-    If no suitable traveler is found within 24 hours, the request will be cancelled.
-    As no payment is collected during the pilot, no refund applies.
-  </p>
-
-  <h5>10. Liability Limitation</h5>
-  <p>
-    TurantX is not responsible for loss, delay, damage, or misuse of documents.
-    Users acknowledge that delivery is facilitated through independent travelers.
-  </p>
-  <p>
-    To the maximum extent permitted by law, TurantX’s liability is limited to the
-    extent of fees paid (if any).
-  </p>
-
-  <h5>11. Safety & Verification</h5>
-  <p>
-    Travelers undergo PAN and ID verification. Flights and routes may be manually reviewed.
-  </p>
-  <p>
-    Despite these checks, users acknowledge that peer-to-peer delivery carries inherent risks.
-  </p>
-
-  <h5>12. Account Suspension</h5>
-  <p>TurantX reserves the right to suspend or terminate accounts if:</p>
-  <ul>
-    <li>False information is provided</li>
-    <li>Terms are violated</li>
-    <li>Suspicious or unsafe activity is detected</li>
-  </ul>
-
-  <h5>13. Privacy</h5>
-  <p>
-    Use of TurantX is also governed by our Privacy Policy.
-    By using the platform, you consent to the collection and use of information
-    as described therein.
-  </p>
-
-  <h5>14. Changes to Terms</h5>
-  <p>
-    TurantX may update these Terms & Conditions from time to time.
-    Continued use of the platform constitutes acceptance of the updated terms.
-  </p>
-
-  <h5>15. Governing Law</h5>
-  <p>
-    These Terms shall be governed by and interpreted in accordance with the laws of India.
-    Any disputes shall be subject to the jurisdiction of the courts of India.
-  </p>
-
-  <h5>16. Contact Us</h5>
-  <p>
-    For any questions regarding these Terms, please contact:
-    <br />
-    📧 <strong>support@turantx.com</strong>
-  </p>
-</div>
-
-      {/* Buttons */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginTop: "15px",
-        }}
-      >
-        <button
-          className="modal-btn"
-          style={{ background: "#eee", color: "#333" }}
-          onClick={() => {
-            setShowTermsModal(false);
-            setForm({ ...form, agreeTerms: false });
-          }}
-        >
-          Reject
-        </button>
-
-        <button
-          className="modal-btn"
-          onClick={() => {
-            setForm({ ...form, agreeTerms: true });
-            setShowTermsModal(false);
-          }}
-        >
-          Accept
-        </button>
+          <div className="fd-actions">
+            <button
+              type="button"
+              className="fd-btn fd-btn--ghost"
+              onClick={() => navigate("/login")}
+            >
+              <span className="fd-btn-icon" aria-hidden>{Icon.back}</span>
+              Back
+            </button>
+            <button type="submit" className="fd-btn fd-btn--primary">
+              Continue
+              <span className="fd-btn-icon" aria-hidden>{Icon.arrow}</span>
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
-  </div>
-)}
 
+      {/* Mobile-only contextual action bar (replaces bottom nav) */}
+      <FormActionBar
+        onBack={() => navigate("/login")}
+        onContinue={handleSubmit}
+        continueLabel="Continue"
+      />
     </div>
   );
 }

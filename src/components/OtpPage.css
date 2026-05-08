@@ -9,8 +9,8 @@
 
 .otp-back {
   position: absolute;
-  top: 40px;
-  left: 60px;
+  top: 24px;
+  left: 24px;
   background: none;
   border: none;
   display: flex;
@@ -22,8 +22,8 @@
 }
 
 .otp-logo {
-  width: 160px;
-  margin-bottom: 25px;
+  width: 130px;
+  margin-bottom: 20px;
 }
 
 .otp-title {
@@ -71,7 +71,8 @@
 }
 
 .otp-verify-btn {
-  width: 350px;
+  width: 100%;
+  max-width: 350px;
   padding: 14px 0;
   font-size: 16px;
   border-radius: 10px;
@@ -90,4 +91,34 @@
 
 .otp-verify-btn.active:hover {
   background-color: #ff7b20;
+}
+
+@media (max-width: 480px) {
+  .otp-page {
+    padding: 20px 16px;
+  }
+
+  .otp-logo {
+    width: 110px;
+    margin-bottom: 16px;
+  }
+
+  .otp-title {
+    font-size: 18px;
+  }
+
+  .otp-subtext {
+    font-size: 13px;
+    padding: 0 8px;
+  }
+
+  .otp-box {
+    width: 42px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .otp-input-row {
+    gap: 8px;
+  }
 }

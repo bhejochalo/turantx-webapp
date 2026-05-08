@@ -2,11 +2,20 @@
   .auto-page {
     background-color: #fff3ec;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    padding: 16px 16px calc(80px + env(safe-area-inset-bottom, 0px));
     font-family: "Inter", sans-serif;
     transition: all 0.3s ease-in-out;
+  }
+
+  @media (min-width: 769px) {
+    .auto-page {
+      align-items: center;
+      padding: 16px;
+    }
   }
 
   /* ====== Main Card ====== */
@@ -14,8 +23,9 @@
     background-color: #ffffff;
     box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
     border-radius: 28px;
-    padding: 40px 45px;
-    width: 400px;
+    padding: 28px 40px 36px;
+    width: 100%;
+    max-width: 400px;
     text-align: center;
     animation: fadeIn 0.6s ease-in-out;
   }
@@ -23,7 +33,8 @@
   /* ====== Logo ====== */
   .auto-logo {
     width: 90px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 14px;
   }
 
   /* ====== Title ====== */
@@ -31,32 +42,137 @@
     font-size: 22px;
     font-weight: 600;
     color: #ff7b29;
-    margin-bottom: 25px;
+    margin-bottom: 16px;
   }
 
   .plane {
     margin-left: 6px;
   }
 
-  /* ====== Route Info ====== */
-  .route-info {
+  /* ====== Role Selection ====== */
+  .role-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #aaa;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+    text-align: left;
+  }
+
+  .role-cards {
+    display: flex;
+    gap: 10px;
     margin-bottom: 16px;
+  }
+
+  .role-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 8px;
+    border: 1.5px solid #e8e8e8;
+    border-radius: 12px;
+    background: #fafafa;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  }
+
+  .role-card:hover {
+    border-color: #ffae70;
+    background: #fff8f3;
+  }
+
+  .role-card.selected {
+    border-color: #ff7b29;
+    background: #fff3eb;
+    box-shadow: 0 0 0 3px rgba(255, 123, 41, 0.12);
+  }
+
+  .role-icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .role-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .role-sub {
+    font-size: 10px;
+    color: #999;
+  }
+
+  .role-error-msg {
+    font-size: 12px;
+    color: #e05252;
+    margin: 0 0 10px;
     text-align: center;
   }
 
-  .route-label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: #aaa;
-    text-transform: uppercase;
-    margin-bottom: 4px;
+  /* ====== City Route Visual ====== */
+  .city-route-wrap {
+    padding: 12px 0 14px;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 16px;
   }
 
-  .route-cities {
-    color: #555;
-    font-size: 13px;
+  .city-route-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #bbb;
+    margin: 0 0 10px;
+    text-align: center;
+  }
+
+  .city-route {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    padding: 0 2px;
+  }
+
+  /* Connecting line behind dots */
+  .city-route::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 6px;
+    right: 6px;
+    height: 1.5px;
+    background: linear-gradient(to right, #ff7b29, #ffb78a, #ffd5b0, #ffb78a, #ff7b29);
+  }
+
+  .city-stop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    z-index: 1;
+  }
+
+  .city-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #ff7b29;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1.5px #ff7b29;
+  }
+
+  .city-short {
+    font-size: 10px;
+    font-weight: 500;
+    color: #888;
+    white-space: nowrap;
   }
 
   .route-error {
@@ -79,6 +195,39 @@
     width: 100%;
   }
 
+  /* Clear (×) button inside address inputs */
+  .addr-clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #e8e8e8;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+    color: #777;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s, color 0.15s;
+    z-index: 2;
+  }
+
+  .addr-clear-btn:hover {
+    background: #ff914d;
+    color: #fff;
+  }
+
+  /* Shift input text so it doesn't go under the × button */
+  .auto-input.has-value {
+    padding-right: 38px;
+  }
+
   .autocomplete-dropdown {
     position: absolute;
     top: calc(100% + 4px);
@@ -99,10 +248,12 @@
   .autocomplete-dropdown li {
     display: flex;
     flex-direction: column;
-    padding: 10px 14px;
+    padding: 12px 14px;
     cursor: pointer;
     gap: 2px;
     transition: background 0.15s;
+    min-height: 48px;
+    justify-content: center;
   }
 
   .autocomplete-dropdown li:hover {
@@ -132,7 +283,7 @@
   .auto-input {
     width: 100%;
     padding: 12px 15px;
-    font-size: 15px;
+    font-size: 16px;
     border: 1.6px solid #e0e0e0;
     border-radius: 12px;
     outline: none;
@@ -189,12 +340,13 @@
     color: #fff;
     border: none;
     width: 100%;
-    padding: 13px;
+    padding: 15px;
     border-radius: 14px;
     font-size: 17px;
     font-weight: 500;
     cursor: not-allowed;
     transition: 0.3s ease-in-out;
+    min-height: 52px;
   }
 
   .next-btn.active {
@@ -305,3 +457,23 @@
       transform: translate(-50%, -50%) scale(0.9);
     }
   }
+
+@media (max-width: 480px) {
+  .auto-card {
+    padding: 22px 20px 28px;
+    border-radius: 22px;
+  }
+
+  .auto-title {
+    font-size: 19px;
+  }
+
+  .route-info {
+    margin-bottom: 12px;
+  }
+
+  .next-btn {
+    font-size: 15px;
+    padding: 13px;
+  }
+}

@@ -1,23 +1,81 @@
 .timeline-card {
   width: 100%;
-  margin-top: 16px;
-  padding: 18px;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #F4F7FB;
+  border: 1px solid rgba(15, 40, 90, 0.09);
 }
 
-.timeline-title {
-  font-size: 15px;
+/* ── Collapsible header ── */
+.timeline-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  gap: 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.timeline-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.timeline-summary-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.timeline-current-step {
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 14px;
-  color: #333;
+  color: #ff914d;
+}
+
+.timeline-step-count {
+  font-size: 11.5px;
+  color: #aaa;
+}
+
+.timeline-chevron {
+  width: 18px;
+  height: 18px;
+  color: #bbb;
+  flex-shrink: 0;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.timeline-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+/* ── Accordion body ── */
+.timeline-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.timeline-collapse.is-open {
+  grid-template-rows: 1fr;
+}
+.timeline-inner {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .timeline {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
+  padding-top: 14px;
 }
 
 .timeline-item {
@@ -36,6 +94,7 @@
   justify-content: center;
   font-size: 12px;
   color: white;
+  flex-shrink: 0;
 }
 
 .dot.done {
@@ -49,16 +108,17 @@
 }
 
 .label {
-  font-size: 14px;
-  color: #999;
+  font-size: 13.5px;
+  color: rgba(15, 23, 42, 0.35);
+  font-family: "Inter", sans-serif;
 }
 
 .label.done {
-  color: #333;
+  color: rgba(15, 23, 42, 0.72);
   font-weight: 500;
 }
 
 .label.active {
-  color: #ff914d;
+  color: #FF621A;
   font-weight: 600;
 }

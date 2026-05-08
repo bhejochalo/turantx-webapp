@@ -48,7 +48,7 @@ export default function SenderProfile() {
         // Try requests subcollection first (new structure)
         const reqsSnap = await getDocs(collection(db, "users", phoneNumber, "SenderRequests"));
         if (!reqsSnap.empty) {
-          const activeDoc = reqsSnap.docs.find((d) => d.data().LastMileStatus !== "Completed")
+          const activeDoc = reqsSnap.docs.find((d) => d.data().status !== "COMPLETED" && d.data().LastMileStatus !== "Completed")
             || reqsSnap.docs[reqsSnap.docs.length - 1];
           activeSenderDocRef.current = doc(db, "users", phoneNumber, "SenderRequests", activeDoc.id);
           senderData = activeDoc.data();
@@ -198,12 +198,18 @@ export default function SenderProfile() {
           <div className="card">
             <h4>📍 Sender From Address</h4>
             <p>{formatAddress(sender?.from)}</p>
+            {sender?.from?.latitude && sender?.from?.longitude && (
+              <a href={`https://maps.google.com/?q=${sender.from.latitude},${sender.from.longitude}`} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "#1a73e8" }}>📍 Open in Maps</a>
+            )}
             <button onClick={() => openEdit("from", sender?.from)}>Edit</button>
           </div>
 
           <div className="card">
             <h4>📍 Sender To Address</h4>
             <p>{formatAddress(sender?.to)}</p>
+            {sender?.to?.latitude && sender?.to?.longitude && (
+              <a href={`https://maps.google.com/?q=${sender.to.latitude},${sender.to.longitude}`} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "#1a73e8" }}>📍 Open in Maps</a>
+            )}
             <button onClick={() => openEdit("to", sender?.to)}>Edit</button>
           </div>
 

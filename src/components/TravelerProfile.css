@@ -3,8 +3,14 @@
     width: 100%;
     min-height: 100vh;
     background: #fffaf6;
-    padding: 20px;
+    padding: 20px 16px calc(88px + env(safe-area-inset-bottom, 0px));
     box-sizing: border-box;
+  }
+
+  @media (min-width: 769px) {
+    .tp-page {
+      padding: 20px;
+    }
   }
   
   /* --- TOP BAR --- */
@@ -230,47 +236,6 @@
   }
   
   /* --- MILE LIST --- */
-.tp-mile-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.tp-mile-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #fff4ec;
-  border: 1px solid #ffd8c4;
-  padding: 12px;
-  border-radius: 12px;
-}
-
-.tp-mile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.tp-mile-info span {
-  font-size: 13px;
-  color: #666;
-}
-
-.tp-mile-otp {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.tp-mile-otp input {
-  width: 110px;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #ffc8b0;
-  font-size: 13px;
-}
-/* --- MILE LIST (CLEAN UX) --- */
 .tp-mile-list {
   display: flex;
   flex-direction: column;

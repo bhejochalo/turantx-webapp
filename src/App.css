@@ -1,13 +1,4 @@
-
-body {
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  background: linear-gradient(180deg, #fff 0%, #fef5ee 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
+/* body styles are in index.css — do not duplicate here */
 
 .input-group {
   display: flex;
@@ -59,12 +50,18 @@ body {
 @keyframes fadeBlur {
   0% {
     opacity: 0;
-    filter: blur(18px);
+    filter: blur(6px);
     transform: translateY(10px);
   }
   100% {
     opacity: 1;
     filter: blur(0);
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none !important;
   }
 }

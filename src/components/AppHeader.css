@@ -1,14 +1,49 @@
 .app-header {
+    height: calc(64px + env(safe-area-inset-top, 0px));
+    padding: env(safe-area-inset-top, 0px) 20px 0;
+    background: #ffffff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    /* Inner items baseline */
+    padding-bottom: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1002;
+    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
+  }
+
+  /* Nav row inside header — always 64px tall */
+  .app-header > * {
     height: 64px;
-    padding: 0 20px;
-    background: #fff;
-    border-bottom: 1px solid #eee;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 1002;
+  }
+
+  /* Dark variant — fully transparent on landing page */
+  .app-header--dark {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .app-header--dark .nav-links a {
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .app-header--dark .nav-links a:hover {
+    color: #fff;
+  }
+  .app-header--dark .logout-link {
+    color: rgba(255, 255, 255, 0.40);
+  }
+  .app-header--dark .logout-link:hover {
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .app-header--dark .hamburger {
+    color: rgba(255, 255, 255, 0.80);
   }
   
   .logo {
@@ -21,40 +56,81 @@
     color: #111;
   }
   
+  .header-logo img {
+    height: 30px;
+    display: block;
+    transition: filter 0.3s ease;
+  }
+  /* When over dark hero — brighten the orange logo so it pops on dark bg */
+  .header-logo img.logo-on-dark {
+    filter: brightness(1.15) drop-shadow(0 0 8px rgba(255, 120, 50, 0.35));
+  }
+
+  .nav-links {
+    align-items: center;
+  }
+
   .nav-links a {
     margin-left: 20px;
     text-decoration: none;
     color: #333;
     font-weight: 500;
+    font-size: 14px;
+    transition: color 0.2s ease;
+  }
+  .app-header--dark .nav-links a {
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .app-header--dark .nav-links a:hover {
+    color: #fff;
   }
   
   .hamburger {
-    font-size: 28px;
+    font-size: 24px;
     background: none;
     border: none;
     cursor: pointer;
     color: #111;
+    /* 44px minimum touch target */
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    transition: background 0.2s;
+    margin-right: -8px;
+  }
+  .hamburger:active {
+    background: rgba(0, 0, 0, 0.06);
   }
   
   /* MOBILE MENU */
   .mobile-menu {
     position: fixed;
-    top: 64px;
+    top: calc(64px + env(safe-area-inset-top, 0px));
     left: 0;
     right: 0;
     background: #fff;
-    padding: 20px;
+    padding: 8px 20px 20px;
     z-index: 1001;
     box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    animation: menuSlideDown 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
-  
+  @keyframes menuSlideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   .mobile-menu a {
-    display: block;
-    padding: 14px 0;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 12px 0;
     font-size: 16px;
     color: #222;
     text-decoration: none;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f0f0;
   }
   
   /* RESPONSIVE */
@@ -66,6 +142,42 @@
     display: none;
   }
   
+  .logout-link {
+    margin-left: 20px;
+    background: none;
+    border: none;
+    color: #999;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 5px 0;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .logout-link:hover {
+    color: #555;
+  }
+  .mobile-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 8px;
+    min-height: 48px;
+    padding: 12px 0;
+    background: none;
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    color: #aaa;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: color 0.2s ease;
+  }
+  .mobile-logout-btn:hover {
+    color: #666;
+  }
+
   @media (max-width: 768px) {
     .desktop-only {
       display: none;
@@ -73,5 +185,272 @@
     .mobile-only {
       display: block;
     }
+  }
+
+  /* ====== Scrolled state — clean white glassmorphism (works over any section) ====== */
+  .app-header--scrolled {
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04), 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+  }
+  .app-header--scrolled .nav-links a,
+  .app-header--scrolled .nav-track-btn {
+    color: #374151 !important;
+  }
+  .app-header--scrolled .nav-links a:hover,
+  .app-header--scrolled .nav-track-btn:hover {
+    color: #111 !important;
+  }
+  .app-header--scrolled .hamburger {
+    color: #111 !important;
+  }
+  .app-header--scrolled .logout-link {
+    color: #9ca3af !important;
+  }
+  .app-header--scrolled .logout-link:hover {
+    color: #374151 !important;
+  }
+
+  /* ====== Desktop Book Now pill CTA ====== */
+  .header-book-btn {
+    margin-left: 16px;
+    padding: 9px 22px;
+    border-radius: 24px;
+    background: linear-gradient(145deg, #FF8B3E 0%, #FF4300 100%);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    font-size: 14px;
+    font-family: "Inter", sans-serif;
+    cursor: pointer;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.2s ease;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 0 0 1px rgba(255, 90, 20, 0.40),
+      0 4px 20px rgba(255, 67, 0, 0.42);
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-book-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .header-book-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 0 0 1px rgba(255, 90, 20, 0.55),
+      0 10px 36px rgba(255, 67, 0, 0.58);
+  }
+  .header-book-btn:active {
+    transform: translateY(0);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 0 0 1px rgba(255, 90, 20, 0.30),
+      0 4px 12px rgba(255, 67, 0, 0.30);
+  }
+
+  .header-book-btn--hidden {
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+  }
+
+  /* Light theme mobile menu when not dark */
+  .mobile-menu--light {
+    background: #fff;
+  }
+
+  /* ====== Track button in desktop nav ====== */
+  .nav-track-btn {
+    margin-left: 20px;
+    background: none;
+    border: none;
+    font-weight: 500;
+    font-size: 14px;
+    font-family: "Inter", sans-serif;
+    cursor: pointer;
+    color: #333;
+    padding: 0;
+    transition: color 0.2s ease;
+  }
+  .app-header--dark .nav-track-btn {
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .app-header--dark .nav-track-btn:hover {
+    color: #fff;
+  }
+  .nav-track-btn:hover { color: #ff621a; }
+
+  /* ====== Track button in mobile menu ====== */
+  .mobile-track-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 0;
+    font-size: 16px;
+    color: #ff621a;
+    font-weight: 600;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+  }
+
+  /* ====== Track Order Modal ====== */
+  .track-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.60);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .track-modal {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: 36px 32px 32px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow:
+      0 4px 6px rgba(0, 0, 0, 0.04),
+      0 24px 60px rgba(0, 0, 0, 0.14);
+  }
+
+  @media (max-width: 480px) {
+    .track-modal-overlay {
+      align-items: flex-end;
+      padding: 0;
+    }
+    .track-modal {
+      border-radius: 28px 28px 0 0;
+      padding: 28px 24px calc(28px + env(safe-area-inset-bottom, 0px));
+      max-width: 100%;
+    }
+    .track-modal::before {
+      content: "";
+      display: block;
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(0, 0, 0, 0.10);
+      margin: 0 auto 20px;
+    }
+  }
+
+  .track-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    background: none;
+    border: none;
+    color: rgba(0, 0, 0, 0.30);
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .track-modal-close:hover { color: rgba(0, 0, 0, 0.65); }
+
+  .track-modal-ping {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ff8b6b;
+    box-shadow: 0 0 0 0 rgba(255, 139, 107, 0.50);
+    animation: trackPing 2s ease-in-out infinite;
+    margin-bottom: 16px;
+  }
+  @keyframes trackPing {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 139, 107, 0.50); }
+    50%       { box-shadow: 0 0 0 8px rgba(255, 139, 107, 0); }
+  }
+
+  .track-modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+    font-family: "Inter", sans-serif;
+  }
+
+  .track-modal-sub {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0 0 24px;
+    font-family: "Inter", sans-serif;
+  }
+
+  .track-modal-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .track-modal-input {
+    flex: 1;
+    padding: 13px 16px;
+    background: #f9fafb;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    color: #111827;
+    font-size: 15px;
+    font-family: "Inter", sans-serif;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .track-modal-input::placeholder { color: #9ca3af; }
+  .track-modal-input:focus {
+    border-color: rgba(255, 98, 26, 0.60);
+    box-shadow: 0 0 0 3px rgba(255, 98, 26, 0.10);
+    background: #fff;
+  }
+
+  .track-modal-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    border: 1.5px solid #e5e7eb;
+    background: #f3f4f6;
+    color: #d1d5db;
+    font-size: 18px;
+    cursor: not-allowed;
+    flex-shrink: 0;
+    transition: all 0.22s;
+  }
+  .track-modal-btn.ready {
+    background: linear-gradient(145deg, #FF8B3E 0%, #FF4300 100%);
+    border-color: transparent;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(255, 67, 0, 0.35);
+  }
+  .track-modal-btn.ready:hover {
+    box-shadow: 0 6px 22px rgba(255, 67, 0, 0.48);
+    transform: translateY(-1px);
   }
   

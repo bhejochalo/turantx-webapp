@@ -4,6 +4,7 @@ import logo from "../assets/turantx-logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import StepIndicator from "./StepIndicator";
 
 const SelectionPage = ({ phoneNumber: propPhone }) => {
   const navigate = useNavigate();
@@ -70,13 +71,15 @@ const SelectionPage = ({ phoneNumber: propPhone }) => {
 
   // Manual navigation (new user)
   const handleTraveler = () => {
+    localStorage.setItem("USER_ROLE", "TRAVELER");
     navigate("/address-selection", {
       state: { phoneNumber, userType: "TRAVELER" },
     });
   };
 
   const handleSender = () => {
-    navigate("/pan-verification", {
+    localStorage.setItem("USER_ROLE", "SENDER");
+    navigate("/address-selection", {
       state: { phoneNumber, userType: "SENDER" },
     });
   };
@@ -99,6 +102,7 @@ const SelectionPage = ({ phoneNumber: propPhone }) => {
   return (
     <div className="select-container page-transition">
       <div className="select-content">
+        <StepIndicator current={1} total={3} label="Choose your role" />
         <img src={logo} alt="TurantX" className="select-logo" />
 
         <h2 className="select-title">Choose Your Role</h2>

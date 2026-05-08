@@ -83,13 +83,7 @@ exports.saveUserData = functions.https.onRequest((req, res) => {
       // TRAVELER schema
       if (userType === "TRAVELER") {
         data.uniqueKey = generateKey();
-        data.status = "WAITING";
-        data.requestStatus = "SEARCHING";
-
-        data.FirstMileStatus = "Not Started";
-        data.SecondMileStatus = "Not Started";
-        data.LastMileStatus = "Not Started";
-
+        data.status = "SEARCHING";
         data.FirstMileOTP = generateOtp();
         data.LastMileOTP = generateOtp();
       }
@@ -98,7 +92,7 @@ exports.saveUserData = functions.https.onRequest((req, res) => {
       if (userType === "SENDER") {
         data.uniqueKey = uniqueKey || generateKey();
         data.isVerified = false;
-        data.requestStatus = "SEARCHING";
+        data.status = "SEARCHING";
         data.opsReviewed = false;
         data.trustStatus = {};
       }
@@ -113,17 +107,6 @@ exports.saveUserData = functions.https.onRequest((req, res) => {
         .doc(phoneNumber)
         .collection(requestsCollection)
         .doc(data.uniqueKey)
-        .set(data, { merge: true });
-
-      // ── LEGACY: Also write to Sender/details or Traveler/details ──
-      // Keeps backward compatibility for existing users during migration.
-      const legacyCollection = userType === "SENDER" ? "Sender" : "Traveler";
-
-      await db
-        .collection("users")
-        .doc(phoneNumber)
-        .collection(legacyCollection)
-        .doc("details")
         .set(data, { merge: true });
 
       // ── Update root user document with current role ──
@@ -209,6 +192,14 @@ exports.sendMailOnSenderRequest = onDocumentCreated(
       const data = snap.data();
       const { userId, requestId } = event.params;
 
+      // ── Admin notification: increment new sender count ──
+      try {
+        await db.collection("meta").doc("adminAlerts").set(
+          { newSenders: admin.firestore.FieldValue.increment(1), lastOrderAt: new Date().toISOString(), lastOrderType: "sender" },
+          { merge: true }
+        );
+      } catch (alertErr) { console.error("Admin alert update failed:", alertErr); }
+
       let rows = "";
       Object.keys(data || {}).forEach((key) => {
         rows += `
@@ -255,6 +246,14 @@ exports.sendMailOnTravelerRequest = onDocumentCreated(
 
       const data = snap.data();
       const { userId, requestId } = event.params;
+
+      // ── Admin notification: increment new traveler count ──
+      try {
+        await db.collection("meta").doc("adminAlerts").set(
+          { newTravelers: admin.firestore.FieldValue.increment(1), lastOrderAt: new Date().toISOString(), lastOrderType: "traveler" },
+          { merge: true }
+        );
+      } catch (alertErr) { console.error("Admin alert update failed:", alertErr); }
 
       let rows = "";
       Object.keys(data || {}).forEach((key) => {

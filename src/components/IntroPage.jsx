@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./IntroPage.css";
 import { useNavigate } from "react-router-dom";
+import logo from "../assets/turantxlogo-once.png";
 
 const slides = [
   {
@@ -31,6 +32,7 @@ export default function IntroPage() {
   return (
     <div className="intro-container page-transition">
       <div className="intro-content">
+        <img src={logo} alt="TurantX" className="intro-logo" />
         <div className="intro-slide">
           <h1>{slides[index].title}</h1>
           <p>{slides[index].text}</p>
